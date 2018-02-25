@@ -23,10 +23,9 @@
 Send money to the Plantoid: <input type="text" id="amount"><br>
 <button type="button" id="feed" onclick="sendFunds()">Send funds</button>
 
-	<script>
+<script>
 
-		var plantoid = web3.eth.contract([{"constant":true,"inputs":[],"name":"getBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]).at("0x557501f444a84732eafcb62c40bd768a4a7cb56d");
-		web3.eth.getBalance(plantoid.address, (e, r)=>{console.log(r); document.getElementById('balance').innerHTML = r;});
+console.log("web333: " + web3);
 
 if(typeof web3 !== 'undefined') {
 
@@ -36,6 +35,8 @@ if(typeof web3 !== 'undefined') {
 }
 
 
+var plantoid = web3.eth.contract([{"constant":true,"inputs":[],"name":"getBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]).at("0x557501f444a84732eafcb62c40bd768a4a7cb56d");
+web3.eth.getBalance(plantoid.address, (e, r)=>{console.log(r); document.getElementById('balance').innerHTML = r;});
 
 
 function getBalance() {
@@ -44,7 +45,6 @@ function getBalance() {
 }
 
 function sendFunds() {
-	getBalance();
 	var amount = document.getElementById("amount").value;
 	amount = web3.toWei(amount, "ether");
 	web3.eth.sendTransaction({to:'0x557501f444a84732eafcb62c40bd768a4a7cb56d', from: '0x64EB4dfcC14B96582D8D5095e9894b279E519b4B', value:amount}, (e)=>{console.log(e)});
