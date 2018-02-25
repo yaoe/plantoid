@@ -7,24 +7,39 @@
 
 <body>
 
-HELLO
+HELLO WORLD
 <div id="balance"></div>
 
-Send money to the Plantoid: <input type="text" name="amount"><br>
-<button type="button" id="feed">Send funds</button>
+Send money to the Plantoid: <input type="text" id="amount"><br>
+<button type="button" id="feed" onclick="sendFunds()">Send funds</button>
 
 
 <script>
 
-var web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/1FRENmMxR6mZ55Sjp8cZ"));
-var plantoid = web3.eth.contract([{"constant":true,"inputs":[],"name":"getBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]).at("0x557501f444a84732eafcb62c40bd768a4a7cb56d");
-var balance = web3.eth.getBalance(plantoid.address);
+if(typeof web3 !== 'undefined') {
 
-function updateBalance() {
-	document.getElementById('balance').innerHTML = balance;
+	web3 = new Web3(web3.currentProvider);
+} else {
+	web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/1FRENmMxR6mZ55Sjp8cZ"));
 }
 
-setTimeout(updateBalance(), 20000);
+
+
+
+function getBalance() {
+	var plantoid = web3.eth.contract([{"constant":true,"inputs":[],"name":"getBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]).at("0x557501f444a84732eafcb62c40bd768a4a7cb56d");
+	web3.eth.getBalance(plantoid.address,  (e,r)=>{console.log(r); document.getElementById('balance').innerHTML = r;});
+}
+
+function sendFunds() {
+	getBalance();
+	var amount = document.getElementById("amount").value;
+	amount = web3.toWei(amount, "ether");
+	web3.eth.sendTransaction({to:'0x557501f444a84732eafcb62c40bd768a4a7cb56d', from: '0x64EB4dfcC14B96582D8D5095e9894b279E519b4B', value:amount}, (e)=>{console.log(e)});
+	//plantoid.fund({value: amount});
+}
+
+setTimeout(getBalance(), 20000);
 
 </script>
 
