@@ -1,20 +1,33 @@
 <!doctype html>
 <html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    </head>
 
 <script src="./web3.js"></script>
 
 
 <body>
+	<!--[if lte IE 9]>
+	<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+	<![endif]-->
 
-HELLO WORLD
-<div id="balance"></div>
+	<h1>HELLO<h1>
+	<div id="balance"></div>
 
 Send money to the Plantoid: <input type="text" id="amount"><br>
 <button type="button" id="feed" onclick="sendFunds()">Send funds</button>
 
+	<script>
 
-<script>
+		var web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/1FRENmMxR6mZ55Sjp8cZ"));
+		var plantoid = web3.eth.contract([{"constant":true,"inputs":[],"name":"getBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]).at("0x557501f444a84732eafcb62c40bd768a4a7cb56d");
+		var balance = web3.eth.getBalance(plantoid.address);
 
 if(typeof web3 !== 'undefined') {
 
