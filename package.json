@@ -1,0 +1,31 @@
+{
+  "name": "plantoid-ethcc",
+  "version": "1.0.0",
+  "description": "First prototype of daostack plantoid",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yaoe/plantoid-ethcc.git"
+  },
+  "keywords": [
+    "DAOstack",
+    "plantoid",
+    "blockchain",
+    "ethereum"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yaoe/plantoid-ethcc/issues"
+  },
+  "homepage": "https://github.com/yaoe/plantoid-ethcc#readme",
+  "dependencies": {
+    "@daostack/arc": "0.0.0-alpha.35"
+  }
+}
