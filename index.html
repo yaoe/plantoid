@@ -17,6 +17,10 @@
 	<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
 	<![endif]-->
 
+
+
+
+
 	<h1>HELLO, I'm a Plantoid !</h1>
   <h3 id="PlantoidCreator"></h3>
   <h3 id="PlantoidThreshold"></h3>
@@ -50,6 +54,8 @@ getBalance();
 function getBalance() {
 	web3.eth.getBalance(plantoid.address,  (e,r)=>{console.log(r); document.getElementById('balance').innerHTML = "Current balance = " + r;});
 }
+
+
 function getInfo() {
   plantoid.artist.call(function(err, res) {
     document.getElementById('PlantoidCreator').innerHTML = "My creator is " + res;
@@ -58,6 +64,15 @@ function getInfo() {
     document.getElementById('PlantoidThreshold').innerHTML = "My threshold is " + web3.fromWei(res, 'ether') + " eth";
   });
   ListSeeds();
+}
+
+
+function weirdTest() {
+    var ww = document.getElementById("woow").value;
+    plantoid.weird.call(ww, function(err, vals) {
+        console.log("ERORRORORO : "+err);
+        document.getElementById('weirdres').innerHTML = "######## " + vals[0];
+      });
 }
 
 
@@ -137,12 +152,12 @@ function ListSeeds() {
             plantoid.getProposal.call(values[0], j, function(err, vals) {
               var cell = document.getElementById('Seedrow' + vals[0]);
 
-              if(vals[0] == "0") {
+              if(vals[1] == "0") {
                   console.log("clearing...........................................\n");
                   cell.innerHTML = "";
               }
-              cell.innerHTML += "Proposal # " + vals[0] + " : <a href='"+vals[2]+"'>"+vals[2]+"</a> from: "+vals[1]+" (current votes: "+vals[3]+") ";
-              cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + values[0]+','+vals[0]+')">Vote</button> <br/>';
+              cell.innerHTML += "Proposal # " + vals[1] + " : <a href='"+vals[3]+"'>"+vals[3]+"</a> from: "+vals[2]+" (current votes: "+vals[4]+") ";
+              cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + vals[0]+','+vals[1]+')">Vote</button> <br/>';
             });
           }
 
@@ -239,6 +254,21 @@ WinningProposalEvent.watch(function(err, result) {
   document.getElementById("transactionLog").innerHTML += "We got a winner !!@#!@  :DDD<br/>";
 });
 
+/*
+var UpgradedEvent = plantoid.Upgraded();
+UpgradedEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("UPgraded to" + result.args.implemntation);
+  document.getElementById("transactionLog").innerHTML += "UPgraded to" + result.args.implemntation + "<br/>";
+});
+
+var FallingBackEvent = plantoid.FallingBack();
+FallingBackEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("Falling backkkkkkkkk to" + result.args.implemntation + " with data: " + result.args.data);
+  document.getElementById("transactionLog").innerHTML += "Falling backkkkkkkkk to" + result.args.implemntation + " with data: " + result.args.data + "<br>"
+});
+*/
 
 
 </script>
