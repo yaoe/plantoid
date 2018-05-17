@@ -1,20 +1,106 @@
 pragma solidity ^0.4.19;
 
+contract Upgradable {
+
+    uint32 public val = 5;
+
+    function test(uint32 v) public returns(uint32, uint256) {
+        val = v;
+        return (val, address(this).balance);
+    }
+
+    function getTest() public view returns (uint32) {
+        return val;
+    }
+}
+
+contract Proxy {
+
+    address public owner;
+    address public _implementation;
+
+    address public artist;
+    uint public threshold;
+
+
+    function Proxy(address _owner, address _artist, uint _threshold) public {
+        owner = _owner;
+        artist = _artist;
+        threshold = _threshold;
+    }
+
+
+    modifier onlyOwner() {
+        require(msg.sender == owner);
+        _;
+    }
+
+    event Upgraded(address indexed implementation);
+    event FallingBack(address indexed implemantion, bytes data);
+
+
+    function implementation() public view returns (address) {
+        return _implementation;
+    }
+
+    function upgradeTo(address impl) public onlyOwner {
+        require(_implementation != impl);
+        _implementation = impl;
+        emit Upgraded(impl);
+        //Plantoid(address(this)).setup(_artist, _threshold);
+    }
+
+    function () public payable {
+        // data = msg.data
+        // sender = msg.sender
+        // myGovContract.call(sender, data)
+
+        // if (governanceContract.shouldCall(hash(msg.data)) {
+        //     call(msg.data)
+        // }
+
+        bytes memory data = msg.data;
+        address _impl = implementation();
+        require(_impl != address(0));
+
+        emit FallingBack(_impl, data);
+
+        assembly {
+            let result := delegatecall(gas, _impl, add(data, 0x20), mload(data), 0, 0)
+            let size := returndatasize
+            let ptr := mload(0x40)
+            returndatacopy(ptr, 0, size)
+            switch result
+            case 0 { revert(ptr, size) }
+            default { return(ptr, size) }
+        }
+    }
+}
 
 contract Plantoid {
 
     event GotDonation(address _donor, uint amount);
     event AcceptedDonation(address _donor, uint amount);
+    event DebugDonation(address _donor, uint amount, uint _threshold, uint _overflow);
     event Reproducing(uint seedCnt);
     event NewProposal(uint id, address _proposer, string url);
     event VotingProposal(uint id, uint pid, address _voter, uint _reputation, bool _voted);
     event VotedProposal(uint id, uint pid, address _voter);
     event WinningProposal(uint id, uint pid);
 
+
+// NEVER TOUCH
+    uint public save1;
+    uint public save2;
+
     address public artist;
-    uint public weiRaised;
     uint public threshold;
-    uint public seedCnt = 0;
+
+    uint public weiRaised;
+    uint public seedCnt;
+
+    mapping (uint => Seed) public seeds;
+// TILL HERE
 
     //enum Phase { Capitalisation, Mating, Hiring, Finish }
     //Using "status" instead:
@@ -43,12 +129,8 @@ contract Plantoid {
         uint totVotes;
     }
 
-    mapping (uint => Seed) public seeds;
 
-    function Plantoid(address _artist, uint _threshold) public {
-        artist = _artist;
-        threshold = _threshold;
-    }
+
 
     // Simple callback function
     function () public payable {
@@ -96,6 +178,7 @@ contract Plantoid {
         // Absolute majority
         if (currSeed.proposals[pid].votes > threshold / 2) {
             emit WinningProposal(id, pid);
+            currSeed.proposals[pid].proposer.transfer(threshold);
         }
 
     }
@@ -105,16 +188,17 @@ contract Plantoid {
         _id = id;
     }
 
-    function getProposal(uint256 id, uint pid) public constant returns(uint _id, address _from, string _url, uint _votes) {
+    function getProposal(uint256 id, uint pid) public constant returns(uint _id, uint _pid, address _from, string _url, uint _votes) {
         _from = seeds[id].proposals[pid].proposer;
         _url = seeds[id].proposals[pid].url;
         _votes = seeds[id].proposals[pid].votes;
-        _id = seeds[id].proposals[pid].id;
+        _pid = seeds[id].proposals[pid].id;
+        _id = id;
     }
 
     // External fund function
     function fund() public payable {
-        require(msg.value > 0);
+    //    require(msg.value > 0);
 
         uint funds = msg.value;
 
@@ -137,12 +221,19 @@ contract Plantoid {
         if (weiRaised + _donation > threshold) {
             overflow = weiRaised + _donation - threshold;
             donation = threshold - weiRaised;
+
+            emit DebugDonation(msg.sender, _donation, threshold, overflow);
+
+            //emit DebugDonation(0x01, donation);
+
         } else {
             donation = _donation;
+
+           emit AcceptedDonation(msg.sender, donation);
         }
       // Increase the amount of weiRaised (for that particular Seed)
         weiRaised += donation;
-        emit AcceptedDonation(msg.sender, donation);
+
 
       // Increase the reputation of the donor (for that particular Seed)
         seeds[seedCnt].reputation[msg.sender] += donation;
