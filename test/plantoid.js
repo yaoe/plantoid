@@ -1,5 +1,5 @@
 const Plantoid = artifacts.require("./Plantoid.sol");
-const Reputation = artifacts.require("./Reputation.sol");
+//const Reputation = artifacts.require("./Reputation.sol");
 
 contract('Plantoid', function (accounts)  {
 
@@ -14,13 +14,13 @@ contract('Plantoid', function (accounts)  {
         }
     });
 
-    it("Try donating", async () => {
-        let plantoid = await Plantoid.new(accounts[0], web3.toWei(1));
-        await plantoid.fund( { from: accounts[1], value: web3.toWei(0.5) } );
-        let baby = await plantoid.babies(0);
-        let repSystem = await Reputation.at(baby[0]);
-        assert.equal(await repSystem.reputationOf(accounts[1]), web3.toWei(0.5), 'Donor did not get his reputation');
-        // TODO: add more checks
-    });
+    // it("Try donating", async () => {
+    //     let plantoid = await Plantoid.new(accounts[0], web3.toWei(1));
+    //     await plantoid.fund( { from: accounts[1], value: web3.toWei(0.5) } );
+    //     let baby = await plantoid.babies(0);
+    //     let repSystem = await Reputation.at(baby[0]);
+    //     assert.equal(await repSystem.reputationOf(accounts[1]), web3.toWei(0.5), 'Donor did not get his reputation');
+    //     // TODO: add more checks
+    // });
 
 });

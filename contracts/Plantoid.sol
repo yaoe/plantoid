@@ -1,5 +1,7 @@
 pragma solidity ^0.4.19;
 
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+
 contract Upgradable {
 
     uint32 public val = 5;
@@ -14,26 +16,19 @@ contract Upgradable {
     }
 }
 
-contract Proxy {
+contract Proxy is Ownable {
 
-    address public owner;
     address public _implementation;
 
     address public artist;
     uint public threshold;
 
 
-    function Proxy(address _owner, address _artist, uint _threshold) public {
-        owner = _owner;
+    function Proxy(address _artist, uint _threshold) public {
         artist = _artist;
         threshold = _threshold;
     }
 
-
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
 
     event Upgraded(address indexed implementation);
     event FallingBack(address indexed implemantion, bytes data);

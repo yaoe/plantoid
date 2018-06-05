@@ -54,7 +54,7 @@ contract Plantoid {
         }
 
         weiRaised += donation;
-        babies[babiesCnt].repSystem.mint(msg.sender, int(donation));
+        babies[babiesCnt].repSystem.mint(msg.sender, donation);
 
         // Create new Baby:
         if (weiRaised >= threshold) {
