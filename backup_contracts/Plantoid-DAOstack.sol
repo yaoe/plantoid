@@ -62,9 +62,9 @@ contract Plantoid {
             newBaby(babiesCnt);
             weiRaised = 0;
             babies[babiesCnt].repSystem = new Reputation();
-            if (overflow != 0) {
+            /*if (overflow != 0) {
                 _fund(overflow);
-            }
+            }*/
         }
     }
 }

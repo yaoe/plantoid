@@ -1,20 +1,6 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.23;
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-
-contract Upgradable {
-
-    uint32 public val = 5;
-
-    function test(uint32 v) public returns(uint32, uint256) {
-        val = v;
-        return (val, address(this).balance);
-    }
-
-    function getTest() public view returns (uint32) {
-        return val;
-    }
-}
+import "@daostack/arc/contracts/controller/Reputation.sol";
 
 contract Proxy is Ownable {
 
@@ -24,7 +10,7 @@ contract Proxy is Ownable {
     uint public threshold;
 
 
-    function Proxy(address _artist, uint _threshold) public {
+    constructor(address _artist, uint _threshold) public {
         artist = _artist;
         threshold = _threshold;
     }
@@ -74,14 +60,15 @@ contract Proxy is Ownable {
 
 contract Plantoid {
 
-    event GotDonation(address _donor, uint amount);
-    event AcceptedDonation(address _donor, uint amount);
+    event GotDonation(address _donor, uint _amount);
+    event AcceptedDonation(address _donor, uint _amount);
     event DebugDonation(address _donor, uint amount, uint _threshold, uint _overflow);
-    event Reproducing(uint seedCnt);
+    event Reproducing(uint _seedCnt);
     event NewProposal(uint id, address _proposer, string url);
     event VotingProposal(uint id, uint pid, address _voter, uint _reputation, bool _voted);
     event VotedProposal(uint id, uint pid, address _voter);
     event WinningProposal(uint id, uint pid);
+    event NewSeed(uint _cnt);
 
 
 // NEVER TOUCH
@@ -94,7 +81,17 @@ contract Plantoid {
     uint public weiRaised;
     uint public seedCnt;
 
-    mapping (uint => Seed) public seeds;
+    // Seed struct:
+    struct Seed {
+        Reputation repSystem;
+        bytes32 propId;
+        Proposal[] proposals;
+        mapping (address => bool) voters;
+        uint totVotes;
+        uint status;
+    }
+
+    mapping (uint=>Seed) public seeds;
 // TILL HERE
 
     //enum Phase { Capitalisation, Mating, Hiring, Finish }
@@ -115,17 +112,11 @@ contract Plantoid {
         uint votes;
     }
 
-    struct Seed {
-        uint id;
-        uint status;
-        mapping (address => uint) reputation;
-        Proposal[] proposals;
-        mapping (address => bool) voters;
-        uint totVotes;
+    constructor(address _artist, uint _threshold) public {
+        seeds[0].repSystem = new Reputation();
+        artist = _artist;
+        threshold = _threshold;
     }
-
-
-
 
     // Simple callback function
     function () public payable {
@@ -157,17 +148,19 @@ contract Plantoid {
     function voteProposal(uint256 id, uint pid) public ifStatus(id, 1) {
         Seed storage currSeed = seeds[id];
 
-        emit VotingProposal(id, pid, msg.sender, currSeed.reputation[msg.sender], currSeed.voters[msg.sender]);
+        uint voterReputation = currSeed.repSystem.reputationOf(msg.sender);
+
+        emit VotingProposal(id, pid, msg.sender, voterReputation, currSeed.voters[msg.sender]);
 
 
-        assert(currSeed.reputation[msg.sender] != 0);
+        assert(voterReputation != 0);
         assert(!currSeed.voters[msg.sender]);
 
         emit VotedProposal(id, pid, msg.sender);
 
-        currSeed.proposals[pid].votes += currSeed.reputation[msg.sender];
+        currSeed.proposals[pid].votes += voterReputation;
         currSeed.voters[msg.sender] = true;
-        currSeed.totVotes += currSeed.reputation[msg.sender];
+        currSeed.totVotes += voterReputation;
 
         // check if we got a winner
         // Absolute majority
@@ -193,18 +186,11 @@ contract Plantoid {
 
     // External fund function
     function fund() public payable {
-    //    require(msg.value > 0);
-
-        uint funds = msg.value;
-
+        require(msg.value > 0);
         // Log that the Plantoid received a new donation
         emit GotDonation(msg.sender, msg.value);
 
-        while (funds > 0) {
-            funds = _fund(funds);
-        }
-
-
+        _fund(msg.value);
     }
 
     // Internal fund function
@@ -229,22 +215,17 @@ contract Plantoid {
       // Increase the amount of weiRaised (for that particular Seed)
         weiRaised += donation;
 
+        seeds[seedCnt].repSystem.mint(msg.sender, donation);
 
-      // Increase the reputation of the donor (for that particular Seed)
-        seeds[seedCnt].reputation[msg.sender] += donation;
-
+        // Create new Baby:
         if (weiRaised >= threshold) {
-            emit Reproducing(seedCnt);
-            // change status of the seeds
-            seeds[seedCnt].status = 1;
-
-            // Create new Seed:
             seedCnt++;
-            //Seed memory newseed; //= Seed(seedCnt, 0, new Proposal[](0)); // 'reputation' member doesn't count
-            seeds[seedCnt].id = seedCnt;
+            emit NewSeed(seedCnt);
             weiRaised = 0;
-            // Feed the new seed if there was an overflow of donations
-            // (overflow != 0) {  _fund(overflow); }
+            seeds[seedCnt].repSystem = new Reputation();
+            if (overflow != 0) {
+                _fund(overflow);
+            }
         }
     }
 
