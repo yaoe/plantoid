@@ -95,6 +95,7 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
         if (_status == 1) { _weis = threshold; } else { _weis = weiRaised; }
     }
 
+
     function addProposal(uint256 id, string url) public ifStatus(id, 1) returns(bytes32){
         Seed storage currSeed = seeds[id]; // try with 'memory' instead of 'storage'
 
@@ -114,6 +115,13 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
         proposalToSeed[proposalId] = id;
         emit NewProposal(id, msg.sender, url,proposalId);
         return proposalId;
+    }
+
+    function vote(bytes32 _proposalId,uint _vote) public returns(bool){
+        uint id = proposalToSeed[_proposalId];
+        require(seeds[id].status == 1);
+        Parameters storage params = parameters[paramsHash];
+        return params.intVote.vote(_proposalId,_vote,msg.sender);
     }
 
     function getProposal(uint256 id, bytes32 pid) public constant returns(uint _id, bytes32 _pid, address _from, string _url, uint _votes) {
@@ -159,6 +167,8 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
 
         // Create new Baby:
         if (weiRaised >= threshold) {
+            seeds[seedCnt].status = 1;
+            emit Reproducing(seedCnt);
             seedCnt++;
             emit NewSeed(seedCnt);
             weiRaised = 0;
@@ -235,7 +245,7 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
     }
 
     function setGenesisProtocolParameters(GenesisProtocol genesisProtocol , uint[14] _params) external returns(bytes32) {
-        return genesisProtocol.setParameters(_params);
+        return genesisProtocol.setParameters(_params,address(this));
     }
 
     function executeProposal(bytes32 _proposalId,int _decision,ExecutableInterface ) external returns(bool) {
