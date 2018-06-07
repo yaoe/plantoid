@@ -12,7 +12,7 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
     event AcceptedDonation(address _donor, uint _amount);
     event DebugDonation(address _donor, uint amount, uint _threshold, uint _overflow);
     event Reproducing(uint _seedCnt);
-    event NewProposal(uint id, address _proposer, string url);
+    event NewProposal(uint id, address _proposer, string url,bytes32 _proposalId);
     event VotingProposal(uint id, uint pid, address _voter, uint _reputation, bool _voted);
     event VotedProposal(uint id, uint pid, address _voter);
     event WinningProposal(uint id, bytes32 pid);
@@ -95,10 +95,9 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
         if (_status == 1) { _weis = threshold; } else { _weis = weiRaised; }
     }
 
-    function addProposal(uint256 id, string url) public ifStatus(id, 1) {
+    function addProposal(uint256 id, string url) public ifStatus(id, 1) returns(bytes32){
         Seed storage currSeed = seeds[id]; // try with 'memory' instead of 'storage'
 
-        emit NewProposal(id, msg.sender, url);
         Parameters storage params = parameters[paramsHash];
         bytes32 proposalId = params.intVote.propose(
             2,
@@ -113,7 +112,8 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
         newprop.url = url;
         currSeed.proposals[proposalId] = newprop;
         proposalToSeed[proposalId] = id;
-
+        emit NewProposal(id, msg.sender, url,proposalId);
+        return proposalId;
     }
 
     function getProposal(uint256 id, bytes32 pid) public constant returns(uint _id, bytes32 _pid, address _from, string _url, uint _votes) {
