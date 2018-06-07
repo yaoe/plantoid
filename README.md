@@ -1,4 +1,4 @@
-# plantoid-ethcc
+# plantoid
 
 How to test :
 - Install and init truffle https://github.com/trufflesuite/truffle
