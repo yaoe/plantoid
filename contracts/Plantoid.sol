@@ -40,8 +40,6 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
     struct Seed {
         Reputation repSystem;
         mapping(bytes32=>Proposal) proposals;
-        mapping (address => bool) voters;
-        uint totVotes;
         uint status;
     }
 
@@ -231,8 +229,7 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
         return seeds[id].repSystem.reputationOf(_owner);
     }
 
-    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32 _proposalId) external returns(bool) {
-        uint id = proposalToSeed[_proposalId];
+    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32 ) external returns(bool) {
         require(msg.sender == parameters[paramsHash].allowToExecute);
         return stakingToken.transfer(_beneficiary,_amount);
     }
@@ -241,7 +238,7 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
         return genesisProtocol.setParameters(_params);
     }
 
-    function executeProposal(bytes32 _proposalId,int _decision,ExecutableInterface _executable) external returns(bool) {
+    function executeProposal(bytes32 _proposalId,int _decision,ExecutableInterface ) external returns(bool) {
         require(msg.sender == parameters[paramsHash].allowToExecute);
         return execute(_proposalId, 0, _decision);
     }
@@ -249,10 +246,9 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
     /**
   * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
   * @param _proposalId the ID of the voting in the voting machine
-  * @param _avatar address of the controller
   * @param _param a parameter of the voting result, 1 yes and 2 is no.
   */
-  function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
+  function execute(bytes32 _proposalId, address , int _param) public returns(bool) {
       // Check the caller is indeed the voting machine:
       require(msg.sender == parameters[paramsHash].allowToExecute);
       // Check if vote was successful:
