@@ -28,6 +28,7 @@
   "homepage": "https://github.com/yaoe/plantoid-ethcc#readme",
   "dependencies": {
     "@daostack/arc": "0.0.0-alpha.42",
+    "@daostack/infra": "file:../infra",
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "ganache-cli": "^6.1.0"

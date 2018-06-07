@@ -1,4 +1,5 @@
 const Plantoid = artifacts.require("./Plantoid.sol");
+var ERC827TokenMock = artifacts.require("./ERC827TokenMock.sol");
 
 
 class TestSetup {
@@ -8,7 +9,8 @@ class TestSetup {
 let accounts = web3.eth.accounts;
 const setup = async function (artist=accounts[0], threshold=100) {
   var testSetup = new TestSetup();
-  testSetup.plantoid = await Plantoid.new(artist, threshold);
+  testSetup.stakingToken = await ERC827TokenMock.new(accounts[1],1000);
+  testSetup.plantoid = await Plantoid.new(artist, threshold,testSetup.stakingToken.address);
   return testSetup;
 };
 contract('Plantoid', function (accounts)  {
