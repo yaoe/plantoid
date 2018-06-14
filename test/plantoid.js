@@ -24,7 +24,7 @@ contract('Plantoid', function (accounts)  {
     it("Plantoid fund", async () => {
         let testSetup = await setup();
         var tx = await testSetup.plantoid.fund({value:100});
-        assert.equal(tx.logs.length, 3);
+        assert.equal(tx.logs.length, 4);
         assert.equal(tx.logs[0].event, "GotDonation");
         assert.equal(tx.logs[0].args._donor, accounts[0]);
         assert.equal(tx.logs[0].args._amount, 100);
@@ -33,8 +33,11 @@ contract('Plantoid', function (accounts)  {
         assert.equal(tx.logs[1].args._donor, accounts[0]);
         assert.equal(tx.logs[1].args._amount, 100);
 
-        assert.equal(tx.logs[2].event, "NewSeed");
-        assert.equal(tx.logs[2].args._cnt, 1);
+        assert.equal(tx.logs[2].event, "Reproducing");
+        assert.equal(tx.logs[2].args._seedCnt, 0);
+
+        assert.equal(tx.logs[3].event, "NewSeed");
+        assert.equal(tx.logs[3].args._cnt, 1);
 
         assert.equal(await testSetup.plantoid.getBalance(),100);
     });
