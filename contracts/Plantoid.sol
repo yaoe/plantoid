@@ -188,6 +188,8 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
         address _allowToExecute
     ) public returns(bytes32)
     {
+        //allow only one time call
+        require(paramsHash == bytes32(0));
         bytes32 _paramsHash = getParametersHash(
             _voteApproveParams,
             _intVote,
@@ -234,7 +236,7 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
         return seeds[id].repSystem.burn(_beneficiary,_amount);
     }
 
-    function reputationOf(address _owner,bytes32 _proposalId) external returns(uint) {
+    function reputationOf(address _owner,bytes32 _proposalId) external view returns(uint) {
         uint id = proposalToSeed[_proposalId];
         return seeds[id].repSystem.reputationOf(_owner);
     }
