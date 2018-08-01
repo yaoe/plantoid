@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
 import "@daostack/infra/contracts/Reputation.sol";
-import "@daostack/infra/contracts/VotingMachines/AbsoluteVote.sol";
+import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
 
 
 contract Upgradable {
@@ -51,7 +51,8 @@ contract Proxy {
         require(_implementation != impl);
         _implementation = impl;
         emit Upgraded(impl);
-        //Plantoid(address(this)).setup(_artist, _threshold);
+// this is a trick to call a constructor in the case of a delegated contract
+//        Plantoid(address(this)).setup();
     }
 
     function () public payable {
@@ -91,7 +92,7 @@ contract Plantoid {
     event VotingProposal(uint id, uint pid, address _voter, uint _reputation, bool _voted);
     event VotedProposal(uint id, uint pid, address _voter);
     event WinningProposal(uint id, uint pid, address _proposer);
-
+    event NewVotingMachine(address voteMachine);
 
 // NEVER TOUCH
     uint public save1;
@@ -105,8 +106,6 @@ contract Plantoid {
 
     mapping (uint => Seed) public seeds;
 // TILL HERE
-
-
 
     //enum Phase { Capitalisation, Mating, Hiring, Finish }
     //Using "status" instead:
@@ -136,6 +135,55 @@ contract Plantoid {
         uint totVotes;
     }
 
+// GENESIS PROTOCOL VARIABLES
+
+    address public VoteMachine;
+
+    bytes32 genesisParams;
+    bytes32 public orgHash;
+
+    uint[14] genesisProtocolParams = [
+    50,     //_preBoostedVoteRequiredPercentage=50,
+    60,     //_preBoostedVotePeriodLimit=60, (in seconds)
+    60,     //_boostedVotePeriodLimit=60,
+    1,      //_thresholdConstA=1,
+    1,      //_thresholdConstB=1,
+    0,      //_minimumStakingFee=0,
+    0,      //_quietEndingPeriod=0
+    60000,      //_proposingRepRewardConstA=60000
+    1000,      //_proposingRepRewardConstB=1000
+    2,      //_stakerFeeRatioForVoters=10,
+    0,      //_votersReputationLossRatio=10
+    0,      //_votersGainRepRatioFromLostRep=80
+    3,      //_daoBountyConst = 15,
+    0      //_daoBountyLimit = 10
+    ];
+
+
+    //this is a trick to implement a constructor in a delegated contract
+    function setup() public {  // is there a way not to make it public ??
+
+        //allow only one time call
+        require(orgHash == bytes32(0));
+
+  //      function setGenesisProtocolParameters(GenesisProtocol genesisProtocol , uint[14] _params) external returns(bytes32) {
+  //          return genesisProtocol.setParameters(_params,address(this));
+  //      }
+          genesisParams = GenesisProtocol(VoteMachine).setParameters(genesisProtocolParams, address(this));
+
+          orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(VoteMachine), address(this)));
+        //  orgHash = getParametersHash(genesisParams, IntVoteInterface(VoteMachine), address(this));
+          // _voteApproveParams: genesisProtocolParams
+          // _intVote : IntVoteInterface(VoteMachine)
+          // allowToExecute: Plantoid address
+    }
+
+    function setVotingMachine(address voteM) public { //onlyOwnerX {
+        require(VoteMachine != voteM);
+        VoteMachine = voteM;
+        emit NewVotingMachine(VoteMachine);
+        this.setup();
+    }
 
 
 
