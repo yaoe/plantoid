@@ -17,6 +17,10 @@
 	<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
 	<![endif]-->
 
+
+
+
+
 	<h1>HELLO, I'm a Plantoid !</h1>
   <h3 id="PlantoidCreator"></h3>
   <h3 id="PlantoidThreshold"></h3>
@@ -43,13 +47,15 @@ if(typeof web3 !== 'undefined') {
 }
 
 
-var plantoid = web3.eth.contract([	{		"constant": false,		"inputs": [			{				"name": "id",				"type": "uint256"			},			{				"name": "url",				"type": "string"			}		],		"name": "addProposal",		"outputs": [],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": false,		"inputs": [],		"name": "fund",		"outputs": [],		"payable": true,		"stateMutability": "payable",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "id",				"type": "uint256"			},			{				"name": "pid",				"type": "uint256"			}		],		"name": "voteProposal",		"outputs": [],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "id",				"type": "uint256"			},			{				"indexed": false,				"name": "pid",				"type": "uint256"			},			{				"indexed": false,				"name": "_voter",				"type": "address"			},			{				"indexed": false,				"name": "_reputation",				"type": "uint256"			},			{				"indexed": false,				"name": "_voted",				"type": "bool"			}		],		"name": "VotingProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "id",				"type": "uint256"			},			{				"indexed": false,				"name": "_proposer",				"type": "address"			},			{				"indexed": false,				"name": "url",				"type": "string"			}		],		"name": "NewProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "seedCnt",				"type": "uint256"			}		],		"name": "Reproducing",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "id",				"type": "uint256"			},			{				"indexed": false,				"name": "pid",				"type": "uint256"			}		],		"name": "WinningProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "_donor",				"type": "address"			},			{				"indexed": false,				"name": "amount",				"type": "uint256"			}		],		"name": "AcceptedDonation",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "_donor",				"type": "address"			},			{				"indexed": false,				"name": "amount",				"type": "uint256"			}		],		"name": "GotDonation",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "id",				"type": "uint256"			},			{				"indexed": false,				"name": "pid",				"type": "uint256"			},			{				"indexed": false,				"name": "_voter",				"type": "address"			}		],		"name": "VotedProposal",		"type": "event"	},	{		"payable": true,		"stateMutability": "payable",		"type": "fallback"	},	{		"inputs": [			{				"name": "_artist",				"type": "address"			},			{				"name": "_threshold",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "constructor"	},	{		"constant": true,		"inputs": [],		"name": "artist",		"outputs": [			{				"name": "",				"type": "address"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "getBalance",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "id",				"type": "uint256"			},			{				"name": "pid",				"type": "uint256"			}		],		"name": "getProposal",		"outputs": [			{				"name": "_id",				"type": "uint256"			},			{				"name": "_pid",				"type": "uint256"			},			{				"name": "_from",				"type": "address"			},			{				"name": "_url",				"type": "string"			},			{				"name": "_votes",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "id",				"type": "uint256"			}		],		"name": "getSeed",		"outputs": [			{				"name": "_id",				"type": "uint256"			},			{				"name": "_status",				"type": "uint256"			},			{				"name": "_weis",				"type": "uint256"			},			{				"name": "_thres",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "id",				"type": "uint256"			}		],		"name": "nProposals",		"outputs": [			{				"name": "_id",				"type": "uint256"			},			{				"name": "n",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "seedCnt",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "",				"type": "uint256"			}		],		"name": "seeds",		"outputs": [			{				"name": "id",				"type": "uint256"			},			{				"name": "status",				"type": "uint256"			},			{				"name": "totVotes",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "threshold",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "weiRaised",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	}]).at("0x842dd69c146b7276963856e02fec4b143ad19d79");
+var plantoid = web3.eth.contract([	{		"constant": false,		"inputs": [			{				"name": "id",				"type": "uint256"			},			{				"name": "url",				"type": "string"			}		],		"name": "addProposal",		"outputs": [],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": false,		"inputs": [],		"name": "fund",		"outputs": [],		"payable": true,		"stateMutability": "payable",		"type": "function"	},	{		"payable": true,		"stateMutability": "payable",		"type": "fallback"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "id",				"type": "uint256"			},			{				"indexed": false,				"name": "pid",				"type": "uint256"			},			{				"indexed": false,				"name": "_voter",				"type": "address"			},			{				"indexed": false,				"name": "_reputation",				"type": "uint256"			},			{				"indexed": false,				"name": "_voted",				"type": "bool"			}		],		"name": "VotingProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "id",				"type": "uint256"			},			{				"indexed": false,				"name": "_proposer",				"type": "address"			},			{				"indexed": false,				"name": "url",				"type": "string"			}		],		"name": "NewProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "seedCnt",				"type": "uint256"			}		],		"name": "Reproducing",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "id",				"type": "uint256"			},			{				"indexed": false,				"name": "pid",				"type": "uint256"			}		],		"name": "WinningProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "_donor",				"type": "address"			},			{				"indexed": false,				"name": "amount",				"type": "uint256"			},			{				"indexed": false,				"name": "_threshold",				"type": "uint256"			},			{				"indexed": false,				"name": "_overflow",				"type": "uint256"			}		],		"name": "DebugDonation",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "_donor",				"type": "address"			},			{				"indexed": false,				"name": "amount",				"type": "uint256"			}		],		"name": "AcceptedDonation",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "_donor",				"type": "address"			},			{				"indexed": false,				"name": "amount",				"type": "uint256"			}		],		"name": "GotDonation",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "id",				"type": "uint256"			},			{				"indexed": false,				"name": "pid",				"type": "uint256"			},			{				"indexed": false,				"name": "_voter",				"type": "address"			}		],		"name": "VotedProposal",		"type": "event"	},	{		"constant": false,		"inputs": [			{				"name": "id",				"type": "uint256"			},			{				"name": "pid",				"type": "uint256"			}		],		"name": "voteProposal",		"outputs": [],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "artist",		"outputs": [			{				"name": "",				"type": "address"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "getBalance",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "id",				"type": "uint256"			},			{				"name": "pid",				"type": "uint256"			}		],		"name": "getProposal",		"outputs": [			{				"name": "_id",				"type": "uint256"			},			{				"name": "_pid",				"type": "uint256"			},			{				"name": "_from",				"type": "address"			},			{				"name": "_url",				"type": "string"			},			{				"name": "_votes",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "id",				"type": "uint256"			}		],		"name": "getSeed",		"outputs": [			{				"name": "_id",				"type": "uint256"			},			{				"name": "_status",				"type": "uint256"			},			{				"name": "_weis",				"type": "uint256"			},			{				"name": "_thres",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "id",				"type": "uint256"			}		],		"name": "nProposals",		"outputs": [			{				"name": "_id",				"type": "uint256"			},			{				"name": "n",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "save1",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "save2",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "seedCnt",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "",				"type": "uint256"			}		],		"name": "seeds",		"outputs": [			{				"name": "id",				"type": "uint256"			},			{				"name": "status",				"type": "uint256"			},			{				"name": "totVotes",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "threshold",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "weiRaised",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	}]).at("0xbbf289d846208c16edc8474705c748aff07732db");
 //web3.eth.getBalance(plantoid.address, (e, r)=>{console.log(r); document.getElementById('balance').innerHTML = r;});
 getBalance();
 
 function getBalance() {
 	web3.eth.getBalance(plantoid.address,  (e,r)=>{console.log(r); document.getElementById('balance').innerHTML = "Current balance = " + r;});
 }
+
+
 function getInfo() {
   plantoid.artist.call(function(err, res) {
     document.getElementById('PlantoidCreator').innerHTML = "My creator is " + res;
@@ -58,6 +64,15 @@ function getInfo() {
     document.getElementById('PlantoidThreshold').innerHTML = "My threshold is " + web3.fromWei(res, 'ether') + " eth";
   });
   ListSeeds();
+}
+
+
+function weirdTest() {
+    var ww = document.getElementById("woow").value;
+    plantoid.weird.call(ww, function(err, vals) {
+        console.log("ERORRORORO : "+err);
+        document.getElementById('weirdres').innerHTML = "######## " + vals[0];
+      });
 }
 
 
@@ -137,12 +152,12 @@ function ListSeeds() {
             plantoid.getProposal.call(values[0], j, function(err, vals) {
               var cell = document.getElementById('Seedrow' + vals[0]);
 
-              if(vals[0] == "0") {
+              if(vals[1] == "0") {
                   console.log("clearing...........................................\n");
                   cell.innerHTML = "";
               }
-              cell.innerHTML += "Proposal # " + vals[0] + " : <a href='"+vals[2]+"'>"+vals[2]+"</a> from: "+vals[1]+" (current votes: "+vals[3]+") ";
-              cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + values[0]+','+vals[0]+')">Vote</button> <br/>';
+              cell.innerHTML += "Proposal # " + vals[1] + " : <a href='"+vals[3]+"'>"+vals[3]+"</a> from: "+vals[2]+" (current votes: "+vals[4]+") ";
+              cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + vals[0]+','+vals[1]+')">Vote</button> <br/>';
             });
           }
 
@@ -155,9 +170,9 @@ function ListSeeds() {
 function sendFunds() {
 	var amount = document.getElementById("amount").value;
 	amount = web3.toWei(amount, "ether");
-	//web3.eth.sendTransaction({to:'0x842dd69c146b7276963856e02fec4b143ad19d79', from: '0x64EB4dfcC14B96582D8D5095e9894b279E519b4B', value:amount}, (e)=>{console.log(e)});
+	//web3.eth.sendTransaction({to:'0xbbf289d846208c16edc8474705c748aff07732db', from: '0x64EB4dfcC14B96582D8D5095e9894b279E519b4B', value:amount}, (e)=>{console.log(e)});
 	//plantoid.fund({value: amount});
-  web3.eth.sendTransaction({to:'0x842dd69c146b7276963856e02fec4b143ad19d79',  value:amount}, (e)=>{console.log(e)});
+  web3.eth.sendTransaction({to:'0xbbf289d846208c16edc8474705c748aff07732db',  value:amount}, (e)=>{console.log(e)});
 
 }
 
@@ -239,6 +254,21 @@ WinningProposalEvent.watch(function(err, result) {
   document.getElementById("transactionLog").innerHTML += "We got a winner !!@#!@  :DDD<br/>";
 });
 
+/*
+var UpgradedEvent = plantoid.Upgraded();
+UpgradedEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("UPgraded to" + result.args.implemntation);
+  document.getElementById("transactionLog").innerHTML += "UPgraded to" + result.args.implemntation + "<br/>";
+});
+
+var FallingBackEvent = plantoid.FallingBack();
+FallingBackEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("Falling backkkkkkkkk to" + result.args.implemntation + " with data: " + result.args.data);
+  document.getElementById("transactionLog").innerHTML += "Falling backkkkkkkkk to" + result.args.implemntation + " with data: " + result.args.data + "<br>"
+});
+*/
 
 
 </script>

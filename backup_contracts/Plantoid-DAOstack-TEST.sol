@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
 
-import "@daostack/arc/contracts/controller/Reputation.sol";
+import "@daostack/infra/contracts/Reputation.sol";
 
 
 contract Upgradable {
@@ -19,7 +19,7 @@ contract Upgradable {
 
 contract Proxy {
 
-    address public owner;
+    address public ownerX;
     address public _implementation;
 
     address public artist;
@@ -27,14 +27,14 @@ contract Proxy {
 
 
     function Proxy(address _owner, address _artist, uint _threshold) public {
-        owner = _owner;
+        ownerX = _owner;
         artist = _artist;
         threshold = _threshold;
     }
 
 
-    modifier onlyOwner() {
-        require(msg.sender == owner);
+    modifier onlyOwnerX() {
+        require(msg.sender == ownerX);
         _;
     }
 
@@ -46,7 +46,7 @@ contract Proxy {
         return _implementation;
     }
 
-    function upgradeTo(address impl) public onlyOwner {
+    function upgradeTo(address impl) public onlyOwnerX {
         require(_implementation != impl);
         _implementation = impl;
         emit Upgraded(impl);
@@ -242,9 +242,9 @@ contract Plantoid {
 
 
       // instantiate a new Reputation system (DAOstack) if one doesnt exist
-      if((seeds[seedCnt].reputation) != Reputation(0)) { seeds[seedCnt].reputation = new Reputation; }
+      if((seeds[seedCnt].reputation) == Reputation(0)) { seeds[seedCnt].reputation = new Reputation(); }
       // Increase the reputation of the donor (for that particular Seed)
-        seeds[seedCnt].reputation.mint(msg.sender, donation);
+         seeds[seedCnt].reputation.mint(msg.sender, donation);
 
         if (weiRaised >= threshold) {
             emit Reproducing(seedCnt);
