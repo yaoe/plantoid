@@ -142,29 +142,31 @@ contract Plantoid {
     bytes32 genesisParams;
     bytes32 public orgHash;
 
-    uint[14] genesisProtocolParams = [
-    50,     //_preBoostedVoteRequiredPercentage=50,
-    60,     //_preBoostedVotePeriodLimit=60, (in seconds)
-    60,     //_boostedVotePeriodLimit=60,
-    1,      //_thresholdConstA=1,
-    1,      //_thresholdConstB=1,
-    0,      //_minimumStakingFee=0,
-    0,      //_quietEndingPeriod=0
-    60000,      //_proposingRepRewardConstA=60000
-    1000,      //_proposingRepRewardConstB=1000
-    2,      //_stakerFeeRatioForVoters=10,
-    0,      //_votersReputationLossRatio=10
-    0,      //_votersGainRepRatioFromLostRep=80
-    3,      //_daoBountyConst = 15,
-    0      //_daoBountyLimit = 10
-    ];
+    uint[14] genesisProtocolParams;
 
 
     //this is a trick to implement a constructor in a delegated contract
-    function setup() public {  // is there a way not to make it public ??
+    function setupVotingMachine() public {  // is there a way not to make it public ??
 
         //allow only one time call
         require(orgHash == bytes32(0));
+
+        genesisProtocolParams = [
+        50,     //_preBoostedVoteRequiredPercentage=50,
+        60,     //_preBoostedVotePeriodLimit=60, (in seconds)
+        60,     //_boostedVotePeriodLimit=60,
+        1,      //_thresholdConstA=1,
+        1,      //_thresholdConstB=1,
+        0,      //_minimumStakingFee=0,
+        0,      //_quietEndingPeriod=0
+        60000,      //_proposingRepRewardConstA=60000
+        1000,      //_proposingRepRewardConstB=1000
+        2,      //_stakerFeeRatioForVoters=10,
+        0,      //_votersReputationLossRatio=10
+        0,      //_votersGainRepRatioFromLostRep=80
+        3,      //_daoBountyConst = 15,
+        0      //_daoBountyLimit = 10
+        ];
 
   //      function setGenesisProtocolParameters(GenesisProtocol genesisProtocol , uint[14] _params) external returns(bytes32) {
   //          return genesisProtocol.setParameters(_params,address(this));
@@ -182,10 +184,9 @@ contract Plantoid {
         require(VoteMachine != voteM);
         VoteMachine = voteM;
         emit NewVotingMachine(VoteMachine);
-        genesisParams = GenesisProtocol(VoteMachine).setParameters(genesisProtocolParams, address(this));
-        orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(VoteMachine), address(this)));
 
-      //  this.setup();
+        this.setupVotingMachine();
+
     }
 
 
