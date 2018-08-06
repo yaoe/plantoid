@@ -171,7 +171,7 @@ contract Plantoid {
   //      }
           genesisParams = GenesisProtocol(VoteMachine).setParameters(genesisProtocolParams, address(this));
 
-          orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(VoteMachine), address(this)));
+         orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(VoteMachine), address(this)));
         //  orgHash = getParametersHash(genesisParams, IntVoteInterface(VoteMachine), address(this));
           // _voteApproveParams: genesisProtocolParams
           // _intVote : IntVoteInterface(VoteMachine)
@@ -182,7 +182,10 @@ contract Plantoid {
         require(VoteMachine != voteM);
         VoteMachine = voteM;
         emit NewVotingMachine(VoteMachine);
-        this.setup();
+        genesisParams = GenesisProtocol(VoteMachine).setParameters(genesisProtocolParams, address(this));
+        orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(VoteMachine), address(this)));
+
+      //  this.setup();
     }
 
 
@@ -211,6 +214,9 @@ contract Plantoid {
         newprop.url = url;
         currSeed.proposals.push(newprop);
         emit NewProposal(id, msg.sender, url);
+
+//function propose(uint _numOfChoices, bytes32 _paramsHash, address , ExecutableInterface _executable,address _proposer)
+        GenesisProtocol(VoteMachine).propose(2, orgHash, 0, ExecutableInterface(this), msg.sender);
 
     }
 
