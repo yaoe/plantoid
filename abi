@@ -1,5 +1,27 @@
 [
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "pid",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "addr",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "_decision",
+				"type": "int256"
+			}
+		],
+		"name": "Execution",
+		"type": "event"
+	},
+	{
 		"constant": false,
 		"inputs": [
 			{
@@ -19,6 +41,87 @@
 	},
 	{
 		"constant": false,
+		"inputs": [
+			{
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"name": "_beneficiary",
+				"type": "address"
+			},
+			{
+				"name": "pid",
+				"type": "bytes32"
+			}
+		],
+		"name": "burnReputation",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "pid",
+				"type": "bytes32"
+			},
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "_param",
+				"type": "int256"
+			}
+		],
+		"name": "execute",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "pid",
+				"type": "bytes32"
+			},
+			{
+				"name": "_decision",
+				"type": "int256"
+			},
+			{
+				"name": "_executable",
+				"type": "address"
+			}
+		],
+		"name": "executeProposal",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
 		"inputs": [],
 		"name": "fund",
 		"outputs": [],
@@ -27,75 +130,82 @@
 		"type": "function"
 	},
 	{
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "fallback"
-	},
-	{
-		"anonymous": false,
+		"constant": false,
 		"inputs": [
 			{
-				"indexed": false,
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
 				"name": "pid",
+				"type": "bytes32"
+			}
+		],
+		"name": "getTotalReputationSupply",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "init",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_amount",
 				"type": "uint256"
 			},
 			{
-				"indexed": false,
-				"name": "_voter",
+				"name": "_beneficiary",
 				"type": "address"
 			},
 			{
-				"indexed": false,
-				"name": "_reputation",
-				"type": "uint256"
-			},
+				"name": "_proposalId",
+				"type": "bytes32"
+			}
+		],
+		"name": "mintReputation",
+		"outputs": [
 			{
-				"indexed": false,
-				"name": "_voted",
+				"name": "",
 				"type": "bool"
 			}
 		],
-		"name": "VotingProposal",
-		"type": "event"
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
-		"anonymous": false,
+		"constant": false,
 		"inputs": [
 			{
-				"indexed": false,
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "_proposer",
+				"name": "_owner",
 				"type": "address"
 			},
 			{
-				"indexed": false,
-				"name": "url",
-				"type": "string"
+				"name": "pid",
+				"type": "bytes32"
 			}
 		],
-		"name": "NewProposal",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
+		"name": "reputationOf",
+		"outputs": [
 			{
-				"indexed": false,
-				"name": "seedCnt",
+				"name": "",
 				"type": "uint256"
 			}
 		],
-		"name": "Reproducing",
-		"type": "event"
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -108,7 +218,7 @@
 			{
 				"indexed": false,
 				"name": "pid",
-				"type": "uint256"
+				"type": "bytes32"
 			},
 			{
 				"indexed": false,
@@ -151,16 +261,21 @@
 		"inputs": [
 			{
 				"indexed": false,
-				"name": "_donor",
-				"type": "address"
+				"name": "id",
+				"type": "uint256"
 			},
 			{
 				"indexed": false,
-				"name": "amount",
-				"type": "uint256"
+				"name": "pid",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "_voter",
+				"type": "address"
 			}
 		],
-		"name": "AcceptedDonation",
+		"name": "VotedProposal",
 		"type": "event"
 	},
 	{
@@ -185,22 +300,141 @@
 		"inputs": [
 			{
 				"indexed": false,
+				"name": "_donor",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "AcceptedDonation",
+		"type": "event"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "voteM",
+				"type": "address"
+			}
+		],
+		"name": "setVotingMachine",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
 				"name": "id",
 				"type": "uint256"
 			},
 			{
 				"indexed": false,
 				"name": "pid",
-				"type": "uint256"
+				"type": "bytes32"
 			},
 			{
 				"indexed": false,
 				"name": "_voter",
 				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "_reputation",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "_voted",
+				"type": "bool"
 			}
 		],
-		"name": "VotedProposal",
+		"name": "VotingProposal",
 		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "pid",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "_proposer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "url",
+				"type": "string"
+			}
+		],
+		"name": "NewProposal",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "seedCnt",
+				"type": "uint256"
+			}
+		],
+		"name": "Reproducing",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "voteMachine",
+				"type": "address"
+			}
+		],
+		"name": "NewVotingMachine",
+		"type": "event"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_beneficiary",
+				"type": "address"
+			},
+			{
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"name": "_proposalId",
+				"type": "bytes32"
+			}
+		],
+		"name": "stakingTokenTransfer",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"constant": false,
@@ -211,7 +445,7 @@
 			},
 			{
 				"name": "pid",
-				"type": "uint256"
+				"type": "bytes32"
 			}
 		],
 		"name": "voteProposal",
@@ -221,6 +455,11 @@
 		"type": "function"
 	},
 	{
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "fallback"
+	},
+	{
 		"constant": true,
 		"inputs": [],
 		"name": "artist",
@@ -228,6 +467,39 @@
 			{
 				"name": "",
 				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "genesisParams",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "genesisProtocolParams",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"payable": false,
@@ -257,7 +529,7 @@
 			},
 			{
 				"name": "pid",
-				"type": "uint256"
+				"type": "bytes32"
 			}
 		],
 		"name": "getProposal",
@@ -268,7 +540,7 @@
 			},
 			{
 				"name": "_pid",
-				"type": "uint256"
+				"type": "bytes32"
 			},
 			{
 				"name": "_from",
@@ -344,6 +616,39 @@
 	{
 		"constant": true,
 		"inputs": [],
+		"name": "orgHash",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"name": "pid2id",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
 		"name": "save1",
 		"outputs": [
 			{
@@ -402,6 +707,14 @@
 				"type": "uint256"
 			},
 			{
+				"name": "reputation",
+				"type": "address"
+			},
+			{
+				"name": "nProposals",
+				"type": "uint256"
+			},
+			{
 				"name": "totVotes",
 				"type": "uint256"
 			}
@@ -418,6 +731,20 @@
 			{
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "VoteMachine",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
 			}
 		],
 		"payable": false,

@@ -4,7 +4,7 @@ import "@daostack/infra/contracts/Reputation.sol";
 import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
 
 
-contract Upgradable {
+contract Upgradable is ExecutableInterface {
 
     uint32 public val = 5;
 
@@ -18,7 +18,7 @@ contract Upgradable {
     }
 }
 
-contract Proxy {
+contract Proxy  {
 
     address public ownerX;
     address public _implementation;
@@ -26,11 +26,15 @@ contract Proxy {
     address public artist;
     uint public threshold;
 
+    uint[14] public genesisProtocolParams;
+
+
 
     function Proxy(address _owner, address _artist, uint _threshold) public {
         ownerX = _owner;
         artist = _artist;
         threshold = _threshold;
+
     }
 
 
@@ -41,6 +45,9 @@ contract Proxy {
 
     event Upgraded(address indexed implementation);
     event FallingBack(address indexed implemantion, bytes data);
+
+
+
 
 
     function implementation() public view returns (address) {
@@ -80,19 +87,21 @@ contract Proxy {
             default { return(ptr, size) }
         }
     }
+
 }
 
-contract Plantoid {
+contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
 
     event GotDonation(address _donor, uint amount);
     event AcceptedDonation(address _donor, uint amount);
     event DebugDonation(address _donor, uint amount, uint _threshold, uint _overflow);
     event Reproducing(uint seedCnt);
-    event NewProposal(uint id, address _proposer, string url);
-    event VotingProposal(uint id, uint pid, address _voter, uint _reputation, bool _voted);
-    event VotedProposal(uint id, uint pid, address _voter);
-    event WinningProposal(uint id, uint pid, address _proposer);
+    event NewProposal(uint id, bytes32 pid, address _proposer, string url);
+    event VotingProposal(uint id, bytes32 pid, address _voter, uint _reputation, bool _voted);
+    event VotedProposal(uint id, bytes32 pid, address _voter);
+    event WinningProposal(uint id, bytes32 pid, address _proposer);
     event NewVotingMachine(address voteMachine);
+    event Execution(bytes32 pid, address addr, int _decision);
 
 // NEVER TOUCH
     uint public save1;
@@ -100,6 +109,8 @@ contract Plantoid {
 
     address public artist;
     uint public threshold;
+
+    uint[14] public genesisProtocolParams;
 
     uint public weiRaised;
     uint public seedCnt;
@@ -119,7 +130,7 @@ contract Plantoid {
     }
 
     struct Proposal {
-        uint id;
+        bytes32 id;
         address proposer;
         string url;
         uint votes;
@@ -130,54 +141,40 @@ contract Plantoid {
         uint status;
      //   mapping (address => uint) reputation;
         Reputation reputation;
-        Proposal[] proposals;
+        mapping(bytes32=>Proposal) proposals;
+        uint nProposals;
         mapping (address => bool) voters;
         uint totVotes;
     }
+
+    //mapping between proposal to seed index
+    mapping (bytes32=>uint) public pid2id;
 
 // GENESIS PROTOCOL VARIABLES
 
     address public VoteMachine;
 
-    bytes32 genesisParams;
+    bytes32 public genesisParams;
     bytes32 public orgHash;
 
-    uint[14] genesisProtocolParams;
 
-
-    //this is a trick to implement a constructor in a delegated contract
-    function setupVotingMachine() public {  // is there a way not to make it public ??
-
-        //allow only one time call
-        require(orgHash == bytes32(0));
-
-        genesisProtocolParams = [
-        50,     //_preBoostedVoteRequiredPercentage=50,
-        60,     //_preBoostedVotePeriodLimit=60, (in seconds)
-        60,     //_boostedVotePeriodLimit=60,
-        1,      //_thresholdConstA=1,
-        1,      //_thresholdConstB=1,
-        0,      //_minimumStakingFee=0,
-        0,      //_quietEndingPeriod=0
-        60000,      //_proposingRepRewardConstA=60000
-        1000,      //_proposingRepRewardConstB=1000
-        2,      //_stakerFeeRatioForVoters=10,
-        0,      //_votersReputationLossRatio=10
-        0,      //_votersGainRepRatioFromLostRep=80
-        3,      //_daoBountyConst = 15,
-        0      //_daoBountyLimit = 10
-        ];
-
-  //      function setGenesisProtocolParameters(GenesisProtocol genesisProtocol , uint[14] _params) external returns(bytes32) {
-  //          return genesisProtocol.setParameters(_params,address(this));
-  //      }
-          genesisParams = GenesisProtocol(VoteMachine).setParameters(genesisProtocolParams, address(this));
-
-         orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(VoteMachine), address(this)));
-        //  orgHash = getParametersHash(genesisParams, IntVoteInterface(VoteMachine), address(this));
-          // _voteApproveParams: genesisProtocolParams
-          // _intVote : IntVoteInterface(VoteMachine)
-          // allowToExecute: Plantoid address
+    function init() public {
+      genesisProtocolParams = [
+      50,     //_preBoostedVoteRequiredPercentage=50,
+      60,     //_preBoostedVotePeriodLimit=60, (in seconds)
+      60,     //_boostedVotePeriodLimit=60,
+      1,      //_thresholdConstA=1,
+      1,      //_thresholdConstB=1,
+      0,      //_minimumStakingFee=0,
+      0,      //_quietEndingPeriod=0
+      60000,      //_proposingRepRewardConstA=60000
+      1000,      //_proposingRepRewardConstB=1000
+      2,      //_stakerFeeRatioForVoters=10,
+      0,      //_votersReputationLossRatio=10
+      0,      //_votersGainRepRatioFromLostRep=80
+      3,      //_daoBountyConst = 15,
+      0      //_daoBountyLimit = 10
+      ];
     }
 
     function setVotingMachine(address voteM) public { //onlyOwnerX {
@@ -185,9 +182,13 @@ contract Plantoid {
         VoteMachine = voteM;
         emit NewVotingMachine(VoteMachine);
 
-        this.setupVotingMachine();
+        //require(orgHash == bytes32(0));
+        genesisParams = GenesisProtocol(VoteMachine).setParameters(genesisProtocolParams, address(this));
+        orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(VoteMachine), address(this)));
 
     }
+
+
 
 
 
@@ -210,19 +211,30 @@ contract Plantoid {
     function addProposal(uint256 id, string url) public ifStatus(id, 1) {
         Seed storage currSeed = seeds[id]; // try with 'memory' instead of 'storage'
         Proposal memory newprop;
-        newprop.id = currSeed.proposals.length;
+
+        newprop.id = GenesisProtocol(VoteMachine).propose(2, genesisParams, 0, ExecutableInterface(this), msg.sender);
+        //function propose(uint _numOfChoices, bytes32 _paramsHash, address , ExecutableInterface _executable,address _proposer)
+
         newprop.proposer = msg.sender;
         newprop.url = url;
-        currSeed.proposals.push(newprop);
-        emit NewProposal(id, msg.sender, url);
 
-//function propose(uint _numOfChoices, bytes32 _paramsHash, address , ExecutableInterface _executable,address _proposer)
-        GenesisProtocol(VoteMachine).propose(2, orgHash, 0, ExecutableInterface(this), msg.sender);
+        currSeed.proposals[newprop.id] = newprop;
+        currSeed.nProposals++;
+        emit NewProposal(id, newprop.id, msg.sender, url);
+
+        //add the pid to the pid2id arrays (for the callback interface functions)
+        pid2id[newprop.id] = id;
 
     }
 
-    function voteProposal(uint256 id, uint pid) public ifStatus(id, 1) {
-        Seed storage currSeed = seeds[id];
+
+
+
+    function voteProposal(uint256 id, bytes32 pid) public ifStatus(id, 1) {
+
+        GenesisProtocol(VoteMachine).vote(pid, 1, msg.sender);
+/*        Seed storage currSeed = seeds[id];
+
 
         emit VotingProposal(id, pid, msg.sender, currSeed.reputation.reputationOf(msg.sender), currSeed.voters[msg.sender]);
 
@@ -242,15 +254,15 @@ contract Plantoid {
             emit WinningProposal(id, pid, currSeed.proposals[pid].proposer);
             currSeed.proposals[pid].proposer.transfer(threshold);
         }
-
+*/
     }
 
     function nProposals(uint256 id) public constant returns (uint _id, uint n) {
-        n = seeds[id].proposals.length;
+        n = seeds[id].nProposals;
         _id = id;
     }
 
-    function getProposal(uint256 id, uint pid) public constant returns(uint _id, uint _pid, address _from, string _url, uint _votes) {
+    function getProposal(uint256 id, bytes32 pid) public constant returns(uint _id, bytes32 _pid, address _from, string _url, uint _votes) {
         _from = seeds[id].proposals[pid].proposer;
         _url = seeds[id].proposals[pid].url;
         _votes = seeds[id].proposals[pid].votes;
@@ -317,6 +329,40 @@ contract Plantoid {
             // (overflow != 0) {  _fund(overflow); }
         }
     }
+
+// FUNCTIONS for ExecutableInterface
+
+    function execute(bytes32 pid, address , int _param) public returns(bool) {
+    }
+
+// FUNCTIONS for GenesisProtocolCallbacksInterface
+
+    function getTotalReputationSupply(bytes32 pid) external returns(uint256) {
+        uint id = pid2id[pid];
+        return seeds[id].reputation.totalSupply();
+    }
+
+    function mintReputation(uint _amount,address _beneficiary,bytes32 _proposalId) external returns(bool) {}
+
+    function burnReputation(uint _amount,address _beneficiary,bytes32 pid) external returns(bool) {
+      uint id = pid2id[pid];
+      require(msg.sender == VoteMachine);
+      return seeds[id].reputation.burn(_beneficiary,_amount);
+    }
+
+    function reputationOf(address _owner,bytes32 pid) external returns(uint) {
+        uint id = pid2id[pid];
+        return seeds[id].reputation.reputationOf(_owner);
+    }
+
+    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32 _proposalId) external returns(bool) {}
+
+    function executeProposal(bytes32 pid,int _decision, ExecutableInterface _executable) external returns(bool) {
+      require(msg.sender == VoteMachine);
+      emit Execution(pid, 0, _decision);
+      return execute(pid, 0, _decision);
+    }
+
 
 
 }

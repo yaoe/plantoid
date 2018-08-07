@@ -48,6 +48,8 @@ if(typeof web3 !== 'undefined') {
 
 
 var plantoid = web3.eth.contract(ABI).at("ETH");
+
+var genesis = web3.eth.contract(IBA).at("GP");
 //web3.eth.getBalance(plantoid.address, (e, r)=>{console.log(r); document.getElementById('balance').innerHTML = r;});
 getBalance();
 
@@ -137,7 +139,7 @@ function ListSeeds() {
       CreateSeeds(i);
     }
 
-    function UpdateProposals(i) {
+    function UpdateProposals_backup(i) {
 
         var PropCounter;
 
@@ -164,6 +166,53 @@ function ListSeeds() {
         });
     }
 
+
+    function UpdateProposals() {
+
+      var propCounter;
+
+        console.log("updating proposals for ALL Seeds");
+
+        plantoid.NewProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((error, eventResult) => {
+          if(error)
+            console.log('Error in NewProposal handler: '+ error);
+          else {
+            console.log('NewProposal: ' + JSON.stringify(eventResult[0]));
+
+            propCounter = eventResult.length;
+
+              for(var j = 0; j < propCounter; j++) {
+
+                var args = eventResult[j].args;
+
+                  var cell = document.getElementById('Seedrow' + args.id);
+
+                  if(! document.getElementById("Proposal"+args.pid)) {
+
+                      cell.innerHTML += "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a> <br>from: "+args._proposer+" <br>";
+                      cell.innerHTML += "Current votes: <span id='Votes"+args.pid+"'> 00 </span>";
+                      cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + args.id+','+args.pid+')">Vote</button> <br/>';
+
+                      var g = document.createElement('div'); g.setAttribute("id", "Proposal"+args.pid);
+                      cell.appendChild(g);
+
+                      updateVotesforPid(args.pid);
+                  //cell.setAttribute("id", "Proposal"+args.pid);
+                }
+
+                }
+
+            }
+          });
+
+    }
+
+function updateVotesforPid(pid) {
+  genesis.voteStatus(pid, 1, function(err, values) {
+    var p = document.getElementById("Votes"+pid);
+    p.innerHTML = values[0];
+  });
+}
 
 
 
