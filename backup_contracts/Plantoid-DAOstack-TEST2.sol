@@ -102,6 +102,8 @@ contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
     event WinningProposal(uint id, bytes32 pid, address _proposer);
     event NewVotingMachine(address voteMachine);
     event Execution(bytes32 pid, address addr, int _decision);
+    event ReputationOf(address _owner, uint rep);
+
 
 // NEVER TOUCH
     uint public save1;
@@ -352,7 +354,9 @@ contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
 
     function reputationOf(address _owner,bytes32 pid) external returns(uint) {
         uint id = pid2id[pid];
-        return seeds[id].reputation.reputationOf(_owner);
+        uint rep = seeds[id].reputation.reputationOf(_owner);
+        emit ReputationOf(_owner, rep);
+        return rep;
     }
 
     function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32 _proposalId) external returns(bool) {}
