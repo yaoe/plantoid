@@ -2,6 +2,8 @@ pragma solidity ^0.4.19;
 
 import "@daostack/infra/contracts/Reputation.sol";
 import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
+import "openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
+
 
 
 contract Upgradable is ExecutableInterface {
@@ -155,7 +157,6 @@ contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
 // GENESIS PROTOCOL VARIABLES
 
     address public VoteMachine;
-
     bytes32 public genesisParams;
     bytes32 public orgHash;
 
@@ -163,7 +164,7 @@ contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
     function init() public {
       genesisProtocolParams = [
       50,     //_preBoostedVoteRequiredPercentage=50,
-      60,     //_preBoostedVotePeriodLimit=60, (in seconds)
+      1800,     //_preBoostedVotePeriodLimit=60, (in seconds)
       60,     //_boostedVotePeriodLimit=60,
       1,      //_thresholdConstA=1,
       1,      //_thresholdConstB=1,
@@ -334,7 +335,7 @@ contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
 
 // FUNCTIONS for ExecutableInterface
 
-    function execute(bytes32 pid, address , int _param) public returns(bool) {
+    function execute(bytes32, address , int) public returns(bool) {
     }
 
 // FUNCTIONS for GenesisProtocolCallbacksInterface
@@ -344,7 +345,11 @@ contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
         return seeds[id].reputation.totalSupply();
     }
 
-    function mintReputation(uint _amount,address _beneficiary,bytes32 _proposalId) external returns(bool) {}
+    function mintReputation(uint _amount,address _beneficiary,bytes32 pid) external returns(bool) {
+      uint id = pid2id[pid];
+      require(msg.sender == VoteMachine);
+      return seeds[id].reputation.mint(_beneficiary,_amount);
+    }
 
     function burnReputation(uint _amount,address _beneficiary,bytes32 pid) external returns(bool) {
       uint id = pid2id[pid];
@@ -352,16 +357,20 @@ contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
       return seeds[id].reputation.burn(_beneficiary,_amount);
     }
 
-    function reputationOf(address _owner,bytes32 pid) external returns(uint) {
+    function reputationOf(address _owner,bytes32 pid) view external returns(uint) {
         uint id = pid2id[pid];
         uint rep = seeds[id].reputation.reputationOf(_owner);
         emit ReputationOf(_owner, rep);
         return rep;
     }
 
-    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32 _proposalId) external returns(bool) {}
+    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32) external returns(bool) {
+      require(msg.sender == VoteMachine);
+      ERC827Token stakingTok = ERC827Token(GenesisProtocol(VoteMachine).stakingToken());
+      return stakingTok.transfer(_beneficiary,_amount);
+    }
 
-    function executeProposal(bytes32 pid,int _decision, ExecutableInterface _executable) external returns(bool) {
+    function executeProposal(bytes32 pid,int _decision, ExecutableInterface) external returns(bool) {
       require(msg.sender == VoteMachine);
       emit Execution(pid, 0, _decision);
       return execute(pid, 0, _decision);

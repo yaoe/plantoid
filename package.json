@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/yaoe/plantoid-ethcc#readme",
   "dependencies": {
-    "@daostack/infra": "file:daostack-infra-0.0.0-alpha.43.tgz",
+    "@daostack/infra": "0.0.0-alpha.03",
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "ganache-cli": "^6.1.0",

@@ -4,21 +4,16 @@
 		"inputs": [
 			{
 				"indexed": false,
-				"name": "pid",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"name": "addr",
+				"name": "_owner",
 				"type": "address"
 			},
 			{
 				"indexed": false,
-				"name": "_decision",
-				"type": "int256"
+				"name": "rep",
+				"type": "uint256"
 			}
 		],
-		"name": "Execution",
+		"name": "ReputationOf",
 		"type": "event"
 	},
 	{
@@ -70,7 +65,7 @@
 		"constant": false,
 		"inputs": [
 			{
-				"name": "pid",
+				"name": "",
 				"type": "bytes32"
 			},
 			{
@@ -78,7 +73,7 @@
 				"type": "address"
 			},
 			{
-				"name": "_param",
+				"name": "",
 				"type": "int256"
 			}
 		],
@@ -105,7 +100,7 @@
 				"type": "int256"
 			},
 			{
-				"name": "_executable",
+				"name": "",
 				"type": "address"
 			}
 		],
@@ -169,7 +164,7 @@
 				"type": "address"
 			},
 			{
-				"name": "_proposalId",
+				"name": "pid",
 				"type": "bytes32"
 			}
 		],
@@ -188,21 +183,12 @@
 		"constant": false,
 		"inputs": [
 			{
-				"name": "_owner",
+				"name": "voteM",
 				"type": "address"
-			},
-			{
-				"name": "pid",
-				"type": "bytes32"
 			}
 		],
-		"name": "reputationOf",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
+		"name": "setVotingMachine",
+		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -212,21 +198,11 @@
 		"inputs": [
 			{
 				"indexed": false,
-				"name": "id",
+				"name": "seedCnt",
 				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "pid",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"name": "_proposer",
-				"type": "address"
 			}
 		],
-		"name": "WinningProposal",
+		"name": "Reproducing",
 		"type": "event"
 	},
 	{
@@ -261,21 +237,16 @@
 		"inputs": [
 			{
 				"indexed": false,
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "pid",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"name": "_voter",
+				"name": "_donor",
 				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "amount",
+				"type": "uint256"
 			}
 		],
-		"name": "VotedProposal",
+		"name": "AcceptedDonation",
 		"type": "event"
 	},
 	{
@@ -300,31 +271,105 @@
 		"inputs": [
 			{
 				"indexed": false,
-				"name": "_donor",
+				"name": "pid",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "addr",
 				"type": "address"
 			},
 			{
 				"indexed": false,
-				"name": "amount",
-				"type": "uint256"
+				"name": "_decision",
+				"type": "int256"
 			}
 		],
-		"name": "AcceptedDonation",
+		"name": "Execution",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "voteMachine",
+				"type": "address"
+			}
+		],
+		"name": "NewVotingMachine",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "pid",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "_proposer",
+				"type": "address"
+			}
+		],
+		"name": "WinningProposal",
 		"type": "event"
 	},
 	{
 		"constant": false,
 		"inputs": [
 			{
-				"name": "voteM",
+				"name": "_beneficiary",
 				"type": "address"
+			},
+			{
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bytes32"
 			}
 		],
-		"name": "setVotingMachine",
-		"outputs": [],
+		"name": "stakingTokenTransfer",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "pid",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "_voter",
+				"type": "address"
+			}
+		],
+		"name": "VotedProposal",
+		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -386,55 +431,9 @@
 		"type": "event"
 	},
 	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"name": "seedCnt",
-				"type": "uint256"
-			}
-		],
-		"name": "Reproducing",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"name": "voteMachine",
-				"type": "address"
-			}
-		],
-		"name": "NewVotingMachine",
-		"type": "event"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_beneficiary",
-				"type": "address"
-			},
-			{
-				"name": "_amount",
-				"type": "uint256"
-			},
-			{
-				"name": "_proposalId",
-				"type": "bytes32"
-			}
-		],
-		"name": "stakingTokenTransfer",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "fallback"
 	},
 	{
 		"constant": false,
@@ -453,11 +452,6 @@
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
-	},
-	{
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "fallback"
 	},
 	{
 		"constant": true,
@@ -636,6 +630,29 @@
 			}
 		],
 		"name": "pid2id",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_owner",
+				"type": "address"
+			},
+			{
+				"name": "pid",
+				"type": "bytes32"
+			}
+		],
+		"name": "reputationOf",
 		"outputs": [
 			{
 				"name": "",

@@ -43,7 +43,7 @@ if(typeof web3 !== 'undefined') {
 
 	web3 = new Web3(web3.currentProvider);
 } else {
-	web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/1FRENmMxR6mZ55Sjp8cZ"));
+	web3 = new Web3(new Web3.providers.HttpProvider("https://kovan.infura.io/1FRENmMxR6mZ55Sjp8cZ"));
 }
 
 
@@ -233,7 +233,7 @@ function sendProposal(id) {
 }
 
 function voteProposal(id, pid) {
-  plantoid.voteProposal(id, pid, function(err, values) {
+  plantoid.voteProposal(id, pid, {gas: 7000000}, function(err, values) {
     console.log("voting on proposal ID: "+ pid + "for Seed: "+id);
   });
 }
