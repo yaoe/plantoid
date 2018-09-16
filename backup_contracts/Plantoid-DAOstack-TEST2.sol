@@ -6,7 +6,7 @@ import "openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
 
 
 
-contract Upgradable is ExecutableInterface {
+contract Upgradable is GenesisProtocolExecuteInterface {
 
     uint32 public val = 5;
 
@@ -92,7 +92,7 @@ contract Proxy  {
 
 }
 
-contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
+contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksInterface {
 
     event GotDonation(address _donor, uint amount);
     event AcceptedDonation(address _donor, uint amount);
@@ -215,8 +215,8 @@ contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
         Seed storage currSeed = seeds[id]; // try with 'memory' instead of 'storage'
         Proposal memory newprop;
 
-        newprop.id = GenesisProtocol(VoteMachine).propose(2, genesisParams, 0, ExecutableInterface(this), msg.sender);
-        //function propose(uint _numOfChoices, bytes32 _paramsHash, address , ExecutableInterface _executable,address _proposer)
+        newprop.id = GenesisProtocol(VoteMachine).propose(2, genesisParams, msg.sender);
+        //function propose(uint _numOfChoices, bytes32 _paramsHash, address _proposer)
 
         newprop.proposer = msg.sender;
         newprop.url = url;
@@ -335,12 +335,12 @@ contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
 
 // FUNCTIONS for ExecutableInterface
 
-    function execute(bytes32, address , int) public returns(bool) {
+    function execute(bytes32, address , int) public pure returns(bool) {
     }
 
 // FUNCTIONS for GenesisProtocolCallbacksInterface
 
-    function getTotalReputationSupply(bytes32 pid) external returns(uint256) {
+    function getTotalReputationSupply(bytes32 pid) external view returns(uint256) {
         uint id = pid2id[pid];
         return seeds[id].reputation.totalSupply();
     }
@@ -359,7 +359,7 @@ contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
 
     function reputationOf(address _owner,bytes32 pid) view external returns(uint) {
         uint id = pid2id[pid];
-        uint rep = seeds[id].reputation.reputationOf(_owner);
+        uint rep = seeds[id].reputation.balanceOf(_owner);
         emit ReputationOf(_owner, rep);
         return rep;
     }
@@ -370,7 +370,7 @@ contract Plantoid is ExecutableInterface, GenesisProtocolCallbacksInterface {
       return stakingTok.transfer(_beneficiary,_amount);
     }
 
-    function executeProposal(bytes32 pid,int _decision, ExecutableInterface) external returns(bool) {
+    function executeProposal(bytes32 pid,int _decision) external returns(bool) {
       require(msg.sender == VoteMachine);
       emit Execution(pid, 0, _decision);
       return execute(pid, 0, _decision);
