@@ -138,6 +138,7 @@ contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksIn
         address proposer;
         string url;
         uint votes;
+        XXX block;
     }
 
     struct Seed {
@@ -220,6 +221,7 @@ contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksIn
 
         newprop.proposer = msg.sender;
         newprop.url = url;
+        newprop.block = block.number;
 
         currSeed.proposals[newprop.id] = newprop;
         currSeed.nProposals++;
@@ -359,7 +361,7 @@ contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksIn
 
     function reputationOf(address _owner,bytes32 pid) view external returns(uint) {
         uint id = pid2id[pid];
-        uint rep = seeds[id].reputation.balanceOf(_owner);
+        uint rep = seeds[id].reputation.balanceOfAt(_owner, seeds[id].proposals[pid].block);
      //   emit ReputationOf(_owner, rep);
         return rep;
     }
