@@ -335,7 +335,7 @@ contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksIn
 
 // FUNCTIONS for ExecutableInterface
 
-    function execute(bytes32, address , int) public pure returns(bool) {
+    function execute(bytes32, address , int) public returns(bool) {
     }
 
 // FUNCTIONS for GenesisProtocolCallbacksInterface
@@ -360,11 +360,11 @@ contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksIn
     function reputationOf(address _owner,bytes32 pid) view external returns(uint) {
         uint id = pid2id[pid];
         uint rep = seeds[id].reputation.balanceOf(_owner);
-        emit ReputationOf(_owner, rep);
+     //   emit ReputationOf(_owner, rep);
         return rep;
     }
 
-    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32) external returns(bool) {
+    function stakingTokenTransfer(StandardToken _stakingToken, address _beneficiary,uint _amount,bytes32) external returns(bool) {
       require(msg.sender == VoteMachine);
       ERC827Token stakingTok = ERC827Token(GenesisProtocol(VoteMachine).stakingToken());
       return stakingTok.transfer(_beneficiary,_amount);
