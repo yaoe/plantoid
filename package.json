@@ -7,8 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "test",
-    "ganache": "ganache-cli"
+    "test": "test"
   },
   "repository": {
     "type": "git",
@@ -30,7 +29,7 @@
     "@daostack/infra": "0.0.0-alpha.05",
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
-    "ganache-cli": "^6.1.0",
-    "openzeppelin-solidity": "1.10.0"
+    "openzeppelin-solidity": "1.12.0",
+    "truffle-hdwallet-provider": "^1.0.0-web3one.0"
   }
 }

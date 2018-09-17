@@ -1,22 +1,104 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "@daostack/infra/contracts/Reputation.sol";
-import "openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
 import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
-import "@daostack/infra/contracts/VotingMachines/ExecutableInterface.sol";
+import "openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
 
-contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
 
-    event GotDonation(address _donor, uint _amount);
-    event AcceptedDonation(address _donor, uint _amount);
+
+contract Upgradable is GenesisProtocolExecuteInterface {
+
+    uint32 public val = 5;
+
+    function test(uint32 v) public returns(uint32, uint256) {
+        val = v;
+        return (val, address(this).balance);
+    }
+
+    function getTest() public view returns (uint32) {
+        return val;
+    }
+}
+
+contract Proxy  {
+
+    address public ownerX;
+    address public _implementation;
+
+    address public artist;
+    uint public threshold;
+
+    uint[14] public genesisProtocolParams;
+
+    constructor(address _owner, address _artist, uint _threshold) public {
+        ownerX = _owner;
+        artist = _artist;
+        threshold = _threshold;
+
+    }
+
+
+    modifier onlyOwnerX() {
+        require(msg.sender == ownerX);
+        _;
+    }
+
+    event Upgraded(address indexed implementation);
+    event FallingBack(address indexed implemantion, bytes data);
+
+    function implementation() public view returns (address) {
+        return _implementation;
+    }
+
+    function upgradeTo(address impl) public onlyOwnerX {
+        require(_implementation != impl);
+        _implementation = impl;
+        emit Upgraded(impl);
+// this is a trick to call a constructor in the case of a delegated contract
+//        Plantoid(address(this)).setup();
+    }
+
+    function () public payable {
+        // data = msg.data
+        // sender = msg.sender
+        // myGovContract.call(sender, data)
+
+        // if (governanceContract.shouldCall(hash(msg.data)) {
+        //     call(msg.data)
+        // }
+
+        bytes memory data = msg.data;
+        address _impl = implementation();
+        require(_impl != address(0));
+
+        emit FallingBack(_impl, data);
+
+        assembly {
+            let result := delegatecall(gas, _impl, add(data, 0x20), mload(data), 0, 0)
+            let size := returndatasize
+            let ptr := mload(0x40)
+            returndatacopy(ptr, 0, size)
+            switch result
+            case 0 { revert(ptr, size) }
+            default { return(ptr, size) }
+        }
+    }
+
+}
+
+contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksInterface {
+
+    event GotDonation(address _donor, uint amount);
+    event AcceptedDonation(address _donor, uint amount);
     event DebugDonation(address _donor, uint amount, uint _threshold, uint _overflow);
-    event Reproducing(uint _seedCnt);
-    event NewProposal(uint id, address _proposer, string url,bytes32 _proposalId);
-    event VotingProposal(uint id, uint pid, address _voter, uint _reputation, bool _voted);
-    event VotedProposal(uint id, uint pid, address _voter);
-    event WinningProposal(uint id, bytes32 pid);
-    event NewSeed(uint _cnt);
+    event Reproducing(uint seedCnt);
+    event NewProposal(uint id, bytes32 pid, address _proposer, string url);
+    event VotingProposal(uint id, bytes32 pid, address _voter, uint _reputation, bool _voted);
+    event VotedProposal(uint id, bytes32 pid, address _voter);
+    event WinningProposal(uint id, bytes32 pid, address _proposer);
+    event NewVotingMachine(address voteMachine);
+    event Execution(bytes32 pid, address addr, int _decision);
+    event ReputationOf(address _owner, uint rep);
 
 
 // NEVER TOUCH
@@ -26,39 +108,12 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
     address public artist;
     uint public threshold;
 
+    uint[14] public genesisProtocolParams;
+
     uint public weiRaised;
     uint public seedCnt;
 
-    struct Proposal {
-        bytes32 id;
-        address proposer;
-        string url;
-        uint votes;
-    }
-
-    // Seed struct:
-    struct Seed {
-        Reputation repSystem;
-        mapping(bytes32=>Proposal) proposals;
-        uint status;
-    }
-
-    struct Parameters {
-        bytes32 voteApproveParams;
-        IntVoteInterface intVote;
-        address allowToExecute;
-    }
-
-    mapping (uint=>Seed) public seeds;
-
-    //mapping between proposal to seed index
-    mapping (bytes32=>uint) public proposalToSeed;
-
-    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
-    mapping(bytes32=>Parameters) public parameters;
-
-    bytes32 public paramsHash;
-    ERC827Token stakingToken;
+    mapping (uint => Seed) public seeds;
 // TILL HERE
 
     //enum Phase { Capitalisation, Mating, Hiring, Finish }
@@ -72,12 +127,73 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
         _;
     }
 
-    constructor(address _artist, uint _threshold,ERC827Token _stakingToken) public {
-        seeds[0].repSystem = new Reputation();
-        artist = _artist;
-        threshold = _threshold;
-        stakingToken = _stakingToken;
+    modifier onlyVotingMachine() {
+        require(msg.sender == VoteMachine,"only VotingMachine");
+        _;
     }
+
+    struct Proposal {
+        bytes32 id;
+        address proposer;
+        string url;
+        uint votes;
+        uint block;
+    }
+
+    struct Seed {
+        uint id;
+        uint status;
+     //   mapping (address => uint) reputation;
+        Reputation reputation;
+        mapping(bytes32=>Proposal) proposals;
+        uint nProposals;
+        mapping (address => bool) voters;
+        uint totVotes;
+    }
+
+    //mapping between proposal to seed index
+    mapping (bytes32=>uint) public pid2id;
+
+// GENESIS PROTOCOL VARIABLES
+
+    address public VoteMachine;
+    bytes32 public genesisParams;
+    bytes32 public orgHash;
+
+
+    function init() public {
+      genesisProtocolParams = [
+      50,     //_preBoostedVoteRequiredPercentage=50,
+      1800,     //_preBoostedVotePeriodLimit=60, (in seconds)
+      60,     //_boostedVotePeriodLimit=60,
+      1,      //_thresholdConstA=1,
+      1,      //_thresholdConstB=1,
+      0,      //_minimumStakingFee=0,
+      0,      //_quietEndingPeriod=0
+      60000,      //_proposingRepRewardConstA=60000
+      1000,      //_proposingRepRewardConstB=1000
+      2,      //_stakerFeeRatioForVoters=10,
+      0,      //_votersReputationLossRatio=10
+      0,      //_votersGainRepRatioFromLostRep=80
+      3,      //_daoBountyConst = 15,
+      0      //_daoBountyLimit = 10
+      ];
+    }
+
+    function setVotingMachine(address voteM) public { //onlyOwnerX {
+        require(VoteMachine != voteM);
+        VoteMachine = voteM;
+        emit NewVotingMachine(VoteMachine);
+
+        //require(orgHash == bytes32(0));
+        genesisParams = GenesisProtocol(VoteMachine).setParameters(genesisProtocolParams, address(this));
+        orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(VoteMachine), address(this)));
+
+    }
+
+
+
+
 
     // Simple callback function
     function () public payable {
@@ -95,33 +211,59 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
         if (_status == 1) { _weis = threshold; } else { _weis = weiRaised; }
     }
 
-
-    function addProposal(uint256 id, string url) public ifStatus(id, 1) returns(bytes32){
+    function addProposal(uint256 id, string url) public ifStatus(id, 1) {
         Seed storage currSeed = seeds[id]; // try with 'memory' instead of 'storage'
-
-        Parameters storage params = parameters[paramsHash];
-        bytes32 proposalId = params.intVote.propose(
-            2,
-            params.voteApproveParams,
-           0,
-           ExecutableInterface(this),
-           msg.sender
-        );
         Proposal memory newprop;
-        newprop.id = proposalId;
+
+        newprop.id = GenesisProtocol(VoteMachine).propose(2, genesisParams, msg.sender);
+        //function propose(uint _numOfChoices, bytes32 _paramsHash, address _proposer)
+
         newprop.proposer = msg.sender;
         newprop.url = url;
-        currSeed.proposals[proposalId] = newprop;
-        proposalToSeed[proposalId] = id;
-        emit NewProposal(id, msg.sender, url,proposalId);
-        return proposalId;
+        newprop.block = block.number;
+
+        currSeed.proposals[newprop.id] = newprop;
+        currSeed.nProposals++;
+        emit NewProposal(id, newprop.id, msg.sender, url);
+
+        //add the pid to the pid2id arrays (for the callback interface functions)
+        pid2id[newprop.id] = id;
+
     }
 
-    function vote(bytes32 _proposalId,uint _vote) public returns(bool){
-        uint id = proposalToSeed[_proposalId];
-        require(seeds[id].status == 1);
-        Parameters storage params = parameters[paramsHash];
-        return params.intVote.vote(_proposalId,_vote,msg.sender);
+
+
+
+    function voteProposal(uint256 id, bytes32 pid) public ifStatus(id, 1) {
+
+        GenesisProtocol(VoteMachine).vote(pid, 1, msg.sender);
+/*        Seed storage currSeed = seeds[id];
+
+
+        emit VotingProposal(id, pid, msg.sender, currSeed.reputation.reputationOf(msg.sender), currSeed.voters[msg.sender]);
+
+
+        assert(currSeed.reputation.reputationOf(msg.sender) != 0);
+        assert(!currSeed.voters[msg.sender]);
+
+        emit VotedProposal(id, pid, msg.sender);
+
+        currSeed.proposals[pid].votes += currSeed.reputation.reputationOf(msg.sender);
+        currSeed.voters[msg.sender] = true;
+        currSeed.totVotes += currSeed.reputation.reputationOf(msg.sender);
+
+        // check if we got a winner
+        // Absolute majority
+        if (currSeed.proposals[pid].votes > threshold / 2) {
+            emit WinningProposal(id, pid, currSeed.proposals[pid].proposer);
+            currSeed.proposals[pid].proposer.transfer(threshold);
+        }
+*/
+    }
+
+    function nProposals(uint256 id) public constant returns (uint _id, uint n) {
+        n = seeds[id].nProposals;
+        _id = id;
     }
 
     function getProposal(uint256 id, bytes32 pid) public constant returns(uint _id, bytes32 _pid, address _from, string _url, uint _votes) {
@@ -134,11 +276,18 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
 
     // External fund function
     function fund() public payable {
-        require(msg.value > 0);
+    //    require(msg.value > 0);
+
+        uint funds = msg.value;
+
         // Log that the Plantoid received a new donation
         emit GotDonation(msg.sender, msg.value);
 
-        _fund(msg.value);
+        while (funds > 0) {
+            funds = _fund(funds);
+        }
+
+
     }
 
     // Internal fund function
@@ -163,112 +312,62 @@ contract Plantoid is GenesisProtocolCallbacksInterface,ExecutableInterface {
       // Increase the amount of weiRaised (for that particular Seed)
         weiRaised += donation;
 
-        seeds[seedCnt].repSystem.mint(msg.sender, donation);
 
-        // Create new Baby:
+      // instantiate a new Reputation system (DAOstack) if one doesnt exist
+      if((seeds[seedCnt].reputation) == Reputation(0)) { seeds[seedCnt].reputation = new Reputation(); }
+      // Increase the reputation of the donor (for that particular Seed)
+         seeds[seedCnt].reputation.mint(msg.sender, donation);
+
         if (weiRaised >= threshold) {
-            seeds[seedCnt].status = 1;
             emit Reproducing(seedCnt);
+            // change status of the seeds
+            seeds[seedCnt].status = 1;
+
+            // Create new Seed:
             seedCnt++;
-            emit NewSeed(seedCnt);
+            //Seed memory newseed; //= Seed(seedCnt, 0, new Proposal[](0)); // 'reputation' member doesn't count
+            seeds[seedCnt].id = seedCnt;
+            seeds[seedCnt].reputation = new Reputation();
             weiRaised = 0;
-            seeds[seedCnt].repSystem = new Reputation();
-            if (overflow != 0) {
-                _fund(overflow);
-            }
+            // Feed the new seed if there was an overflow of donations
+            // (overflow != 0) {  _fund(overflow); }
         }
     }
 
-    /**
-    * @dev hash the parameters, save them if necessary, and return the hash value
-    */
-    function setParameters(
-        bytes32 _voteApproveParams,
-        IntVoteInterface _intVote,
-        address _allowToExecute
-    ) public returns(bytes32)
-    {
-        //allow only one time call
-        require(paramsHash == bytes32(0));
-        bytes32 _paramsHash = getParametersHash(
-            _voteApproveParams,
-            _intVote,
-            _allowToExecute
-        );
-        parameters[_paramsHash].voteApproveParams = _voteApproveParams;
-        parameters[_paramsHash].intVote = _intVote;
-        parameters[_paramsHash].allowToExecute = _allowToExecute;
-        paramsHash = _paramsHash;
-        return paramsHash;
+// FUNCTIONS for ExecutableInterface
+
+    function execute(bytes32, address , int) public returns(bool) {
     }
 
-    /**
-    * @dev return a hash of the given parameters
-    * @param _voteApproveParams parameters for the voting machine.
-    * @param _intVote the voting machine used to approve a contribution
-    * @param _allowToExecute specify address which allow to call the genesisProtocolCallbacks.
-    * @return a hash of the parameters
-    */
-    // TODO: These fees are messy. Better to have a _fee and _feeToken pair, just as in some other contract (which one?) with some sane default
-    function getParametersHash(
-        bytes32 _voteApproveParams,
-        IntVoteInterface _intVote,
-        address _allowToExecute
-    ) public pure returns(bytes32)
-    {
-        return (keccak256(abi.encodePacked(_voteApproveParams, _intVote,_allowToExecute)));
+// FUNCTIONS for GenesisProtocolCallbacksInterface
+
+    function getTotalReputationSupply(bytes32 pid) external view returns(uint256) {
+        uint id = pid2id[pid];
+        return seeds[id].reputation.totalSupply();
     }
 
-    function getTotalReputationSupply(bytes32 _proposalId) external returns(uint256) {
-        uint id = proposalToSeed[_proposalId];
-        return seeds[id].repSystem.totalSupply();
+    function mintReputation(uint _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
+      uint id = pid2id[pid];
+      return seeds[id].reputation.mint(_beneficiary,_amount);
     }
 
-    function mintReputation(uint _amount,address _beneficiary,bytes32 _proposalId) external returns(bool) {
-        uint id = proposalToSeed[_proposalId];
-        require(msg.sender == parameters[paramsHash].allowToExecute);
-        return seeds[id].repSystem.mint(_beneficiary,_amount);
+    function burnReputation(uint _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
+      uint id = pid2id[pid];
+      return seeds[id].reputation.burn(_beneficiary,_amount);
     }
 
-    function burnReputation(uint _amount,address _beneficiary,bytes32 _proposalId) external returns(bool) {
-        uint id = proposalToSeed[_proposalId];
-        require(msg.sender == parameters[paramsHash].allowToExecute);
-        return seeds[id].repSystem.burn(_beneficiary,_amount);
+    function reputationOf(address _owner,bytes32 pid) view external returns(uint) {
+        uint id = pid2id[pid];
+        uint rep = seeds[id].reputation.balanceOfAt(_owner, seeds[id].proposals[pid].block);
+        return rep;
     }
 
-    function reputationOf(address _owner,bytes32 _proposalId) external view returns(uint) {
-        uint id = proposalToSeed[_proposalId];
-        return seeds[id].repSystem.reputationOf(_owner);
+    function stakingTokenTransfer(StandardToken _stakingToken, address _beneficiary,uint _amount,bytes32) external onlyVotingMachine returns(bool) {
+      return _stakingToken.transfer(_beneficiary,_amount);
     }
 
-    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32 ) external returns(bool) {
-        require(msg.sender == parameters[paramsHash].allowToExecute);
-        return stakingToken.transfer(_beneficiary,_amount);
+    function executeProposal(bytes32 pid,int _decision) external onlyVotingMachine returns(bool) {
+      emit Execution(pid, 0, _decision);
+      return execute(pid, 0, _decision);
     }
-
-    function setGenesisProtocolParameters(GenesisProtocol genesisProtocol , uint[14] _params) external returns(bytes32) {
-        return genesisProtocol.setParameters(_params,address(this));
-    }
-
-    function executeProposal(bytes32 _proposalId,int _decision,ExecutableInterface ) external returns(bool) {
-        require(msg.sender == parameters[paramsHash].allowToExecute);
-        return execute(_proposalId, 0, _decision);
-    }
-
-    /**
-  * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-  * @param _proposalId the ID of the voting in the voting machine
-  * @param _param a parameter of the voting result, 1 yes and 2 is no.
-  */
-  function execute(bytes32 _proposalId, address , int _param) public returns(bool) {
-      // Check the caller is indeed the voting machine:
-      require(msg.sender == parameters[paramsHash].allowToExecute);
-      // Check if vote was successful:
-      if (_param == 1) {
-          emit WinningProposal(proposalToSeed[_proposalId], _proposalId);
-          uint id = proposalToSeed[_proposalId];
-          seeds[id].proposals[_proposalId].proposer.transfer(threshold);
-      }
-      return true;
-  }
 }
