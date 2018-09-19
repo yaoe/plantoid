@@ -22,6 +22,7 @@
 
 
 	<h1>HELLO, I'm a Plantoid !</h1>
+  <h3>My address is: ETH </h3>
   <h3 id="PlantoidCreator"></h3>
   <h3 id="PlantoidThreshold"></h3>
 	<h2 id="balance"></h2>
@@ -63,7 +64,7 @@ function getInfo() {
     document.getElementById('PlantoidCreator').innerHTML = "My creator is " + res;
   });
   plantoid.threshold.call(function(err, res) {
-    document.getElementById('PlantoidThreshold').innerHTML = "My threshold is " + web3.fromWei(res, 'ether') + " eth";
+    document.getElementById('PlantoidThreshold').innerHTML = "My threshold is " + web3.fromWei(res, 'wei') + " wei's";
   });
   ListSeeds();
 }
@@ -218,7 +219,7 @@ function updateVotesforPid(pid) {
 
 function sendFunds() {
 	var amount = document.getElementById("amount").value;
-	amount = web3.toWei(amount, "ether");
+	//amount = web3.toWei(amount, "ether");
 	//web3.eth.sendTransaction({to:'ETH', from: '0x64EB4dfcC14B96582D8D5095e9894b279E519b4B', value:amount}, (e)=>{console.log(e)});
 	//plantoid.fund({value: amount});
   web3.eth.sendTransaction({to:'ETH',  value:amount}, (e)=>{console.log(e)});
@@ -233,9 +234,11 @@ function sendProposal(id) {
 }
 
 function voteProposal(id, pid) {
-  plantoid.voteProposal(id, pid, {gas: 7000000}, function(err, values) {
-    console.log("voting on proposal ID: "+ pid + "for Seed: "+id);
+  plantoid.voteProposal(id, pid.toString(), {gas: 7000000}, function(err, values) {
+  console.log("voting on proposal ID: "+ pid.toString() + "for Seed: "+id);
   });
+  console.log("voting on proposal ID: "+ pid.toString() + " for Seed: "+id +"   -> "+ typeof(pid.toString()));
+
 }
 
 setTimeout(getBalance(), 20000);

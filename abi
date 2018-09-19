@@ -98,10 +98,6 @@
 			{
 				"name": "_decision",
 				"type": "int256"
-			},
-			{
-				"name": "",
-				"type": "address"
 			}
 		],
 		"name": "executeProposal",
@@ -122,25 +118,6 @@
 		"outputs": [],
 		"payable": true,
 		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "pid",
-				"type": "bytes32"
-			}
-		],
-		"name": "getTotalReputationSupply",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -192,6 +169,33 @@
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "pid",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "_proposer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "url",
+				"type": "string"
+			}
+		],
+		"name": "NewProposal",
+		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -326,6 +330,10 @@
 		"constant": false,
 		"inputs": [
 			{
+				"name": "_stakingToken",
+				"type": "address"
+			},
+			{
 				"name": "_beneficiary",
 				"type": "address"
 			},
@@ -401,33 +409,6 @@
 			}
 		],
 		"name": "VotingProposal",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "pid",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"name": "_proposer",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "url",
-				"type": "string"
-			}
-		],
-		"name": "NewProposal",
 		"type": "event"
 	},
 	{
@@ -577,6 +558,25 @@
 			},
 			{
 				"name": "_thres",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "pid",
+				"type": "bytes32"
+			}
+		],
+		"name": "getTotalReputationSupply",
+		"outputs": [
+			{
+				"name": "",
 				"type": "uint256"
 			}
 		],

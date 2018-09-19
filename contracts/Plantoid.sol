@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 import "@daostack/infra/contracts/Reputation.sol";
 import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
-import "openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
+import "@daostack/infra/contracts/token/ERC827/ERC827Token.sol";
 
 
 
