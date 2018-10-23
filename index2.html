@@ -27,16 +27,20 @@
   <h3 id="PlantoidThreshold"></h3>
 	<h2 id="balance"></h2>
 
-  <script>
-  var pidpid = "0x8915c9d1e77582d97f7363faa777526b27d931fd63b272f862597a336939c786 ";
-  </script>
-  <button id="piddd" onclick="pidTesting(pidpid)">Test</button>
+  <div id="lala"></div>
 
-  <script>
-  function pidTesting(ppp) {
-    console.log("testing with ppp = " + ppp);
-  }
-  </script>
+    <script>
+    var pidpid = "0x8915c9d1e77582d97f7363faa777526b27d931fd63b272f862597a336939c786";
+    var ddd = document.getElementById("lala");
+    ddd.innerHTML +=
+    '<button onclick="pidTesting(\''+pidpid+'\')">Test</button>';
+
+    function pidTesting(ppp) {
+      console.log("testing with ppp = " + ppp);
+    }
+
+    </script>
+
 
 Send money to the Plantoid: <input type="text" id="amount"><br>
 <button type="button" id="feed" onclick="sendFunds()">Send funds</button>
@@ -205,7 +209,7 @@ function ListSeeds() {
 
                       cell.innerHTML += "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a> <br>from: "+args._proposer+" <br>";
                       cell.innerHTML += "Current votes: <span id='Votes"+args.pid+"'> 00 </span>";
-                      cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + args.id +','+ args.pid+')">Vote</button> <br/>';
+                      cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\')">Vote</button> <br/>';
 
                       var g = document.createElement('div'); g.setAttribute("id", "Proposal"+args.pid);
                       cell.appendChild(g);
@@ -222,9 +226,11 @@ function ListSeeds() {
     }
 
 function updateVotesforPid(pid) {
-  genesis.voteStatus(pid, 1, function(err, values) {
+  console.log("GENESIS ===  " + genesis.voteStatus);
+  genesis.voteStatus.call(pid, 1, function(err, val) {
+    console.log("Voting values = " + val);
     var p = document.getElementById("Votes"+pid);
-    p.innerHTML = values[0];
+    p.innerHTML = val;
   });
 }
 
@@ -247,10 +253,12 @@ function sendProposal(id) {
 }
 
 function voteProposal(id, pid) {
-//  plantoid.voteProposal(id, pid, {gas: 7000000}, function(err, values) {
-  console.log("voting on proposal ID: "+ pid + "for Seed: "+id);
-//  });
+  plantoid.voteProposal(id, pid, {gas: 7000000}, function(err, values) {
+        console.log("voting on proposal ID: "+ pid + "for Seed: "+id);
+   });
   console.log("voting on proposal ID: "+ pid + " for Seed: "+id +"   -> "+ typeof(pid.toString()));
+  updateVotesforPid(pid);
+
 
 }
 

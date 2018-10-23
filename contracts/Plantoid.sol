@@ -236,12 +236,10 @@ contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksIn
 
     function voteProposal(uint256 id, bytes32 pid) public ifStatus(id, 1) {
 
+      emit VotingProposal(id, pid, msg.sender, currSeed.reputation.reputationOf(msg.sender), currSeed.voters[msg.sender]);
+
         GenesisProtocol(VoteMachine).vote(pid, 1, msg.sender);
 /*        Seed storage currSeed = seeds[id];
-
-
-        emit VotingProposal(id, pid, msg.sender, currSeed.reputation.reputationOf(msg.sender), currSeed.voters[msg.sender]);
-
 
         assert(currSeed.reputation.reputationOf(msg.sender) != 0);
         assert(!currSeed.voters[msg.sender]);

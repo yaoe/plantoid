@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "test",
-    "ganache": "ganache-cli -l 6000000 -m 'grid dress decorate umbrella sunset width park corn federal two start nasty'"
+    "ganache": "ganache-cli -l 8000000 -m 'grid dress decorate umbrella sunset width park corn federal two start nasty'"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/yaoe/plantoid-ethcc#readme",
   "dependencies": {
-    "@daostack/infra": "0.0.0-alpha.05",
+    "@daostack/infra": "0.0.0-alpha.09",
     "babel-cli": "^6.26.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
