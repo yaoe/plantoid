@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "@daostack/infra/contracts/Reputation.sol";
 import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
@@ -6,7 +6,7 @@ import "@daostack/infra/contracts/token/ERC827/ERC827Token.sol";
 
 
 
-contract Upgradable is GenesisProtocolExecuteInterface {
+contract Upgradable is ProposalExecuteInterface {
 
     uint32 public val = 5;
 
@@ -86,7 +86,7 @@ contract Proxy  {
 
 }
 
-contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksInterface {
+contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     event GotDonation(address _donor, uint amount);
     event AcceptedDonation(address _donor, uint amount);
@@ -215,8 +215,8 @@ contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksIn
         Seed storage currSeed = seeds[id]; // try with 'memory' instead of 'storage'
         Proposal memory newprop;
 
-        newprop.id = GenesisProtocol(VoteMachine).propose(2, genesisParams, msg.sender);
-        //function propose(uint _numOfChoices, bytes32 _paramsHash, address _proposer)
+        newprop.id = GenesisProtocol(VoteMachine).propose(2, genesisParams, msg.sender, 0);
+        //function propose(uint _numOfChoices, bytes32 _paramsHash, address _proposer, address _organization)
 
         newprop.proposer = msg.sender;
         newprop.url = url;
@@ -236,7 +236,9 @@ contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksIn
 
     function voteProposal(uint256 id, bytes32 pid) public ifStatus(id, 1) {
 
-      emit VotingProposal(id, pid, msg.sender, currSeed.reputation.reputationOf(msg.sender), currSeed.voters[msg.sender]);
+      Seed storage currSeed = seeds[pid2id[pid]];
+
+      emit VotingProposal(id, pid, msg.sender, currSeed.reputation.balanceOf(msg.sender), currSeed.voters[msg.sender]);
 
         GenesisProtocol(VoteMachine).vote(pid, 1, msg.sender);
 /*        Seed storage currSeed = seeds[id];
@@ -334,7 +336,11 @@ contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksIn
 
 // FUNCTIONS for ExecutableInterface
 
-    function execute(bytes32, address , int) public returns(bool) {
+    function execute(bytes32 , address , int) public returns(bool) {
+
+
+    //  emit ExecutionProposal()
+
     }
 
 // FUNCTIONS for GenesisProtocolCallbacksInterface
@@ -362,6 +368,9 @@ contract Plantoid is GenesisProtocolExecuteInterface, GenesisProtocolCallbacksIn
 
     function stakingTokenTransfer(StandardToken _stakingToken, address _beneficiary,uint _amount,bytes32) external onlyVotingMachine returns(bool) {
       return _stakingToken.transfer(_beneficiary,_amount);
+    }
+
+    function balanceOfStakingToken(StandardToken, bytes32) external view returns(uint) {
     }
 
     function executeProposal(bytes32 pid,int _decision) external onlyVotingMachine returns(bool) {
