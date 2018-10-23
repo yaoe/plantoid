@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "ganache": "ganache-cli -l 6000000"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-register": "^6.26.0",
     "openzeppelin-solidity": "1.12.0",
-    "truffle-hdwallet-provider": "^1.0.0-web3one.0"
+    "truffle-hdwallet-provider": "^1.0.0-web3one.0",
+    "ganache-cli": "^6.1.8"
   }
 }

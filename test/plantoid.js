@@ -73,6 +73,7 @@ contract('Plantoid',  accounts =>  {
       var proposalId = tx.logs[0].args.pid;
       // Proxy.voteProposal(0, "AAA"-id) with account 2
       tx = await testSetup.plantoid.voteProposal(0,proposalId,{from:accounts[2]});
+      console.log(">>",await testSetup.plantoid.reputationOf(accounts[2],proposalId));
       //Proxy.voteProposal(0, "AAA"-id) with account 1
       tx = await testSetup.plantoid.voteProposal(0,proposalId,{from:accounts[1]});
 
