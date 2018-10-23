@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "test",
-    "ganache": "ganache-cli -l 6000000"
+    "ganache": "ganache-cli -l 6000000 -m 'grid dress decorate umbrella sunset width park corn federal two start nasty'"
   },
   "repository": {
     "type": "git",
