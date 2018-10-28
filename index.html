@@ -22,7 +22,7 @@
 
 
 	<h1>HELLO, I'm a Plantoid !</h1>
-  <h3>My address is: ETH </h3>
+  <h3>My address is: ETHHH </h3>
   <h3 id="PlantoidCreator"></h3>
   <h3 id="PlantoidThreshold"></h3>
 	<h2 id="balance"></h2>
@@ -63,9 +63,9 @@ if(typeof web3 !== 'undefined') {
 }
 
 
-var plantoid = web3.eth.contract(ABI).at("ETH");
+var plantoid = web3.eth.contract(ABI).at("ETHHH");
 
-var genesis = web3.eth.contract(IBA).at("GP");
+var genesis = web3.eth.contract(IBA).at("GPPP");
 //web3.eth.getBalance(plantoid.address, (e, r)=>{console.log(r); document.getElementById('balance').innerHTML = r;});
 getBalance();
 
@@ -73,6 +73,7 @@ function getBalance() {
 	web3.eth.getBalance(plantoid.address,  (e,r)=>{console.log(r); document.getElementById('balance').innerHTML = "Current balance = " + r;});
 }
 
+var threshold;
 
 function getInfo() {
   plantoid.artist.call(function(err, res) {
@@ -80,6 +81,7 @@ function getInfo() {
   });
   plantoid.threshold.call(function(err, res) {
     document.getElementById('PlantoidThreshold').innerHTML = "My threshold is " + web3.fromWei(res, 'wei') + " wei's";
+    threshold = res;
   });
   ListSeeds();
 }
@@ -95,6 +97,8 @@ function weirdTest() {
 
 
 var SeedCounter = 0;
+var SeedStatus = [];
+var SeedWinner = [];
 
 var rows = 0;
 
@@ -104,9 +108,8 @@ function ListSeeds() {
     SeedCounter = res;
     document.getElementById('Seedcnt').innerHTML = SeedCounter;
 
-
     for(var i = 0; i <= SeedCounter; i++) {
-        CreateSeeds(i);
+        CreateSeeds(i); console.log("creating seed.... " + i);
     }
   });
 }
@@ -116,29 +119,33 @@ function ListSeeds() {
       var table = document.getElementById("SeedTable");
 
       plantoid.getSeed.call(i, function(err, values) {
-        console.log("seed # "+ values[0] + ": " + values);
+        console.log("seed # "+ i + ": " + values);
+
+        SeedStatus[i] = values[0];
+        SeedWinner[i] = values[4];
 
         var row = table.insertRow(rows++);
-        row.id = "Seed" + values[0];
+        row.id = "Seed" + i;
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
         var cell3 = row.insertCell(2);
         var cell4 = row.insertCell(3);
-        cell1.innerHTML = "Seed # " + values[0];
-        cell2.innerHTML = "Status: " + values[1];
-        cell3.innerHTML = "(Raised " + values[2] + " + of " + values[3] + "Wei)";
+        cell1.innerHTML = "Seed # " + i;
+        cell2.innerHTML = "Status: " + values[0];
+        cell3.innerHTML = "(Raised " + values[1] + "Wei's)";
         cell4.innerHTML =
-        '<input type="text" id="propURL'+values[0]+'"">' +
-        '<button type="button" id="feed" onclick="sendProposal(' + values[0] +')">Send Proposal</button>';
+        '<input type="text" id="propURL'+i+'"">' +
+        '<button type="button" id="feed" onclick="sendProposal(' + i +')"' +
+        ((SeedStatus[i]==1) || 'disabled') + '>Send Proposal</button>';
 
         var row2 = table.insertRow(rows++);
         row2.insertCell(0);
         row2.insertCell(1);
         row2.insertCell(2);
         var cell = row2.insertCell(3);
-        cell.id = "Seedrow" + values[0];
+        cell.id = "Seedrow" + i;
 
-        UpdateProposals(values[0]);
+        UpdateProposals4Seed(i);
       });
   }
 
@@ -146,13 +153,14 @@ function ListSeeds() {
     function UpdateSeeds(i) {
       var table = document.getElementById("SeedTable");
       console.log("looking for..,,.,.,.,.,.,.,.: "+"Seed"+i);
-      var row = document.getElementById("Seed"+i);
-      var row2 = document.getElementById("Seedrow"+i);
-      row.parentNode.removeChild(row);
-      row2.parentNode.removeChild(row2);
-      rows -= 2;
-
-      CreateSeeds(i);
+      var row = document.getElementById("Seed"+i);  console.log("raw Seed+"+i+" = " + row);
+      var row2 = document.getElementById("Seedrow"+i); console.log("raw Seedrow+"+i+" = " + row2);
+      if(row) {
+        row.parentNode.removeChild(row);
+        row2.parentNode.removeChild(row2);
+        rows -= 2;
+        CreateSeeds(i);  console.log("CREATING SEED # " + i);
+      }
     }
 
     function UpdateProposals_backup(i) {
@@ -182,6 +190,66 @@ function ListSeeds() {
         });
     }
 
+    function UpdateAllProposals() {
+      plantoid.seedCnt.call(function(err, res) {
+        console.log("updating seeds, with new counter: " + res);
+        for(var j=0; j<res; j++) {
+          UpdateProposals4Seed(j);
+        }
+      });
+    }
+
+   function UpdateProposals4Seed(i) {
+
+      console.log("updating proposals for Seed # " + i);
+      plantoid.NewProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((error, eventResult) => {
+        if(error)
+          console.log('Error in NewProposal handler: '+ error);
+        else {
+
+
+          var propCounter = eventResult.length;
+          var t1 = ""; var t2 = "";
+
+          console.log("here --- propCounter == " + propCounter);
+
+
+            for(var j = 0; j < propCounter; j++) {
+
+              var args = eventResult[j].args;
+              console.log("processing proposition ... " + args.url + " from ID = " + args.id + " of---- " + i);
+
+              if(args.id == i) {
+
+                  var cell = document.getElementById('Seedrow' + args.id);
+                  var prop = document.getElementById("Proposal"+args.pid);
+                  console.log("document exist? " + prop);
+
+                  if(! document.getElementById("Proposal"+args.pid)) {
+
+                    console.log("checking ;: " + SeedWinner[args.id] + "==" + args.pid );
+
+                    if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
+                      t1 = "<b>"; t2 = "</b>";
+                    } else { t1 = t2 = ""; }
+
+                      cell.innerHTML += '<span id="PID' + args.pid+ '">' + t1 + "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a>"+ t2 +" <br></span>"
+                      cell.innerHTML += "from: "+args._proposer+" <br>";
+                      cell.innerHTML += "Current votes: <span id='Votes"+args.pid+"'> 00 </span>";
+                      cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\')"' +
+                      ((SeedStatus[args.id]==1) || 'disabled') +'>Vote</button> <br/>';
+
+                      var g = document.createElement('div'); g.setAttribute("id", "Proposal"+args.pid);
+                      cell.appendChild(g);
+
+                      updateVotesforPid(args.pid);
+                  }
+                } else { console.log(args.id + " != " + i);}
+              }
+          }
+      });
+    }
+
 
     function UpdateProposals() {
 
@@ -207,7 +275,8 @@ function ListSeeds() {
 
                       console.log('ARG PID 191: ' + args.pid);
 
-                      cell.innerHTML += "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a> <br>from: "+args._proposer+" <br>";
+                      cell.innerHTML += "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a> <br>"
+                      cell.innerHTML += "from: "+args._proposer+" <br>";
                       cell.innerHTML += "Current votes: <span id='Votes"+args.pid+"'> 00 </span>";
                       cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\')">Vote</button> <br/>';
 
@@ -228,10 +297,18 @@ function ListSeeds() {
 function updateVotesforPid(pid) {
   console.log("GENESIS ===  " + genesis.voteStatus);
   genesis.voteStatus.call(pid, 1, function(err, val) {
-    console.log("Voting values = " + val);
+    console.log("Voting values = " + val + "threshold == " + threshold);
     var p = document.getElementById("Votes"+pid);
-    p.innerHTML = val;
+    p.innerHTML = val / threshold * 100 + "%"; // will need to fix this once reputation starts changing !
   });
+}
+
+
+function WinningProposal(pid) {
+  var cell = document.getElementById("PID"+pid);
+  var content = cell.innerHTML;
+  cell.innerHTML = "<b>"+content+"</b>";
+
 }
 
 
@@ -241,7 +318,7 @@ function sendFunds() {
 	//amount = web3.toWei(amount, "ether");
 	//web3.eth.sendTransaction({to:'ETH', from: '0x64EB4dfcC14B96582D8D5095e9894b279E519b4B', value:amount}, (e)=>{console.log(e)});
 	//plantoid.fund({value: amount});
-  web3.eth.sendTransaction({to:'ETH',  value:amount}, (e)=>{console.log(e)});
+  web3.eth.sendTransaction({to:'ETHHH',  value:amount}, (e)=>{console.log(e)});
 
 }
 
@@ -257,8 +334,6 @@ function voteProposal(id, pid) {
         console.log("voting on proposal ID: "+ pid + "for Seed: "+id);
    });
   console.log("voting on proposal ID: "+ pid + " for Seed: "+id +"   -> "+ typeof(pid.toString()));
-  updateVotesforPid(pid);
-
 
 }
 
@@ -271,6 +346,7 @@ DonationEvent.watch(function(err, result) {
   console.log("GotDonation!!! ");
   console.log(result.args);
   getBalance();
+  UpdateSeeds(result.args._seed);
   document.getElementById("transactionLog").innerHTML += "Got Donation of " + web3.fromWei(result.args.amount, 'ether') + " by donor: " + result.args._donor +" <br/>";
 });
 
@@ -280,6 +356,7 @@ DonationAccepted.watch(function(err, result) {
   console.log("ACCEPTED Donation!!! ");
   console.log(result.args);
   getBalance();
+  UpdateSeeds(result.args._seed);
   document.getElementById("transactionLog").innerHTML += "Accepted Donation of " + web3.fromWei(result.args.amount, 'ether') + " from donor: " + result.args._donor +" <br/>";
 });
 
@@ -293,12 +370,21 @@ ReproductionEvent.watch(function(err, result) {
   CreateSeeds(++SeedCounter);
 });
 
+var ProposingEvent = plantoid.Proposing();
+ProposingEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("PROPOSINGGGGGGGGGGGGGG!");
+  console.log(result.args);
+//  UpdateProposals(result.args.id);
+//  document.getElementById("transactionLog").innerHTML += "The plantoid received a new proposal: "+ result.args.url+ " from " + result.args._proposer+ "<br/>";
+});
+
 var NewProposalEvent = plantoid.NewProposal();
 NewProposalEvent.watch(function(err, result) {
   if(err) { console.log(err); return; }
   console.log("NewProposal Event!");
   console.log(result.args);
-  UpdateProposals(result.args.id);
+  UpdateProposals4Seed(Number(result.args.id));
   document.getElementById("transactionLog").innerHTML += "The plantoid received a new proposal: "+ result.args.url+ " from " + result.args._proposer+ "<br/>";
 });
 
@@ -307,24 +393,21 @@ VotingProposalEvent.watch(function(err, result) {
   if(err) { console.log(err); return; }
   console.log("VOTED proposal Event!");
   console.log(result.args);
-  UpdateProposals(result.args.id);
+  //UpdateProposals(result.args.id);
+  updateVotesforPid(result.args.pid);
   document.getElementById("transactionLog").innerHTML += "Someone ("+result.args._voter+") is voting on proposal "+result.args.pid+" with reputation("+result.args._reputation+") and BOOL = "+ result.args._voted+"<br/>";
 });
 
-var VotedProposalEvent = plantoid.VotedProposal();
-VotedProposalEvent.watch(function(err, result) {
-  if(err) { console.log(err); return; }
-  console.log("VOTED proposal Event!");
-  console.log(result.args);
-  UpdateProposals(result.args.id);
-  document.getElementById("transactionLog").innerHTML += "Someone ("+result.args._voter+") has just voted on Proposal "+result.args.pid+"...<br/>";
-});
 
 var WinningProposalEvent = plantoid.WinningProposal();
 WinningProposalEvent.watch(function(err, result) {
   if(err) { console.log(err); return; }
+  getBalance();
   console.log("WinningProposal Event!");
-  document.getElementById("transactionLog").innerHTML += "We got a winner !!@#!@  :DDD<br/>";
+  document.getElementById("transactionLog").innerHTML += "We got a winner !!@#!@  :DDD<br/>"
+  + "id :" + result.args.id + " pid: " + result.args.pid + " winner address = " + result.args._proposer + "with previous balance = " + result.args.b4balance;
+  SeedStatus[result.args.id]=2; SeedWinner[result.args.id] = result.args.pid;
+  WinningProposal(result.args.pid);
 });
 
 /*

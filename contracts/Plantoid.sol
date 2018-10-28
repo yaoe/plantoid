@@ -88,14 +88,14 @@ contract Proxy  {
 
 contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
-    event GotDonation(address _donor, uint amount);
-    event AcceptedDonation(address _donor, uint amount);
+    event GotDonation(address _donor, uint amount, uint _seed);
+    event AcceptedDonation(address _donor, uint amount, uint _seed);
     event DebugDonation(address _donor, uint amount, uint _threshold, uint _overflow);
     event Reproducing(uint seedCnt);
+    event Proposing(uint _numOfChoices, bytes32 _paramsHash, address _proposer, address _organization);
     event NewProposal(uint id, bytes32 pid, address _proposer, string url);
-    event VotingProposal(uint id, bytes32 pid, address _voter, uint _reputation, bool _voted);
-    event VotedProposal(uint id, bytes32 pid, address _voter);
-    event WinningProposal(uint id, bytes32 pid, address _proposer);
+    event VotingProposal(uint id, bytes32 pid, address _voter, uint _reputation);
+    event WinningProposal(uint id, bytes32 pid, address _proposer, uint256 b4balance, int decision);
     event NewVotingMachine(address voteMachine);
     event Execution(bytes32 pid, address addr, int _decision);
     event ReputationOf(address _owner, uint rep);
@@ -110,7 +110,6 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     uint[14] public genesisProtocolParams;
 
-    uint public weiRaised;
     uint public seedCnt;
 
     mapping (uint => Seed) public seeds;
@@ -143,12 +142,13 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     struct Seed {
         uint id;
         uint status;
+        uint weiRaised;
      //   mapping (address => uint) reputation;
         Reputation reputation;
         mapping(bytes32=>Proposal) proposals;
         uint nProposals;
-        mapping (address => bool) voters;
-        uint totVotes;
+        bytes32 winningProposal;
+      //  mapping (address => bool) voters;
     }
 
     //mapping between proposal to seed index
@@ -164,16 +164,16 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     function init() public {
       genesisProtocolParams = [
       50,     //_preBoostedVoteRequiredPercentage=50,
-      1800,     //_preBoostedVotePeriodLimit=60, (in seconds)
+      31557600,     //_preBoostedVotePeriodLimit=60, (in seconds) -- one year
       60,     //_boostedVotePeriodLimit=60,
-      1,      //_thresholdConstA=1,
+      100000000,      //_thresholdConstA=1, -- n# of GENs you need to stake for boosting when there are 0 proposals
       1,      //_thresholdConstB=1,
       0,      //_minimumStakingFee=0,
       0,      //_quietEndingPeriod=0
       60000,      //_proposingRepRewardConstA=60000
       1000,      //_proposingRepRewardConstB=1000
       2,      //_stakerFeeRatioForVoters=10,
-      0,      //_votersReputationLossRatio=10
+      0,      //_votersReputationLossRatio=10  -- 100 so they can vote only once?
       0,      //_votersGainRepRatioFromLostRep=80
       3,      //_daoBountyConst = 15,
       0      //_daoBountyLimit = 10
@@ -204,18 +204,21 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         return address(this).balance;
     }
 
-    function getSeed(uint id) public constant returns(uint _id, uint _status, uint _weis, uint _thres) {
-        _status = seeds[id].status;
-        _thres = threshold;
-        _id = id;
-        if (_status == 1) { _weis = threshold; } else { _weis = weiRaised; }
+    function getSeed(uint id) public constant returns(uint _status, uint _weis, address reputation, uint nProps, bytes32 winner) {
+
+        Seed storage seed = seeds[id];
+         return (seed.status, seed.weiRaised, seed.reputation, seed.nProposals, seed.winningProposal);
+  //      if (_status == 1) { _weis = threshold; } else { _weis = seeds[id].weiRaised; }
+
     }
 
     function addProposal(uint256 id, string url) public ifStatus(id, 1) {
         Seed storage currSeed = seeds[id]; // try with 'memory' instead of 'storage'
         Proposal memory newprop;
 
-        newprop.id = GenesisProtocol(VoteMachine).propose(2, genesisParams, msg.sender, 0);
+        emit Proposing(2, genesisParams, msg.sender, address(0));
+
+        newprop.id = GenesisProtocol(VoteMachine).propose(2, genesisParams, msg.sender, address(0));
         //function propose(uint _numOfChoices, bytes32 _paramsHash, address _proposer, address _organization)
 
         newprop.proposer = msg.sender;
@@ -238,9 +241,10 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
       Seed storage currSeed = seeds[pid2id[pid]];
 
-      emit VotingProposal(id, pid, msg.sender, currSeed.reputation.balanceOf(msg.sender), currSeed.voters[msg.sender]);
-
         GenesisProtocol(VoteMachine).vote(pid, 1, msg.sender);
+
+        emit VotingProposal(id, pid, msg.sender, currSeed.reputation.balanceOf(msg.sender));
+
 /*        Seed storage currSeed = seeds[id];
 
         assert(currSeed.reputation.reputationOf(msg.sender) != 0);
@@ -281,7 +285,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         uint funds = msg.value;
 
         // Log that the Plantoid received a new donation
-        emit GotDonation(msg.sender, msg.value);
+        emit GotDonation(msg.sender, msg.value, seedCnt);
 
         while (funds > 0) {
             funds = _fund(funds);
@@ -294,11 +298,12 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     function _fund(uint _donation) internal returns(uint overflow) {
 
         uint donation;
+        Seed storage currSeed = seeds[seedCnt];
 
       // Check if there is an overflow
-        if (weiRaised + _donation > threshold) {
-            overflow = weiRaised + _donation - threshold;
-            donation = threshold - weiRaised;
+        if (currSeed.weiRaised + _donation > threshold) {
+            overflow = currSeed.weiRaised + _donation - threshold;
+            donation = threshold - currSeed.weiRaised;
 
             emit DebugDonation(msg.sender, _donation, threshold, overflow);
 
@@ -307,10 +312,10 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         } else {
             donation = _donation;
 
-           emit AcceptedDonation(msg.sender, donation);
+           emit AcceptedDonation(msg.sender, donation, seedCnt);
         }
       // Increase the amount of weiRaised (for that particular Seed)
-        weiRaised += donation;
+        currSeed.weiRaised += donation;
 
 
       // instantiate a new Reputation system (DAOstack) if one doesnt exist
@@ -318,7 +323,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
       // Increase the reputation of the donor (for that particular Seed)
          seeds[seedCnt].reputation.mint(msg.sender, donation);
 
-        if (weiRaised >= threshold) {
+        if (currSeed.weiRaised >= threshold) {
             emit Reproducing(seedCnt);
             // change status of the seeds
             seeds[seedCnt].status = 1;
@@ -328,26 +333,31 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
             //Seed memory newseed; //= Seed(seedCnt, 0, new Proposal[](0)); // 'reputation' member doesn't count
             seeds[seedCnt].id = seedCnt;
             seeds[seedCnt].reputation = new Reputation();
-            weiRaised = 0;
+            //weiRaised = 0;
             // Feed the new seed if there was an overflow of donations
             // (overflow != 0) {  _fund(overflow); }
         }
     }
 
-// FUNCTIONS for ExecutableInterface
+// FUNCTIONS for ProposalExecuteInterface
 
-    function execute(bytes32 , address , int) public returns(bool) {
+    function executeProposal(bytes32 pid, int decision) external returns(bool) {
 
-
-    //  emit ExecutionProposal()
-
+      uint id = pid2id[pid];
+      if(decision == 1) {
+          address _proposer = seeds[id].proposals[pid].proposer;
+          seeds[id].status = 2;
+          seeds[id].winningProposal = pid;
+          _proposer.transfer(threshold);
+          emit WinningProposal(id, pid, _proposer, _proposer.balance, decision);
+      }
     }
 
 // FUNCTIONS for GenesisProtocolCallbacksInterface
 
     function getTotalReputationSupply(bytes32 pid) external view returns(uint256) {
         uint id = pid2id[pid];
-        return seeds[id].reputation.totalSupply();
+        return seeds[id].reputation.totalSupplyAt(seeds[id].proposals[pid].block);
     }
 
     function mintReputation(uint _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
@@ -373,8 +383,4 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     function balanceOfStakingToken(StandardToken, bytes32) external view returns(uint) {
     }
 
-    function executeProposal(bytes32 pid,int _decision) external onlyVotingMachine returns(bool) {
-      emit Execution(pid, 0, _decision);
-      return execute(pid, 0, _decision);
-    }
 }
