@@ -184,7 +184,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     }
 
     function setVotingMachine(address voteM) public { //onlyOwnerX {
-        require(VoteMachine != voteM);
+        require(VoteMachine != address(0));
         VoteMachine = voteM;
         emit NewVotingMachine(VoteMachine);
 
@@ -344,7 +344,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
 // FUNCTIONS for ProposalExecuteInterface
 
-    function executeProposal(bytes32 pid, int decision) external returns(bool) {
+    function executeProposal(bytes32 pid, int decision) external onlyVotingMachine returns(bool) {
 
       uint id = pid2id[pid];
       if(decision == 1) {

@@ -19,11 +19,13 @@
 
 
 
+<h1 style="{color:red}"> This project is still on its alpha phase !  We don't guarantee complete security. Play at your own risk</h3>
 
 
 	<h1>HELLO, I'm a Plantoid !</h1>
   <h3>My address is: ETHHH </h3>
   <h3 id="PlantoidCreator"></h3>
+  <h3 id="PlantoidParent"></h3>
   <h3 id="PlantoidThreshold"></h3>
 	<h2 id="balance"></h2>
 
@@ -76,8 +78,12 @@ function getBalance() {
 var threshold;
 
 function getInfo() {
+
   plantoid.artist.call(function(err, res) {
     document.getElementById('PlantoidCreator').innerHTML = "My creator is " + res;
+  });
+  plantoid.parent.call(function(err, res) {
+    document.getElementById('PlantoidParent').innerHTML = "My parent is " + res;
   });
   plantoid.threshold.call(function(err, res) {
     document.getElementById('PlantoidThreshold').innerHTML = "My threshold is " + web3.fromWei(res, 'wei') + " wei's";
