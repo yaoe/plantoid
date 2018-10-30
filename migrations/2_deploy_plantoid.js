@@ -8,10 +8,10 @@ var GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 
 
 var threshold = 50;
-//var artist = "0x73Db6408abbea97C5DB8A2234C4027C315094936";
+var artist = "0x73Db6408abbea97C5DB8A2234C4027C315094936";
 module.exports = async function(deployer,network,provider) {
 
-    deployer.deploy(Proxy,provider[0],provider[0],threshold).then(async function(){
+    deployer.deploy(Proxy,provider[0],artist,provider[0],threshold).then(async function(){
       var proxy = await Proxy.deployed();
       var stakingToken = await deployer.deploy(ERC827TokenMock,0,0);
       await deployer.deploy(Plantoid);

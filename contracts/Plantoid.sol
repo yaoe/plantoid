@@ -26,13 +26,15 @@ contract Proxy  {
     address public _implementation;
 
     address public artist;
+    address public parent;
     uint public threshold;
 
     uint[14] public genesisProtocolParams;
 
-    constructor(address _owner, address _artist, uint _threshold) public {
+    constructor(address _owner, address _artist, address _parent, uint _threshold) public {
         ownerX = _owner;
         artist = _artist;
+        parent = _parent;
         threshold = _threshold;
 
     }
@@ -106,6 +108,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     uint public save2;
 
     address public artist;
+    address public parent;
     uint public threshold;
 
     uint[14] public genesisProtocolParams;
@@ -348,7 +351,11 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
           address _proposer = seeds[id].proposals[pid].proposer;
           seeds[id].status = 2;
           seeds[id].winningProposal = pid;
-          _proposer.transfer(threshold);
+
+          uint portion = threshold/10;
+          artist.transfer(portion);
+          parent.transfer(portion);
+          _proposer.transfer(threshold - portion*2);
           emit WinningProposal(id, pid, _proposer, _proposer.balance, decision);
       }
     }
