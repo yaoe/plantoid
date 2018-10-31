@@ -11,7 +11,7 @@ var threshold = 50;
 var artist = "0x73Db6408abbea97C5DB8A2234C4027C315094936";
 module.exports = async function(deployer,network,provider) {
 
-    deployer.deploy(Proxy,provider[0],artist,provider[0],threshold).then(async function(){
+    deployer.deploy(Proxy,artist,artist,threshold).then(async function(){
       var proxy = await Proxy.deployed();
       var stakingToken = await deployer.deploy(ERC827TokenMock,0,0);
       await deployer.deploy(Plantoid);
@@ -23,6 +23,7 @@ module.exports = async function(deployer,network,provider) {
       var plantoid = await Plantoid.at(proxyInstance.address);
       var genesisProtocol = await deployer.deploy(GenesisProtocol,stakingToken.address,{gas:6000000});
       await plantoid.init();
+      console.log(1);
       await plantoid.setVotingMachine(genesisProtocol.address);
   });
 };

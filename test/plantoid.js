@@ -77,8 +77,8 @@ contract('Plantoid',  accounts =>  {
       //Proxy.voteProposal(0, "AAA"-id) with account 1
       tx = await testSetup.plantoid.voteProposal(0,proposalId,{from:accounts[1]});
 
-      assert.equal(tx.logs.length, 1);
-      assert.equal(tx.logs[0].event, "Execution");
+      assert.equal(tx.logs.length, 2);
+      assert.equal(tx.logs[0].event, "WinningProposal");
 
     });
 
