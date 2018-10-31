@@ -64,7 +64,7 @@ contract('Plantoid',  accounts =>  {
       //Proxy.(fallback): value: 3000 wei (with account 1)
       await web3.eth.sendTransaction({from:accounts[1],to:testSetup.plantoid.address, value:30,gas:1000000});
       //Proxy.(fallback): value: 3000 wei (with account 2)
-      await web3.eth.sendTransaction({from:accounts[2],to:testSetup.plantoid.address, value:30,gas:1000000});
+      await web3.eth.sendTransaction({from:accounts[2],to:testSetup.plantoid.address, value:20,gas:1000000});
       //Proxy.addProposal(0, "AAA") with account 2
        var tx = await testSetup.plantoid.addProposal(0,"AAA",{from:accounts[2]});
       assert.equal(tx.logs.length, 1);
@@ -72,13 +72,15 @@ contract('Plantoid',  accounts =>  {
       //get proposalId
       var proposalId = tx.logs[0].args.pid;
       // Proxy.voteProposal(0, "AAA"-id) with account 2
-      tx = await testSetup.plantoid.voteProposal(0,proposalId,{from:accounts[2]});
+      tx = await testSetup.plantoid.voteProposal(0,proposalId,1,{from:accounts[2]});
       console.log(">>",await testSetup.plantoid.reputationOf(accounts[2],proposalId));
       //Proxy.voteProposal(0, "AAA"-id) with account 1
-      tx = await testSetup.plantoid.voteProposal(0,proposalId,{from:accounts[1]});
+      tx = await testSetup.plantoid.voteProposal(0,proposalId,2,{from:accounts[1]});
 
       assert.equal(tx.logs.length, 2);
-      assert.equal(tx.logs[0].event, "WinningProposal");
+      assert.equal(tx.logs[0].event, "ExecuteProposal");
+      assert.equal(tx.logs[0].args.decision, 2);
+
 
     });
 

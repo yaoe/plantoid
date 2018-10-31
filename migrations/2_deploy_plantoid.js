@@ -8,7 +8,7 @@ var GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 
 
 var threshold = 50;
-var artist = "0x73Db6408abbea97C5DB8A2234C4027C315094936";
+var artist = "0xb913BFd7A9a2B3E40864CFa08637848e37E5a042";
 module.exports = async function(deployer,network,provider) {
 
     deployer.deploy(Proxy,artist,artist,threshold).then(async function(){

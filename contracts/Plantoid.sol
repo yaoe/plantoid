@@ -83,10 +83,11 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     event AcceptedDonation(address _donor, uint amount, uint _seed);
     event Reproducing(uint seedCnt);
     event NewProposal(uint id, bytes32 pid, address _proposer, string url);
-    event VotingProposal(uint id, bytes32 pid, address _voter, uint _reputation);
-    event WinningProposal(uint id, bytes32 pid, address _proposer, uint256 b4balance, int decision);
+    event VotingProposal(uint id, bytes32 pid, address _voter, uint _reputation, uint _vote);
+    event ExecuteProposal(uint id, bytes32 pid, int decision);
     event NewVotingMachine(address voteMachine);
     event Execution(bytes32 pid, address addr, int _decision);
+    event ApprovedExecution(bytes32 pid, address proposer);
     event ReputationOf(address _owner, uint rep);
 
 
@@ -159,19 +160,19 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     function init() public {
       genesisProtocolParams = [
       50,     //_preBoostedVoteRequiredPercentage=50,
-      31557600,     //_preBoostedVotePeriodLimit=60, (in seconds) -- one year
-      60,     //_boostedVotePeriodLimit=60,
-      100000000 ether, //_thresholdConstA=1, -- n# of GENs you need to stake for boosting when there are 0 proposals
-      1,      //_thresholdConstB=1,
+      11557600,     //_preBoostedVotePeriodLimit=60, (in seconds) -- 3 months
+      300,     //_boostedVotePeriodLimit=60,
+      100 ether, //_thresholdConstA=1, -- n# of GENs you need to stake for boosting when there are 0 proposals
+      5,      //_thresholdConstB=1,
       0,      //_minimumStakingFee=0,
-      0,      //_quietEndingPeriod=0
-      60000,      //_proposingRepRewardConstA=60000 //it does not matter for Plantoid
-      1000,      //_proposingRepRewardConstB=1000
-      2,      //_stakerFeeRatioForVoters=10,
+      60,      //_quietEndingPeriod=0
+      0,      //_proposingRepRewardConstA=60000 //it does not matter for Plantoid
+      0,      //_proposingRepRewardConstB=1000
+      20,      //_stakerFeeRatioForVoters=10,
       0,      //_votersReputationLossRatio=10  -- 100 so they can vote only once?
-      0,      //_votersGainRepRatioFromLostRep=80
-      3,      //_daoBountyConst = 15,
-      0      //_daoBountyLimit = 10
+      100,      //_votersGainRepRatioFromLostRep=80
+      30,      //_daoBountyConst = 15,
+      20      //_daoBountyLimit = 10
       ];
     }
 
@@ -217,11 +218,11 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         pid2id[newprop.id] = _id;
     }
 
-    function voteProposal(uint256 _id, bytes32 _pid) public ifStatus(_id, 1) {
+    function voteProposal(uint256 _id, bytes32 _pid, uint _vote) public ifStatus(_id, 1) {
 
         Seed storage currSeed = seeds[pid2id[_pid]];
-        GenesisProtocol(voteMachine).vote(_pid, 1, msg.sender);
-        emit VotingProposal(_id, _pid, msg.sender, currSeed.reputation.balanceOfAt(msg.sender,currSeed.proposals[_pid].block));
+        GenesisProtocol(voteMachine).vote(_pid, _vote, msg.sender);
+        emit VotingProposal(_id, _pid, msg.sender, currSeed.reputation.balanceOfAt(msg.sender,currSeed.proposals[_pid].block), _vote);
     }
 
     function getProposal(uint256 _id, bytes32 _pid) public constant returns(bytes32 pid, address from, string url) {
@@ -286,17 +287,30 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
       require(seeds[id].status == 1,"require status to be 1");
 
       if(decision == 1) {
-          address _proposer = seeds[id].proposals[pid].proposer;
           seeds[id].status = 2;
           seeds[id].winningProposal = pid;
+        }
 
-          uint portion = threshold/10;
-          artist.transfer(portion);
-          parent.transfer(portion);
-          _proposer.transfer(threshold - portion*2);
-          emit WinningProposal(id, pid, _proposer, _proposer.balance, decision);
-      }
+        emit ExecuteProposal(id, pid,  decision);
+
     }
+
+     function approveExecution(bytes32 _pid) public {
+         require(msg.sender == artist);
+         uint id = pid2id[_pid];
+         require(seeds[id].winningProposal != 0,"require winning proposal");
+         require(seeds[id].winningProposal == _pid, "require _pid is winningProposal");
+         require(seeds[id].status == 2, "requiring status == 2");
+         seeds[id].status = 3;
+
+         uint portion = threshold/10;
+         artist.transfer(portion);
+         parent.transfer(portion);
+         seeds[id].proposals[_pid].proposer.transfer(threshold - portion*2);
+
+         emit ApprovedExecution(_pid, seeds[id].proposals[_pid].proposer);
+
+     }
 
 // FUNCTIONS for GenesisProtocolCallbacksInterface
 
