@@ -4,7 +4,8 @@ require("babel-register")({
   "plugins": ["syntax-async-functions","transform-regenerator"]
 });
 
-const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const HDWalletProviderPrv = require("truffle-hdwallet-provider-privkey");
 const privKeys = ["D1E32164D27D0DABE6C48DC504EA25590A29FC62F5AE8746CF2FD7EF85CDD9B9"]; // private keys
 var mnemonic = "twelve bacon solar behave web protect modify average evidence light banner name";
 
@@ -20,7 +21,7 @@ module.exports = {
       timeoutBlocks: 200,     // # of blocks before a deployment times out  (minimum/default: 50)
       skipDryRun: false,        // Skip dry run before migrations? (default: false for public nets )
       provider: function() {
-        return new HDWalletProvider(privKeys, "https://mainnet.infura.io/v3/af8ca76816644d44a908b6cb3d1bf690")
+        return new HDWalletProviderPrv(privKeys, "https://mainnet.infura.io/v3/af8ca76816644d44a908b6cb3d1bf690")
       }
     },
     ropsten: {
@@ -31,7 +32,7 @@ module.exports = {
       timeoutBlocks: 200,     // # of blocks before a deployment times out  (minimum/default: 50)
       skipDryRun: true,        // Skip dry run before migrations? (default: false for public nets )
       provider: function() {
-        return new HDWalletProvider(privKeys, "https://ropsten.infura.io/v3/3e0e337a9e144b08b56d2b1b35f3c90b")
+        return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/3e0e337a9e144b08b56d2b1b35f3c90b")
       }
     },
     rinkeby: {
