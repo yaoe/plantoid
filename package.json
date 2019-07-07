@@ -2,7 +2,6 @@
   "name": "plantoid-ethcc",
   "version": "1.0.0",
   "description": "First prototype of daostack plantoid",
-  "main": "truffle-config.js",
   "directories": {
     "test": "test"
   },

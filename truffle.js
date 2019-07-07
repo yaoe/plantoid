@@ -31,7 +31,7 @@ module.exports = {
       timeoutBlocks: 200,     // # of blocks before a deployment times out  (minimum/default: 50)
       skipDryRun: true,        // Skip dry run before migrations? (default: false for public nets )
       provider: function() {
-        return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/af8ca76816644d44a908b6cb3d1bf690")
+        return new HDWalletProvider(privKeys, "https://ropsten.infura.io/v3/3e0e337a9e144b08b56d2b1b35f3c90b")
       }
     },
     rinkeby: {
