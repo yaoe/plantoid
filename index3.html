@@ -40,10 +40,10 @@
                   <div class="w3-row w3-left w3-left-align w3-section">
 
                   <div class="w3-col w3-container w3-padding-0" style="width: 50px">
-                    <img src="./images/QR6-BTC.png" id="QRcode"  width="45" style="border: 1px solid white; padding: 2px;"><br/>
-                    <img src="./images/QR6-ETH.png" id="QRcode"  width="45" style="border: 1px solid white; padding: 2px;">
+                    <img src="./assets/images/QR6-BTC.png" id="QRcode"  width="45" style="border: 1px solid white; padding: 2px;"><br/>
+                    <img src="./assets/images/QR6-ETH.png" id="QRcode"  width="45" style="border: 1px solid white; padding: 2px;">
                     <hr style="border:black; padding-bottom: 3px;"/>
-                    <img src="./images/metamask.png" width="45" style="padding: 2px;">
+                    <img src="./assets/images/metamask.png" width="45" style="padding: 2px;">
                   </div>
 
                   <div class="w3-rest w3-container w3-padding-small">
@@ -54,7 +54,7 @@
                     <hr/>
                     Send money via Metamask <br/>
                     <span class="w3-small">Amount (in Wei):</span> <input type="text" id="amount">
-                    <input type="image" src="./images/send.png" id="feed" onclick="sendFunds()">
+                    <input type="image" src="./assets/images/send.png" id="feed" onclick="sendFunds()">
                   </div>
 
                   </div>
@@ -62,7 +62,7 @@
               </div>
 
               <div class="w3-third w3-section">
-                   <img src="./images/header-small.png" alt="plantoid"  height="250px" >
+                   <img src="./assets/images/header-small.png" alt="plantoid"  height="250px" >
               </div>
 
               <div class="w3-third w3-section w3-left w3-left-align">
@@ -119,12 +119,21 @@
 
 <script>
 
-console.log("web333: " + web3);
+console.log("we start here");
+const Web3 = require('web3');
+var web3;
 
 if(typeof web3 !== 'undefined') {
+  console.log("here");
 	web3 = new Web3(web3.currentProvider);
+  console.log("web333-current: " + web3);
+
 } else {
-	web3 = new Web3(new Web3.providers.HttpProvider("https://kovan.infura.io/1FRENmMxR6mZ55Sjp8cZ"));
+  console.log("there");
+//	web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/3e0e337a9e144b08b56d2b1b35f3c90b"));
+//  web3 = new Web3('wss://ropsten.infura.io/ws');
+    web = new Web3(new Web3.providers.WebsocketProvider('ws://ropsten.infura.io/ws'));
+  console.log("web333-infura: " + web3);
 }
 
 
@@ -232,7 +241,7 @@ function ListSeeds() {
               cell4.innerHTML =
               '<span class="submitText">Submit a proposal:<br/></span>' +
               '<input type="text" class="propInput" id="propURL'+i+'" size=60 placeholder="Enter link to proposal (HTML or IPFS)">' +
-              '<input type="image" src="./images/send2.png" id="feed" onclick="sendProposal(' + i +')"/>';
+              '<input type="image" src="./assets/images/send2.png" id="feed" onclick="sendProposal(' + i +')"/>';
         }
 
         var row2 = table.insertRow(rows++);
@@ -331,9 +340,9 @@ function ListSeeds() {
 
                       cell.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a>"+ w2 + " <br></span>"
                       cell.innerHTML += "from: "+args._proposer+" <br>";
-                      cell.innerHTML += '<input type="image" src="./images/upvote' + d + '.png" height=25 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
+                      cell.innerHTML += '<input type="image" src="./assets/images/upvote' + d + '.png" height=25 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
                       cell.innerHTML += "<span id='VotesPos"+args.pid+"'> 00 </span>";
-                      cell.innerHTML += '<input type="image" src="./images/downvote' + d + '.png" height=20 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
+                      cell.innerHTML += '<input type="image" src="./assets/images/downvote' + d + '.png" height=20 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
                       cell.innerHTML += "<span id='VotesNeg"+args.pid+"'> 00 </span>";
 
 /*
@@ -410,7 +419,7 @@ function sendFunds() {
 	//amount = web3.toWei(amount, "ether");
 	//web3.eth.sendTransaction({to:'ETH', from: '0x64EB4dfcC14B96582D8D5095e9894b279E519b4B', value:amount}, (e)=>{console.log(e)});
 	//plantoid.fund({value: amount});
-  web3.eth.sendTransaction({to:'ETHHH',  value:amount, gas:1000000}, (e)=>{console.log(e)});
+  web3.eth.sendTransaction({to:'ETHHH',  value:amount, gas:2500000}, (e)=>{console.log(e)});
 
 }
 
