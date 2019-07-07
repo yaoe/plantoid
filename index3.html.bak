@@ -1,0 +1,451 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    </head>
+
+<script src="./web3.js"></script>
+
+
+<body>
+	<!--[if lte IE 9]>
+	<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+	<![endif]-->
+
+
+
+<h1 style="{color:red}"> This project is still on its alpha phase !  We don't guarantee complete security. Play at your own risk</h3>
+
+
+	<h1>HELLO, I'm a Plantoid !</h1>
+  <h3>My address is: 0x91556701296b79458A89256E9C56BC0aeE4Ea98F </h3>
+  <h3 id="PlantoidCreator"></h3>
+  <h3 id="PlantoidParent"></h3>
+  <h3 id="PlantoidThreshold"></h3>
+	<h2 id="balance"></h2>
+
+  <div id="lala"></div>
+
+    <script>
+    var pidpid = "0x8915c9d1e77582d97f7363faa777526b27d931fd63b272f862597a336939c786";
+    var ddd = document.getElementById("lala");
+    ddd.innerHTML +=
+    '<button onclick="pidTesting(\''+pidpid+'\')">Test</button>';
+
+    function pidTesting(ppp) {
+      console.log("testing with ppp = " + ppp);
+    }
+
+    </script>
+
+
+Send money to the Plantoid: <input type="text" id="amount"><br>
+<button type="button" id="feed" onclick="sendFunds()">Send funds</button>
+<hr/>
+Current Seed count = <span id="Seedcnt"></span><br>
+<table id="SeedTable"></table>
+<hr/>
+<div id="transactionLog"></div>
+
+
+<script>
+
+console.log("web333: " + web3);
+
+if(typeof web3 !== 'undefined') {
+
+	web3 = new Web3(web3.currentProvider);
+} else {
+	web3 = new Web3(new Web3.providers.HttpProvider("https://kovan.infura.io/1FRENmMxR6mZ55Sjp8cZ"));
+}
+
+
+var plantoid = web3.eth.contract([	{		"constant": true,		"inputs": [],		"name": "genesisParams",		"outputs": [			{				"name": "",				"type": "bytes32"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "orgHash",		"outputs": [			{				"name": "",				"type": "bytes32"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_id",				"type": "uint256"			},			{				"name": "_url",				"type": "string"			}		],		"name": "addProposal",		"outputs": [],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_pid",				"type": "bytes32"			}		],		"name": "approveExecution",		"outputs": [],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "seedCnt",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "",				"type": "uint256"			}		],		"name": "genesisProtocolParams",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "",				"type": "bytes32"			}		],		"name": "pid2id",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "threshold",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "artist",		"outputs": [			{				"name": "",				"type": "address"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_id",				"type": "uint256"			},			{				"name": "_pid",				"type": "bytes32"			}		],		"name": "getProposal",		"outputs": [			{				"name": "pid",				"type": "bytes32"			},			{				"name": "from",				"type": "address"			},			{				"name": "url",				"type": "string"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "parent",		"outputs": [			{				"name": "",				"type": "address"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "",				"type": "address"			},			{				"name": "",				"type": "bytes32"			}		],		"name": "balanceOfStakingToken",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_id",				"type": "uint256"			},			{				"name": "_pid",				"type": "bytes32"			},			{				"name": "_vote",				"type": "uint256"			}		],		"name": "voteProposal",		"outputs": [],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "owner",		"outputs": [			{				"name": "",				"type": "address"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_owner",				"type": "address"			},			{				"name": "pid",				"type": "bytes32"			}		],		"name": "reputationOf",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "voteMachine",		"outputs": [			{				"name": "",				"type": "address"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "pid",				"type": "bytes32"			},			{				"name": "decision",				"type": "int256"			}		],		"name": "executeProposal",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_voteM",				"type": "address"			}		],		"name": "setVotingMachine",		"outputs": [],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "pid",				"type": "bytes32"			}		],		"name": "getTotalReputationSupply",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [],		"name": "fund",		"outputs": [],		"payable": true,		"stateMutability": "payable",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_stakingToken",				"type": "address"			},			{				"name": "_beneficiary",				"type": "address"			},			{				"name": "_amount",				"type": "uint256"			},			{				"name": "",				"type": "bytes32"			}		],		"name": "stakingTokenTransfer",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_amount",				"type": "uint256"			},			{				"name": "_beneficiary",				"type": "address"			},			{				"name": "pid",				"type": "bytes32"			}		],		"name": "mintReputation",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_id",				"type": "uint256"			}		],		"name": "getSeed",		"outputs": [			{				"name": "status",				"type": "uint256"			},			{				"name": "weis",				"type": "uint256"			},			{				"name": "reputation",				"type": "address"			},			{				"name": "nProps",				"type": "uint256"			},			{				"name": "winner",				"type": "bytes32"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [],		"name": "init",		"outputs": [],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "save1",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "",				"type": "uint256"			}		],		"name": "seeds",		"outputs": [			{				"name": "id",				"type": "uint256"			},			{				"name": "status",				"type": "uint256"			},			{				"name": "weiRaised",				"type": "uint256"			},			{				"name": "reputation",				"type": "address"			},			{				"name": "nProposals",				"type": "uint256"			},			{				"name": "winningProposal",				"type": "bytes32"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_amount",				"type": "uint256"			},			{				"name": "_beneficiary",				"type": "address"			},			{				"name": "pid",				"type": "bytes32"			}		],		"name": "burnReputation",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"payable": true,		"stateMutability": "payable",		"type": "fallback"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "_donor",				"type": "address"			},			{				"indexed": false,				"name": "amount",				"type": "uint256"			},			{				"indexed": false,				"name": "_seed",				"type": "uint256"			}		],		"name": "GotDonation",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "_donor",				"type": "address"			},			{				"indexed": false,				"name": "amount",				"type": "uint256"			},			{				"indexed": false,				"name": "_seed",				"type": "uint256"			}		],		"name": "AcceptedDonation",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "seedCnt",				"type": "uint256"			}		],		"name": "Reproducing",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "id",				"type": "uint256"			},			{				"indexed": false,				"name": "pid",				"type": "bytes32"			},			{				"indexed": false,				"name": "_proposer",				"type": "address"			},			{				"indexed": false,				"name": "url",				"type": "string"			}		],		"name": "NewProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "id",				"type": "uint256"			},			{				"indexed": false,				"name": "pid",				"type": "bytes32"			},			{				"indexed": false,				"name": "_voter",				"type": "address"			},			{				"indexed": false,				"name": "_reputation",				"type": "uint256"			},			{				"indexed": false,				"name": "_vote",				"type": "uint256"			}		],		"name": "VotingProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "id",				"type": "uint256"			},			{				"indexed": false,				"name": "pid",				"type": "bytes32"			},			{				"indexed": false,				"name": "decision",				"type": "int256"			}		],		"name": "ExecuteProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "voteMachine",				"type": "address"			}		],		"name": "NewVotingMachine",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "pid",				"type": "bytes32"			},			{				"indexed": false,				"name": "addr",				"type": "address"			},			{				"indexed": false,				"name": "_decision",				"type": "int256"			}		],		"name": "Execution",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "pid",				"type": "bytes32"			},			{				"indexed": false,				"name": "proposer",				"type": "address"			}		],		"name": "ApprovedExecution",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": false,				"name": "_owner",				"type": "address"			},			{				"indexed": false,				"name": "rep",				"type": "uint256"			}		],		"name": "ReputationOf",		"type": "event"	}]).at("0x91556701296b79458A89256E9C56BC0aeE4Ea98F");
+
+var genesis = web3.eth.contract([	{		"constant": true,		"inputs": [			{				"name": "",				"type": "bytes32"			}		],		"name": "parameters",		"outputs": [			{				"name": "preBoostedVoteRequiredPercentage",				"type": "uint256"			},			{				"name": "preBoostedVotePeriodLimit",				"type": "uint256"			},			{				"name": "boostedVotePeriodLimit",				"type": "uint256"			},			{				"name": "thresholdConstA",				"type": "uint256"			},			{				"name": "thresholdConstB",				"type": "uint256"			},			{				"name": "minimumStakingFee",				"type": "uint256"			},			{				"name": "quietEndingPeriod",				"type": "uint256"			},			{				"name": "proposingRepRewardConstA",				"type": "uint256"			},			{				"name": "proposingRepRewardConstB",				"type": "uint256"			},			{				"name": "stakerFeeRatioForVoters",				"type": "uint256"			},			{				"name": "votersReputationLossRatio",				"type": "uint256"			},			{				"name": "votersGainRepRatioFromLostRep",				"type": "uint256"			},			{				"name": "voteOnBehalf",				"type": "address"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "NO",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			},			{				"name": "_voter",				"type": "address"			}		],		"name": "voteInfo",		"outputs": [			{				"name": "",				"type": "uint256"			},			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			},			{				"name": "_staker",				"type": "address"			}		],		"name": "getStaker",		"outputs": [			{				"name": "",				"type": "uint256"			},			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			}		],		"name": "getProposalOrganization",		"outputs": [			{				"name": "",				"type": "bytes32"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "proposalsCnt",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_params",				"type": "uint256[14]"			},			{				"name": "_voteOnBehalf",				"type": "address"			}		],		"name": "setParameters",		"outputs": [			{				"name": "",				"type": "bytes32"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_paramsHash",				"type": "bytes32"			},			{				"name": "_organizationId",				"type": "bytes32"			}		],		"name": "threshold",		"outputs": [			{				"name": "",				"type": "int256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			},			{				"name": "_vote",				"type": "uint256"			},			{				"name": "_amount",				"type": "uint256"			}		],		"name": "stake",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "DELEGATION_HASH_EIP712",		"outputs": [			{				"name": "",				"type": "bytes32"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "",				"type": "bytes32"			}		],		"name": "proposals",		"outputs": [			{				"name": "organizationId",				"type": "bytes32"			},			{				"name": "callbacks",				"type": "address"			},			{				"name": "numOfChoices",				"type": "uint256"			},			{				"name": "votersStakes",				"type": "uint256"			},			{				"name": "submittedTime",				"type": "uint256"			},			{				"name": "boostedPhaseTime",				"type": "uint256"			},			{				"name": "state",				"type": "uint8"			},			{				"name": "winningVote",				"type": "uint256"			},			{				"name": "proposer",				"type": "address"			},			{				"name": "currentBoostedVotePeriodLimit",				"type": "uint256"			},			{				"name": "paramsHash",				"type": "bytes32"			},			{				"name": "daoBountyRemain",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "",				"type": "bytes32"			},			{				"name": "",				"type": "uint256"			},			{				"name": "",				"type": "address"			}		],		"name": "ownerVote",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_params",				"type": "uint256[14]"			},			{				"name": "_voteOnBehalf",				"type": "address"			}		],		"name": "getParametersHash",		"outputs": [			{				"name": "",				"type": "bytes32"			}		],		"payable": false,		"stateMutability": "pure",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "",				"type": "bytes32"			}		],		"name": "cancelProposal",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			},			{				"name": "_vote",				"type": "uint256"			},			{				"name": "_rep",				"type": "uint256"			},			{				"name": "",				"type": "uint256"			},			{				"name": "_voter",				"type": "address"			}		],		"name": "voteWithSpecifiedAmounts",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			}		],		"name": "winningVote",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			},			{				"name": "_vote",				"type": "uint256"			},			{				"name": "_amount",				"type": "uint256"			},			{				"name": "_nonce",				"type": "uint256"			},			{				"name": "_signatureType",				"type": "uint256"			},			{				"name": "_signature",				"type": "bytes"			}		],		"name": "stakeWithSignature",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "getAllowedRangeOfChoices",		"outputs": [			{				"name": "min",				"type": "uint256"			},			{				"name": "max",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "pure",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "isAbstainAllow",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "pure",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			}		],		"name": "state",		"outputs": [			{				"name": "",				"type": "uint8"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			},			{				"name": "_beneficiary",				"type": "address"			}		],		"name": "redeemDaoBounty",		"outputs": [			{				"name": "redeemedAmount",				"type": "uint256"			},			{				"name": "potentialAmount",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			},			{				"name": "_vote",				"type": "uint256"			}		],		"name": "voteStake",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "stakingToken",		"outputs": [			{				"name": "",				"type": "address"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			},			{				"name": "_vote",				"type": "uint256"			},			{				"name": "_voter",				"type": "address"			}		],		"name": "vote",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			}		],		"name": "proposalStatus",		"outputs": [			{				"name": "",				"type": "uint256"			},			{				"name": "",				"type": "uint256"			},			{				"name": "",				"type": "uint256"			},			{				"name": "",				"type": "uint256"			},			{				"name": "",				"type": "uint256"			},			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "ETH_SIGN_PREFIX",		"outputs": [			{				"name": "",				"type": "string"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			}		],		"name": "shouldBoost",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_numOfChoices",				"type": "uint256"			},			{				"name": "_paramsHash",				"type": "bytes32"			},			{				"name": "_proposer",				"type": "address"			},			{				"name": "_organization",				"type": "address"			}		],		"name": "propose",		"outputs": [			{				"name": "",				"type": "bytes32"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			}		],		"name": "cancelVote",		"outputs": [],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "NUM_OF_CHOICES",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			}		],		"name": "getNumberOfChoices",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [],		"name": "YES",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			},			{				"name": "_choice",				"type": "uint256"			}		],		"name": "voteStatus",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "",				"type": "bytes32"			}		],		"name": "organizations",		"outputs": [			{				"name": "",				"type": "address"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			}		],		"name": "isVotable",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			},			{				"name": "_beneficiary",				"type": "address"			}		],		"name": "redeem",		"outputs": [			{				"name": "rewards",				"type": "uint256[5]"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			}		],		"name": "score",		"outputs": [			{				"name": "",				"type": "int256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": false,		"inputs": [			{				"name": "_proposalId",				"type": "bytes32"			}		],		"name": "execute",		"outputs": [			{				"name": "",				"type": "bool"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "_organizationId",				"type": "bytes32"			}		],		"name": "getBoostedProposalsCount",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"constant": true,		"inputs": [			{				"name": "",				"type": "bytes32"			}		],		"name": "orgBoostedProposalsCnt",		"outputs": [			{				"name": "",				"type": "uint256"			}		],		"payable": false,		"stateMutability": "view",		"type": "function"	},	{		"inputs": [			{				"name": "_stakingToken",				"type": "address"			}		],		"payable": false,		"stateMutability": "nonpayable",		"type": "constructor"	},	{		"anonymous": false,		"inputs": [			{				"indexed": true,				"name": "_proposalId",				"type": "bytes32"			},			{				"indexed": true,				"name": "_organization",				"type": "address"			},			{				"indexed": true,				"name": "_staker",				"type": "address"			},			{				"indexed": false,				"name": "_vote",				"type": "uint256"			},			{				"indexed": false,				"name": "_amount",				"type": "uint256"			}		],		"name": "Stake",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": true,				"name": "_proposalId",				"type": "bytes32"			},			{				"indexed": true,				"name": "_organization",				"type": "address"			},			{				"indexed": true,				"name": "_beneficiary",				"type": "address"			},			{				"indexed": false,				"name": "_amount",				"type": "uint256"			}		],		"name": "Redeem",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": true,				"name": "_proposalId",				"type": "bytes32"			},			{				"indexed": true,				"name": "_organization",				"type": "address"			},			{				"indexed": true,				"name": "_beneficiary",				"type": "address"			},			{				"indexed": false,				"name": "_amount",				"type": "uint256"			}		],		"name": "RedeemDaoBounty",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": true,				"name": "_proposalId",				"type": "bytes32"			},			{				"indexed": true,				"name": "_organization",				"type": "address"			},			{				"indexed": true,				"name": "_beneficiary",				"type": "address"			},			{				"indexed": false,				"name": "_amount",				"type": "uint256"			}		],		"name": "RedeemReputation",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": true,				"name": "_proposalId",				"type": "bytes32"			},			{				"indexed": false,				"name": "_executionState",				"type": "uint8"			}		],		"name": "GPExecuteProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": true,				"name": "_proposalId",				"type": "bytes32"			},			{				"indexed": true,				"name": "_organization",				"type": "address"			},			{				"indexed": false,				"name": "_numOfChoices",				"type": "uint256"			},			{				"indexed": false,				"name": "_proposer",				"type": "address"			},			{				"indexed": false,				"name": "_paramsHash",				"type": "bytes32"			}		],		"name": "NewProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": true,				"name": "_proposalId",				"type": "bytes32"			},			{				"indexed": true,				"name": "_organization",				"type": "address"			},			{				"indexed": false,				"name": "_decision",				"type": "uint256"			},			{				"indexed": false,				"name": "_totalReputation",				"type": "uint256"			}		],		"name": "ExecuteProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": true,				"name": "_proposalId",				"type": "bytes32"			},			{				"indexed": true,				"name": "_organization",				"type": "address"			},			{				"indexed": true,				"name": "_voter",				"type": "address"			},			{				"indexed": false,				"name": "_vote",				"type": "uint256"			},			{				"indexed": false,				"name": "_reputation",				"type": "uint256"			}		],		"name": "VoteProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": true,				"name": "_proposalId",				"type": "bytes32"			},			{				"indexed": true,				"name": "_organization",				"type": "address"			}		],		"name": "CancelProposal",		"type": "event"	},	{		"anonymous": false,		"inputs": [			{				"indexed": true,				"name": "_proposalId",				"type": "bytes32"			},			{				"indexed": true,				"name": "_organization",				"type": "address"			},			{				"indexed": true,				"name": "_voter",				"type": "address"			}		],		"name": "CancelVoting",		"type": "event"	}]).at("GPPP");
+//web3.eth.getBalance(plantoid.address, (e, r)=>{console.log(r); document.getElementById('balance').innerHTML = r;});
+getBalance();
+
+function getBalance() {
+	web3.eth.getBalance(plantoid.address,  (e,r)=>{console.log(r); document.getElementById('balance').innerHTML = "Current balance = " + r;});
+}
+
+var threshold;
+
+function getInfo() {
+
+  plantoid.artist.call(function(err, res) {
+    document.getElementById('PlantoidCreator').innerHTML = "My creator is " + res;
+  });
+  plantoid.parent.call(function(err, res) {
+    document.getElementById('PlantoidParent').innerHTML = "My parent is " + res;
+  });
+  plantoid.threshold.call(function(err, res) {
+    document.getElementById('PlantoidThreshold').innerHTML = "My threshold is " + web3.fromWei(res, 'wei') + " wei's";
+    threshold = res;
+  });
+  ListSeeds();
+}
+
+
+function weirdTest() {
+    var ww = document.getElementById("woow").value;
+    plantoid.weird.call(ww, function(err, vals) {
+        console.log("ERORRORORO : "+err);
+        document.getElementById('weirdres').innerHTML = "######## " + vals[0];
+      });
+}
+
+
+var SeedCounter = 0;
+var SeedStatus = [];
+var SeedWinner = [];
+
+var rows = 0;
+
+function ListSeeds() {
+  plantoid.seedCnt.call(function(err, res) {
+    console.log("updating seeds, with new counter: " + res);
+    SeedCounter = res;
+    document.getElementById('Seedcnt').innerHTML = SeedCounter;
+
+    for(var i = 0; i <= SeedCounter; i++) {
+        CreateSeeds(i); console.log("creating seed.... " + i);
+    }
+  });
+}
+
+
+  function CreateSeeds(i) {
+      var table = document.getElementById("SeedTable");
+
+      plantoid.getSeed.call(i, function(err, values) {
+        console.log("seed # "+ i + ": " + values);
+
+        SeedStatus[i] = values[0];
+        SeedWinner[i] = values[4];
+
+        var row = table.insertRow(rows++);
+        row.id = "Seed" + i;
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        cell1.innerHTML = "Seed # " + i;
+        cell2.innerHTML = "Status: " + values[0];
+        cell3.innerHTML = "(Raised " + values[1] + "Wei's)";
+        cell4.innerHTML =
+        '<input type="text" id="propURL'+i+'"">' +
+        '<button type="button" id="feed" onclick="sendProposal(' + i +')"' +
+        ((SeedStatus[i]==1) || 'disabled') + '>Send Proposal</button>';
+
+        var row2 = table.insertRow(rows++);
+        row2.insertCell(0);
+        row2.insertCell(1);
+        row2.insertCell(2);
+        var cell = row2.insertCell(3);
+        cell.id = "Seedrow" + i;
+
+        UpdateProposals4Seed(i);
+      });
+  }
+
+
+    function UpdateSeeds(i) {
+      var table = document.getElementById("SeedTable");
+      console.log("looking for..,,.,.,.,.,.,.,.: "+"Seed"+i);
+      var row = document.getElementById("Seed"+i);  console.log("raw Seed+"+i+" = " + row);
+      var row2 = document.getElementById("Seedrow"+i); console.log("raw Seedrow+"+i+" = " + row2);
+      if(row) {
+        row.parentNode.removeChild(row);
+        row2.parentNode.removeChild(row2);
+        rows -= 2;
+        CreateSeeds(i);  console.log("CREATING SEED # " + i);
+      }
+    }
+
+
+
+    function UpdateAllProposals() {
+      plantoid.seedCnt.call(function(err, res) {
+        console.log("updating seeds, with new counter: " + res);
+        for(var j=0; j<res; j++) {
+          UpdateProposals4Seed(j);
+        }
+      });
+    }
+
+   function UpdateProposals4Seed(i) {
+
+      console.log("updating proposals for Seed # " + i);
+      plantoid.NewProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((error, eventResult) => {
+        if(error)
+          console.log('Error in NewProposal handler: '+ error);
+        else {
+
+
+          var propCounter = eventResult.length;
+          var t1 = ""; var t2 = "";
+
+          console.log("here --- propCounter == " + propCounter);
+
+
+            for(var j = 0; j < propCounter; j++) {
+
+              var args = eventResult[j].args;
+              console.log("processing proposition ... " + args.url + " from ID = " + args.id + " of---- " + i);
+
+              if(args.id == i) {
+
+                  var cell = document.getElementById('Seedrow' + args.id);
+                  var prop = document.getElementById("Proposal"+args.pid);
+                  console.log("document exist? " + prop);
+
+                  if(! document.getElementById("Proposal"+args.pid)) {
+
+                    console.log("checking ;: " + SeedWinner[args.id] + "==" + args.pid );
+
+                    if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
+                      t1 = "<b>"; t2 = "</b>";
+                    } else { t1 = t2 = ""; }
+
+                      cell.innerHTML += '<span id="PID' + args.pid+ '">' + t1 + "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a>"+ t2 +" <br></span>"
+                      cell.innerHTML += "from: "+args._proposer+" <br>";
+                      cell.innerHTML += "Positive votes: <span id='VotesPos"+args.pid+"'> 00 </span>";
+                      cell.innerHTML += "Negative votes: <span id='VotesNeg"+args.pid+"'> 00 </span>";
+
+                      cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' +
+                      ((SeedStatus[args.id]==1) || 'disabled') +'>UpVote</button> ';
+                      cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\', 2)"' +
+                      ((SeedStatus[args.id]==1) || 'disabled') +'>DownVote</button> <br/>';
+
+                      if(SeedStatus[args.id]==2) {
+                        cell.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
+                      }
+
+                      var g = document.createElement('div'); g.setAttribute("id", "Proposal"+args.pid);
+                      cell.appendChild(g);
+
+                      updateVotesforPidPos(args.pid);
+                      updateVotesforPidNeg(args.pid);                  }
+                } else { console.log(args.id + " != " + i);}
+              }
+          }
+      });
+    }
+
+
+    function UpdateProposals() {
+
+      var propCounter;
+
+        console.log("updating proposals for ALL Seeds");
+
+        plantoid.NewProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((error, eventResult) => {
+          if(error)
+            console.log('Error in NewProposal handler: '+ error);
+          else {
+            console.log('NewProposal: ' + JSON.stringify(eventResult[0]));
+
+            propCounter = eventResult.length;
+
+              for(var j = 0; j < propCounter; j++) {
+
+                var args = eventResult[j].args;
+
+                  var cell = document.getElementById('Seedrow' + args.id);
+
+                  if(! document.getElementById("Proposal"+args.pid)) {
+
+                      console.log('ARG PID 191: ' + args.pid);
+
+                      cell.innerHTML += "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a> <br>"
+                      cell.innerHTML += "from: "+args._proposer+" <br>";
+                      cell.innerHTML += "Current Positive votes: <span id='VotesPos"+args.pid+"'> 00 </span>";
+                      cell.innerHTML += "Current Negative votes: <span id='VotesPos"+args.pid+"'> 00 </span>";
+                      cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\')">Vote</button>';
+
+                      var g = document.createElement('div'); g.setAttribute("id", "Proposal"+args.pid);
+                      cell.appendChild(g);
+
+                      updateVotesforPidPos(args.pid);
+                      updateVotesforPidNeg(args.pid);
+                  //cell.setAttribute("id", "Proposal"+args.pid);
+                }
+
+                }
+
+            }
+          });
+
+    }
+
+function updateVotesforPidPos(pid) {
+  genesis.voteStatus.call(pid, 1, function(err, val) {
+    var p = document.getElementById("VotesPos"+pid);
+    p.innerHTML = val / threshold * 100 + "%"; // will need to fix this once reputation starts changing !
+  });
+}
+
+function updateVotesforPidNeg(pid) {
+  genesis.voteStatus.call(pid, 2, function(err, val) {
+    var p = document.getElementById("VotesNeg"+pid);
+    p.innerHTML = val / threshold * 100 + "%"; // will need to fix this once reputation starts changing !
+  });
+}
+
+
+function WinningProposal(pid) {
+  var cell = document.getElementById("PID"+pid);
+  var content = cell.innerHTML;
+  cell.innerHTML = "<b>"+content+"</b>";
+
+}
+
+function LoosingProposal(pid) {
+  var cell = document.getElementById("PID"+pid);
+  var content = cell.innerHTML;
+  cell.innerHTML = "<i>"+content+"</i>";
+
+}
+
+function ApprovePid(pid) {
+    plantoid.approveExecution(pid, function(err, values) {
+      console.log("approving execution.... " + pid);
+    });
+}
+
+function sendFunds() {
+	var amount = document.getElementById("amount").value;
+	//amount = web3.toWei(amount, "ether");
+	//web3.eth.sendTransaction({to:'ETH', from: '0x64EB4dfcC14B96582D8D5095e9894b279E519b4B', value:amount}, (e)=>{console.log(e)});
+	//plantoid.fund({value: amount});
+  web3.eth.sendTransaction({to:'0x91556701296b79458A89256E9C56BC0aeE4Ea98F',  value:amount}, (e)=>{console.log(e)});
+
+}
+
+function sendProposal(id) {
+  var url = document.getElementById("propURL"+id).value;
+  plantoid.addProposal(id, url, function(err, values) {
+    console.log("sending new proposal for ID "+ id + " : " + url);
+  });
+}
+
+function voteProposal(id, pid, vote) {
+  plantoid.voteProposal(id, pid, vote, {gas: 7000000}, function(err, values) {
+        console.log("voting on proposal ID: "+ pid + "for Seed: "+id + "with decision = " + vote);
+   });
+  console.log("voting on proposal ID: "+ pid + " for Seed: "+id +"   -> "+ typeof(pid.toString()));
+
+}
+
+setTimeout(getBalance(), 20000);
+setTimeout(getInfo(), 20000);
+
+var DonationEvent = plantoid.GotDonation();
+DonationEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("GotDonation!!! ");
+  console.log(result.args);
+  getBalance();
+  UpdateSeeds(result.args._seed);
+  document.getElementById("transactionLog").innerHTML += "Got Donation of " + web3.fromWei(result.args.amount, 'ether') + " by donor: " + result.args._donor +" <br/>";
+});
+
+var DonationAccepted = plantoid.AcceptedDonation();
+DonationAccepted.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("ACCEPTED Donation!!! ");
+  console.log(result.args);
+  getBalance();
+  UpdateSeeds(result.args._seed);
+  document.getElementById("transactionLog").innerHTML += "Accepted Donation of " + web3.fromWei(result.args.amount, 'ether') + " from donor: " + result.args._donor +" <br/>";
+});
+
+
+var ReproductionEvent = plantoid.Reproducing();
+ReproductionEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("Reproduction Event from: "+ result.args.seedCnt);
+  document.getElementById("transactionLog").innerHTML += "The plantoid's Seed #"+result.args.seedCnt+" is reproducing itself !!!!  :DDD<br/>";
+  UpdateSeeds(result.args.seedCnt);
+  CreateSeeds(++SeedCounter);
+});
+
+
+
+var NewProposalEvent = plantoid.NewProposal();
+NewProposalEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("NewProposal Event!");
+  console.log(result.args);
+  UpdateProposals4Seed(Number(result.args.id));
+  document.getElementById("transactionLog").innerHTML += "The plantoid received a new proposal: "+ result.args.url+ " from " + result.args._proposer+ "<br/>";
+});
+
+var VotingProposalEvent = plantoid.VotingProposal();
+VotingProposalEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("VOTED proposal Event!");
+  console.log(result.args);
+  //UpdateProposals(result.args.id);
+  updateVotesforPidPos(result.args.pid);
+  updateVotesforPidNeg(result.args.pid);
+
+  document.getElementById("transactionLog").innerHTML += "Someone ("+result.args._voter+") is voting on proposal "+result.args.pid+" with reputation("+result.args._reputation+") and vote = "+ result.args._vote+"<br/>";
+});
+
+
+var ExecuteProposalEvent = plantoid.ExecuteProposal();
+ExecuteProposalEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  getBalance();
+  console.log("ExecuteProposal Event!");
+
+  if(result.args.decision == 1) {
+
+      document.getElementById("transactionLog").innerHTML += "We got a winner !!@#!@  :DDD<br/>"
+      + "id :" + result.args.id + " pid: " + result.args.pid + " winner address = " + result.args._proposer + "with previous balance = " + result.args.b4balance;
+      SeedStatus[result.args.id]=2; SeedWinner[result.args.id] = result.args.pid;
+      WinningProposal(result.args.pid);
+
+  } else {
+      document.getElementById("transactionLog").innerHTML += "We got a LOOSER !!@#!@  :DDD<br/>"
+      SeedStatus[result.args.id]=2;
+      LoosingProposal(result.args.pid);
+
+  }
+});
+
+
+var ApprovedExecutionEvent = plantoid.ApprovedExecution();
+ApprovedExecutionEvent.watch(function(err, result) {
+  console.log("Approved Execution by artist ---> ")
+});
+
+/*
+var UpgradedEvent = plantoid.Upgraded();
+UpgradedEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("UPgraded to" + result.args.implemntation);
+  document.getElementById("transactionLog").innerHTML += "UPgraded to" + result.args.implemntation + "<br/>";
+});
+
+var FallingBackEvent = plantoid.FallingBack();
+FallingBackEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("Falling backkkkkkkkk to" + result.args.implemntation + " with data: " + result.args.data);
+  document.getElementById("transactionLog").innerHTML += "Falling backkkkkkkkk to" + result.args.implemntation + " with data: " + result.args.data + "<br>"
+});
+*/
+
+
+</script>
+
+</body>
+</html>

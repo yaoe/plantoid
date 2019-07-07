@@ -1,0 +1,36 @@
+var Plantoid = artifacts.require('./Plantoid.sol');
+var Proxy = artifacts.require('./Proxy.sol');
+var ERC827TokenMock = artifacts.require("./ERC827TokenMock.sol");
+var GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
+
+var proxyaddr = "0x3E36186203b422fa436E3ab78ecAD3F67f823bf1";
+var artist = "0x95200d9955c6a01495cedeade04b62909736e3a9";
+
+module.exports = async function(deployer,network,provider) {
+
+
+
+	deployer.deploy(Plantoid).then(async function() {
+
+		console.log('deploying plantoid..');
+		
+		var proxy = await Proxy.at(proxyaddr);
+
+		
+		console.log('found proxy == ' + proxy.address);
+
+		var plantoidInstance = await Plantoid.deployed({gas:6000000});
+
+		console.log('found plantoid instance == ' + plantoidInstance.address);
+
+		await proxy.upgradeTo(plantoidInstance.address,{gas:6000000});
+
+		console.log('updated instance');
+
+		await proxy.transferOwnership(artist);
+
+		console.log(await proxy.owner());
+
+	});
+}
+

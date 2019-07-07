@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+
+<head>
+    <title>Plantoids: Blockchain-based life forms</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+    <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+    <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="./assets/css/basic-w3.css" />
+
+
+
+
+
+</head>
+<div class="w3-black">
+
+
+<!-- Page Content -->
+<div class="w3-padding-large" id="main">
+
+    <!-- Header -->
+    <header class="w3-container w3-padding-32 w3-center " id="home">
+
+
+        <h1 class="w3-xxxlarge"><span class="w3-hide-small">I'm a </span>PLANTOID</h1>
+        <p>A Blockchain-based life form.</p>
+
+
+        <div class="w3-row w3-center wp-padding-16 w3-section">
+
+
+            <div class="w3-quarter w3-section">
+                <p class="quote w3-xxxlarge">Bitcoin </p>
+                <img src="./images/QR-big.png" id="QRcode"  width="100" style="border: 1px solid white; padding: 2px;">
+                <p class="w3-small">16tWKiHkx3D4ncjATYiqjazTSTWRQsYis6</p>
+            </div>
+
+
+
+            <div class="w3-quarter w3-section">
+                 <img src="./images/header.png" alt="plantoid"  height="320px" >
+            </div>
+
+            <div class="w3-quarter w3-section">
+            </div>
+
+            <div class="w3-quarter w3-section w3-small">
+
+                <br/>
+
+                <p><span class="w3-small">Current balance:</span><br/> <span class="w3-xxlarge" id="amount"> ??? </span> BTC</p>
+       <hr style="width: 250px; margin: auto; margin-top: 10px; margin-bottom:20px;">
+       <p><span class="w3-xxlarge">0.25</span> BTC<span class="w3-small"><br/>(required amount)</span></p>';
+            </div>
+        </div>
+
+
+        <div class="w3-row w3-center wp-padding-16 w3-section">
+
+
+            <div class="w3-quarter w3-section">
+                <p class="quote w3-xxxlarge">Ethereum </p>
+                <img src="./images/QR-ETH-big.png" id="QRcode"  width="100" style="border: 1px solid white; padding: 2px;">
+                <p class="w3-small">0x71e1cb683fb425a20f732cd9926b3973f1cf911a</p>
+            </div>
+
+
+
+            <div class="w3-half w3-section">
+                <p class="quote w3-xxxlarge w3-center">Feed me... please.. I'm hungry! </p>
+
+            </div>
+
+            <div class="w3-quarter w3-section w3-small">
+
+                <br/>
+
+                <p><span class="w3-small">Current balance:</span><br/> <span class="w3-xxlarge" id="amountETH"> ??? </span> ETH</p>
+                <hr style="width: 250px; margin: auto; margin-top: 10px; margin-bottom:20px;">
+                <p><span class="w3-xxlarge">5</span> ETH<span class="w3-small"><br/>(required amount)</span></p>';
+            </div>
+        </div>
+
+
+    </header>
+
+    <!-- Footer -->
+    <div class"w3-content w3-justify w3-text-grey w3-padding-64" id="bitcoin">
+        <hr class="w3-opacity">
+
+
+        <div class"w3-container w3-large">
+            <div class="w3-right-align w3-xlarge">
+                <p class="quote">&quot;Things do not exist until they begin to appear&quot;</p>
+             </div>
+            <div class="w3-right-align w3-large">
+               <p class="quote">Humberto Maturana</p>
+             </div>
+        </div>
+
+    </div>
+
+    <!-- BTClog -->
+    <button type="button" id="btcClick" class="styled" onClick='showHide("btclog")'>See transaction history</button>
+    <div id="btclog" style="display:none;"></div>
+
+</div>
+
+
+
+<script>
+
+
+    function showHide(elementID)
+    {
+        var element = document.getElementById(elementID);
+        console.log(element);
+        if(element.style.display === "none") {
+            element.style.display = '';
+        } else if(element.style.display === "") {
+            element.style.display = "none";
+        }
+    }
+
+   // document.getElementById("btcClick").onClick = showHide("btclog");
+
+
+    function getBalance(element)
+    {
+        httpGetAsync("https://blockchain.info/q/addressbalance/16tWKiHkx3D4ncjATYiqjazTSTWRQsYis6", function (res) {
+            element.innerHTML = Number(res) / 100000000;
+            console.log(Number(res) / 100000000);
+
+        });
+    }
+
+    function getBalanceETH(element)
+    {
+        httpGetAsync("http://api.etherscan.io/api?module=account&action=balance&address=0x71e1cB683Fb425a20f732cD9926b3973F1CF911a", function (res) {
+
+            var obj = JSON.parse(res);
+
+            element.innerHTML = Number(obj.result) / 1000000000000000000;
+            console.log(Number(obj.result) / 1000000000000000000);
+        });
+    }
+
+
+    function getBTClog()
+    {
+        httpGetAsync("http://coala.global/css/BTClog.txt", function(res) {
+            document.getElementById("btclog").innerHTML = res;
+        });
+    }
+
+    function httpGetAsync(theUrl, callback)
+    {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                callback(xmlHttp.responseText);
+        }
+        xmlHttp.open("GET", theUrl, true); // true for asynchronous
+        xmlHttp.send(null);
+    }
+
+    //get BTC balance
+    var amount = document.getElementById("amount");
+    getBalance(amount);
+    getBalanceETH(amountETH);
+
+    //get BTC log
+        getBTClog();
+
+    setInterval(function () {
+        console.log("refreshing balance...");
+        getBalance(amount);
+        getBalanceETH(amountETH);
+        getBTClog();
+    }, 10000);
+</script>
+
+
+</body>
+</html>

@@ -84,7 +84,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     event Reproducing(uint seedCnt);
     event NewProposal(uint id, bytes32 pid, address _proposer, string url);
     event VotingProposal(uint id, bytes32 pid, address _voter, uint _reputation, uint _vote);
-    event ExecuteProposal(uint id, bytes32 pid, int decision, address _proposer, uint b4balance);
+    event ExecuteProposal(uint id, bytes32 pid, int decision);
     event NewVotingMachine(address voteMachine);
     event Execution(bytes32 pid, address addr, int _decision);
     event ApprovedExecution(bytes32 pid, address proposer);
@@ -291,8 +291,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
           seeds[id].winningProposal = pid;
         }
 
-        address proposer = seeds[id].proposals[pid].proposer;
-        emit ExecuteProposal(id, pid, decision, proposer, proposer.balance );
+        emit ExecuteProposal(id, pid,  decision);
 
     }
 

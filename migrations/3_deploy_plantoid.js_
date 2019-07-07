@@ -1,0 +1,23 @@
+//this migration file is used only for testing purpose
+
+var Plantoid = artifacts.require('./Plantoid.sol');
+var Proxy = artifacts.require('./Proxy.sol');
+var ERC827TokenMock = artifacts.require("./ERC827TokenMock.sol");
+var GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
+
+
+var proxyaddr = "0x91556701296b79458A89256E9C56BC0aeE4Ea98F";
+
+var threshold = 50;
+var artist = "0xdf2C0B1b3091EdFf1EbA111Ca9b338A260BbFD58";
+module.exports = async function(deployer,network,provider) {
+
+  deployer.deploy(Plantoid).then(async function(){
+  console.log(1)
+
+    //  var proxyInstance = await Proxy.at(proxyaddr);
+    //  var plantoidInstance = await Plantoid.deployed();
+
+     await  web3.eth.sendTransaction({to:"0x64EB4dfcC14B96582D8D5095e9894b279E519b4B", from:"0xdf2C0B1b3091EdFf1EbA111Ca9b338A260BbFD58", value:web3.utils.toWei('0.1', "ether")});
+   });
+   };

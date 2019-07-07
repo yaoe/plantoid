@@ -1,0 +1,151 @@
+@import url("http://fonts.googleapis.com/css?family=Roboto:100,100italic,300,300italic,400,400italic");
+@import url("http://fonts.googleapis.com/css?family=Great+Vibes:100,200,300,400,600,700,800");
+@import url("http://fonts.googleapis.com/css?family=Raleway:100,200,300,400,600,700,800");
+@import url("http://fonts.googleapis.com/css?family=Montserrat");
+
+
+body, h1, h2, h3, h4, h5, h6 {
+	font-family: "Raleway", sans-serif;
+	background-color: black;
+	height: 100%;
+}
+
+.w3-row-padding img {
+	margin-bottom: 12px
+}
+
+/* set the width of the sidenav to 120px */
+.w3-sidenav {
+	width: 120px;
+	background-color: #222;
+}
+
+/* add a left margin to the "page content" that matches the width of the sidenav (120px) */
+#main {
+	margin-left: 120px;
+}
+
+/* remove margins from "page content" on small screens */
+@media only screen and (max-width: 600px) { #main { margin-left: 0 } }
+
+
+.quote {
+	font-family: "Great Vibes";
+	margin: 0;
+}
+
+.warning {
+	font-family: "Great Vibes";
+	size: 200px;
+	animation:blinkingText 0.8s infinite;
+}
+@keyframes blinkingText{
+    0%{     color: GreenYellow;    }
+    20%{    color: transparent; }
+    80%{   color: GreenYellow;    }
+}
+
+#bitcoinQR {
+	border: 1px solid white;
+	padding: 10px;
+	width: 40%;
+}
+
+#video {
+}
+
+#footer {
+	padding-bottom: 2em;
+}
+
+
+/* BTC Log section */
+.styled {
+	border-radius: 4px;
+	color: lightgray;
+	background-color: black;
+	border: 1px solid gray;
+	padding: 5px 15px;
+	font-size: small;
+}
+
+#btclog {
+	width: 400px;
+}
+
+#btclog .tx {
+	font-size: small;
+	color: gray;
+}
+
+#btclog .tx-title {
+	font-size: small;
+	color: lightgray;
+}
+
+#btclog .tx-amount {
+	font-size: large;
+	color: white;
+}
+
+input[type=text] {
+	border-radius: 4px;
+	border: none;
+	border-bottom: 1px solid Gray;
+	border-top: 1px solid Gray;
+
+	background-color: #000;
+  color: white;
+}
+
+input#vote {
+	margin: 2px;
+	margin-left: 10px;
+}
+
+input#amount {
+	width: 100px;
+	border-bottom: 1px solid Orange;
+	border-top: 1px solid Orange;
+}
+
+input.propInput {
+	top: -30px;
+	margin-right: 20px;
+	border-bottom: 2px solid White;
+	padding: 2px;
+}
+
+::placeholder{
+	font-size: 11px;
+}
+
+#feed {
+	padding-top: 0px;
+	height: 25px;
+	vertical-align: bottom;
+
+}
+
+#vote {
+	vertical-align: bottom;
+}
+
+#SeedTable td {
+	padding-top: 20px;
+}
+
+.winProp {
+	color: Orange;
+}
+.looseProp {
+	color: Gray;
+}
+
+#approve {
+	margin-left: 20px;
+	background-color: black;
+  color: Orange;
+  border: 1px solid Orange;
+	border-radius: 8px;
+}

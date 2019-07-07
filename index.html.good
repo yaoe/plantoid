@@ -79,18 +79,18 @@
                     <span class="w3-tiny" id="PlantoidParent"></span><br/>
                 </div>
 
-                <div class="w3-row w3-cell-row w3-left w3-left-align">
+                <div class="w3-row w3-section w3-left w3-left-align">
 
-                  <div class="w3-col w3-cell w3-quarter w3-padding-0">
-                    <p><span class="w3-medium">Current<br/>balance:</span></p>
-                    <p><span class="w3-medium">Required<br/>threshold:</span></p>
+                  <div class="w3-col w3-container w3-quarter w3-padding-0">
+                    <p><span class="w3-small">Current balance:</span></p>
+                    <p><span class="w3-small">Required threshold:</span></p>
                   </div>
-                  <div class="w3-col w3-cell w3-half w3-center w3-center-align">
+                  <div class="w3-col w3-container w3-half w3-center w3-center-align">
                       <span class="w3-xxlarge" id="balance"> ??? </span>
-                      <hr style="width: 100px;  margin: auto; margin-top: 10px; margin-bottom:10px;">
+                      <hr style="width: 60px; margin-left: 20px; margin-top: 10px; margin-bottom:10px;">
                       <span class="w3-xxlarge" id="PlantoidThreshold">???</span>
                   </div>
-                  <div class="w3-col w3-cell w3-quarter w3-padding-0 ">
+                  <div class="w3-col w3-container w3-quarter w3-padding-0 ">
                       <br/><br/>WEI
                   </div>
                 </div>
@@ -138,7 +138,6 @@ var threshold;
 var SeedCounter = 0;
 var SeedStatus = [];
 var SeedWinner = [];
-var SeedLoosers = [];
 
 setTimeout(getBalance(), 20000);
 setTimeout(getInfo(), 20000);
@@ -189,27 +188,14 @@ function ListSeeds() {
 
       var table = document.getElementById("SeedTable");
 
-      plantoid.seedCnt.call(function(err, res) {
-        if(i > res) { return; }
-        else {
-            SeedCounter = res;
-            document.getElementById('Seedcnt').innerHTML = SeedCounter;
+      plantoid.getSeed.call(i, function(err, values) {
+        console.log("seed # "+ i + ": " + values);
 
+        SeedStatus[i] = values[0];
 
-            plantoid.getSeed.call(i, function(err, values) {
-            //  console.log("seed # "+ i + ": " + values);
+        if(SeedStatus[i] == 3) {  SeedWinner[i] = values[4];  }
 
-              SeedStatus[i] = values[0];
-
-              if(SeedStatus[i] == 3) {  SeedWinner[i] = values[4];  }
-
-              var row = document.getElementById("Seed"+i);
-            //  console.log("-------------> checking Seed"+i+" ======>> "+ row);
-              if(row) { return; }
-
-              CreateStandardSeed(i, values);
-          });
-        }
+        CreateStandardSeed(i, values);
 
       });
 
@@ -221,18 +207,18 @@ function ListSeeds() {
 
         var row = table.insertRow(rows++);
         row.id = "Seed" + i;
-        var cell1 = row.insertCell(0); cell1.style.width = '75px';
-        var cell2 = row.insertCell(1); cell2.style.width = '75px';
-        var cell3 = row.insertCell(2); cell3.style.width = '100px';
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
         var cell4 = row.insertCell(3);
-        cell1.innerHTML = "Seed<br/># " + i;
-        cell2.innerHTML = "Status:<br/>" + values[0];
-        cell3.innerHTML = "Funds:<br/>" + values[1] + " / " + threshold;
+        cell1.innerHTML = "Seed # " + i;
+        cell2.innerHTML = "Status: " + values[0];
+        cell3.innerHTML = "(Raised " + values[1] + "Wei's)";
         if(SeedStatus[i] == 1) {
               cell4.innerHTML =
-              '<span class="submitText">Submit a proposal:<br/></span>' +
-              '<input type="text" class="propInput" id="propURL'+i+'" size=60 placeholder="Enter link to proposal (HTML or IPFS)">' +
-              '<input type="image" src="./images/send2.png" id="feed" onclick="sendProposal(' + i +')"/>';
+              '<input type="text" id="propURL'+i+'"">' +
+              '<button type="button" id="feed" onclick="sendProposal(' + i +')"' +
+              '>Send Proposal</button>';
         }
 
         var row2 = table.insertRow(rows++);
@@ -276,72 +262,47 @@ function ListSeeds() {
    function UpdateProposals4Seed(i) {
 
       console.log("updating proposals for Seed # " + i);
-
-
-      //first collect the list of loosing Proposals
-      plantoid.ExecuteProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((err, ev) => {
-        if(err)
-          console.log('Error in ExecuteProposal handler: '+ err);
-        else {
-          var propC = ev.length; console.log("******** length of EXECUTED props == "+ ev.length);
-            for(var k = 0; k < propC; k++) {
-              var results = ev[k].args;  console.log("curennt decision === " + results.decision);
-              if(results.decision == 1) {
-                SeedWinner[results.id] = results.pid;
-              } else {
-                if(!SeedLoosers[results.id]) { SeedLoosers[results.id] = new Array(); }
-                SeedLoosers[results.id].push(results.pid);
-              }
-            }
-
-      //then collect the list of proposals for Seed = i
       plantoid.NewProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((error, eventResult) => {
         if(error)
           console.log('Error in NewProposal handler: '+ error);
         else {
 
+
           var propCounter = eventResult.length;
-          var w1 = ""; var w2 = "";
-          var d = "";
+          var t1 = ""; var t2 = "";
+
+          console.log("here --- propCounter == " + propCounter);
+
 
             for(var j = 0; j < propCounter; j++) {
 
               var args = eventResult[j].args;
-      //        console.log("processing proposition ... " + args.url + " from ID = " + args.id + " of---- " + i);
+              console.log("processing proposition ... " + args.url + " from ID = " + args.id + " of---- " + i);
 
               if(args.id == i) {
 
                   var cell = document.getElementById('Seedrow' + args.id);
                   var prop = document.getElementById("Proposal"+args.pid);
+                  console.log("document exist? " + prop);
 
-                  if(! prop) {
+                  if(! document.getElementById("Proposal"+args.pid)) {
 
-                        if( (SeedStatus[args.id]==2) || (SeedStatus[args.id]==3) && (SeedWinner[args.id] == args.pid)) {
-                          w1 = '<span class="winProp">';
-                          w2 = '</span>';
-                          d = 'disabled';
-                        } else {
-                          if( SeedLoosers[args.id] && (SeedLoosers[args.id].indexOf(args.pid)!= -1)) {
-                            w1 = '<span class="looseProp">';
-                            w2 = '</span>';
-                            d = 'disabled';
-                          }
+                    console.log("checking ;: " + SeedWinner[args.id] + "==" + args.pid );
 
-                        }
+                    if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
+                      t1 = "<b>"; t2 = "</b>";
+                    } else { t1 = t2 = ""; }
 
-                      cell.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a>"+ w2 + " <br></span>"
+                      cell.innerHTML += '<span id="PID' + args.pid+ '">' + t1 + "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a>"+ t2 +" <br></span>"
                       cell.innerHTML += "from: "+args._proposer+" <br>";
-                      cell.innerHTML += '<input type="image" src="./images/upvote' + d + '.png" height=25 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
-                      cell.innerHTML += "<span id='VotesPos"+args.pid+"'> 00 </span>";
-                      cell.innerHTML += '<input type="image" src="./images/downvote' + d + '.png" height=20 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
-                      cell.innerHTML += "<span id='VotesNeg"+args.pid+"'> 00 </span>";
+                      cell.innerHTML += "Positive votes: <span id='VotesPos"+args.pid+"'> 00 </span>";
+                      cell.innerHTML += "Negative votes: <span id='VotesNeg"+args.pid+"'> 00 </span>";
 
-/*
                       cell.innerHTML += '<input type="image" src="./images/upvote.png" height=25 id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' +
-                      ((SeedStatus[args.id]==1) && ( (!SeedLoosers[args.id]) || (SeedLoosers[args.id].indexOf(args.pid)==-1) ) || 'disabled') +'/> ';
+                      ((SeedStatus[args.id]==1) || 'disabled') +'/> ';
                       cell.innerHTML += '<input type="image" src="./images/downvote.png" height=20 id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\', 2)"' +
-                      ((SeedStatus[args.id]==1) && ( (!SeedLoosers[args.id]) || (SeedLoosers[args.id].indexOf(args.pid)==-1) ) || 'disabled') +'/> <br/>';
-*/
+                      ((SeedStatus[args.id]==1) || 'disabled') +'/> <br/>';
+
                       if(SeedStatus[args.id]==2) {
                         cell.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
                       }
@@ -350,18 +311,58 @@ function ListSeeds() {
                       cell.appendChild(g);
 
                       updateVotesforPidPos(args.pid);
-                      updateVotesforPidNeg(args.pid);
-                    }
+                      updateVotesforPidNeg(args.pid);                  }
                 } else { console.log(args.id + " != " + i);}
               }
           }
       });
     }
-  });
-
-}
 
 
+    function UpdateProposals() {
+
+      var propCounter;
+
+        console.log("updating proposals for ALL Seeds");
+
+        plantoid.NewProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((error, eventResult) => {
+          if(error)
+            console.log('Error in NewProposal handler: '+ error);
+          else {
+            console.log('NewProposal: ' + JSON.stringify(eventResult[0]));
+
+            propCounter = eventResult.length;
+
+              for(var j = 0; j < propCounter; j++) {
+
+                var args = eventResult[j].args;
+
+                  var cell = document.getElementById('Seedrow' + args.id);
+
+                  if(! document.getElementById("Proposal"+args.pid)) {
+
+                      console.log('ARG PID 191: ' + args.pid);
+
+                      cell.innerHTML += "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a> <br>"
+                      cell.innerHTML += "from: "+args._proposer+" <br>";
+                      cell.innerHTML += "Current Positive votes: <span id='VotesPos"+args.pid+"'> 00 </span>";
+                      cell.innerHTML += "Current Negative votes: <span id='VotesPos"+args.pid+"'> 00 </span>";
+                      cell.innerHTML += '<button type="button" id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\')">Vote</button>';
+
+                      var g = document.createElement('div'); g.setAttribute("id", "Proposal"+args.pid);
+                      cell.appendChild(g);
+
+                      updateVotesforPidPos(args.pid);
+                      updateVotesforPidNeg(args.pid);
+                  //cell.setAttribute("id", "Proposal"+args.pid);
+                }
+
+                }
+
+            }
+          });
+
+    }
 
 function updateVotesforPidPos(pid) {
   genesis.voteStatus.call(pid, 1, function(err, val) {
@@ -384,18 +385,14 @@ function updateVotesforPidNeg(pid) {
 function WinningProposal(pid) {
   var cell = document.getElementById("PID"+pid);
   var content = cell.innerHTML;
-  var w1 = '<span class="winProp">';
-  var w2 = '</span>';
-  cell.innerHTML = w1+content+w2;
+  cell.innerHTML = "<b>"+content+"</b>";
 
 }
 
 function LoosingProposal(pid) {
   var cell = document.getElementById("PID"+pid);
   var content = cell.innerHTML;
-  var w1 = '<span class="looseProp">';
-  var w2 = '</span>';
-  cell.innerHTML = w1+content+w2;
+  cell.innerHTML = "<i>"+content+"</i>";
 
 }
 
@@ -432,7 +429,7 @@ function voteProposal(id, pid, vote) {
 
 
 
-/*
+
 plantoid.allEvents({fromBlock:'latest'}, function (error,event){
     if (error) {
       console.log(error)
@@ -441,7 +438,7 @@ plantoid.allEvents({fromBlock:'latest'}, function (error,event){
       console.log(event);
     }
   });
-*/
+
 
 var DonationEvent = plantoid.GotDonation();
 DonationEvent.watch(function(err, result) {
@@ -470,7 +467,7 @@ ReproductionEvent.watch(function(err, result) {
   console.log("Reproduction Event from: "+ result.args.seedCnt);
   document.getElementById("transactionLog").innerHTML += "The plantoid's Seed #"+result.args.seedCnt+" is reproducing itself !!!!  :DDD<br/>";
   UpdateSeeds(result.args.seedCnt);
-  CreateSeeds(Number(SeedCounter)+1);
+  CreateSeeds(++SeedCounter);
 });
 
 

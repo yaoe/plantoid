@@ -1,0 +1,25 @@
+//this migration file is used only for testing purpose
+
+var Plantoid = artifacts.require('./Plantoid.sol');
+var Proxy = artifacts.require('./Proxy.sol');
+var ERC827TokenMock = artifacts.require("./ERC827TokenMock.sol");
+var GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
+
+
+
+var threshold = 1000000000000000000;
+var artist = "0xdf2C0B1b3091EdFf1EbA111Ca9b338A260BbFD58";
+module.exports = async function(deployer,network,provider) {
+
+    deployer.deploy(GenesisProtocol,0,{gas:6000000}).then(async function(){
+      console.log(1)
+      var genesisProtocol = await GenesisProtocol.deployed();
+      var proxy = await Proxy.at("0x6e741DF700F6C6A9dD20908e2A0Db71A83009991");
+
+      var plantoid = await Plantoid.at("0x6e741DF700F6C6A9dD20908e2A0Db71A83009991");
+      await plantoid.init();
+      await plantoid.setVotingMachine(genesisProtocol.address);
+      await proxy.transferOwnership(artist);
+      console.log(await proxy.owner());
+  });
+};

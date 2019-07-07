@@ -32,8 +32,9 @@
     "babel-polyfill": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-register": "^6.26.0",
+    "ganache-cli": "^6.1.8",
     "openzeppelin-solidity": "1.12.0",
     "truffle-hdwallet-provider": "^1.0.0-web3one.0",
-    "ganache-cli": "^6.1.8"
+    "truffle-hdwallet-provider-privkey": "^0.3.0"
   }
 }
