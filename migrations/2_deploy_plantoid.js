@@ -2,10 +2,10 @@
 
 var Plantoid = artifacts.require('./Plantoid.sol');
 var Proxy = artifacts.require('./Proxy.sol');
-var ERC827TokenMock = artifacts.require("./ERC827TokenMock.sol");
+//var ERC827TokenMock = artifacts.require("./ERC827TokenMock.sol");
 var GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 
-
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 //var threshold = 1000000000000000000;
 var threshold = 100;
@@ -26,7 +26,7 @@ module.exports = async function(deployer,network,provider) {
 
       var proxyInstance = await Proxy.deployed();
       var plantoid = await Plantoid.at(proxyInstance.address);
-      var genesisProtocol = await deployer.deploy(GenesisProtocol,0,{gas:6000000});
+      var genesisProtocol = await deployer.deploy(GenesisProtocol,NULL_ADDRESS,{gas:6000000});
       await plantoid.init();
       await plantoid.setVotingMachine(genesisProtocol.address);
       await proxy.transferOwnership(artist);

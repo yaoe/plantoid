@@ -1,8 +1,10 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.4;
 
 import "@daostack/infra/contracts/Reputation.sol";
+import "@daostack/infra/contracts/VotingMachines/VotingMachineCallbacksInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/ProposalExecuteInterface.sol";
 import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
-import "@daostack/infra/contracts/token/ERC827/ERC827Token.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 
 contract Proxy {
@@ -10,18 +12,18 @@ contract Proxy {
     address public _implementation;
 
     address public owner;
-    address public artist;
-    address public parent;
-    uint public threshold;
+    address payable public artist;
+    address payable public parent;
+    uint256 public threshold;
 
-    uint[14] public genesisProtocolParams;
+    uint256[11] public genesisProtocolParams;
 
     event OwnershipTransferred(
       address indexed previousOwner,
       address indexed newOwner
     );
 
-    constructor(address _artist, address _parent, uint _threshold) public {
+    constructor(address payable _artist, address payable _parent, uint256 _threshold) public {
         artist = _artist;
         parent = _parent;
         threshold = _threshold;
@@ -59,7 +61,7 @@ contract Proxy {
       owner = _newOwner;
     }
 
-    function () public payable {
+    function () external payable {
         bytes memory data = msg.data;
         address _impl = implementation();
         require(_impl != address(0));
@@ -79,33 +81,33 @@ contract Proxy {
 
 contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
-    event GotDonation(address _donor, uint amount, uint _seed);
-    event AcceptedDonation(address _donor, uint amount, uint _seed);
-    event Reproducing(uint seedCnt);
-    event NewProposal(uint id, bytes32 pid, address _proposer, string url);
-    event VotingProposal(uint id, bytes32 pid, address _voter, uint _reputation, uint _vote);
-    event ExecuteProposal(uint id, bytes32 pid, int decision, address _proposer, uint b4balance);
+    event GotDonation(address _donor, uint256 amount, uint256 _seed);
+    event AcceptedDonation(address _donor, uint256 amount, uint256 _seed);
+    event Reproducing(uint256 seedCnt);
+    event NewProposal(uint256 id, bytes32 pid, address _proposer, string url);
+    event VotingProposal(uint256 id, bytes32 pid, address _voter, uint256 _reputation, uint256 _vote);
+    event ExecuteProposal(uint256 id, bytes32 pid, int decision, address _proposer, uint256 b4balance);
     event NewVotingMachine(address voteMachine);
     event Execution(bytes32 pid, address addr, int _decision);
     event ApprovedExecution(bytes32 pid, address proposer);
-    event ReputationOf(address _owner, uint rep);
+    event ReputationOf(address _owner, uint256 rep);
 
 
 // NEVER TOUCH
-    uint public save1;
-    //uint public save2;
+    uint256 public save1;
+    //uint256 public save2;
 
     address public owner;
-    address public artist;
-    address public parent;
-    uint public threshold;
+    address payable public  artist;
+    address payable public parent;
+    uint256 public threshold;
 
-    uint[14] public genesisProtocolParams;
+    uint256[11] public genesisProtocolParams;
 
-    uint public seedCnt = 9;
+    uint256 public seedCnt = 9;
 
     //mapping between proposal to seed index
-    mapping (bytes32=>uint) public pid2id;
+    mapping (bytes32=>uint256) public pid2id;
 
 // GENESIS PROTOCOL VARIABLES
 
@@ -113,7 +115,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     bytes32 public genesisParams;
     bytes32 public orgHash;
 
-    mapping (uint => Seed) public seeds;
+    mapping (uint256 => Seed) public seeds;
 // TILL HERE
 
     //enum Phase { Capitalisation, Mating, Hiring, Finish }
@@ -122,7 +124,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     // - 1: Bidding and Voting
     // - 2: Hiring and Milestones
     // - 3: Reproduction complete
-    modifier ifStatus (uint _id, uint _status) {
+    modifier ifStatus (uint256 _id, uint256 _status) {
         require(seeds[_id].status == _status);
         _;
     }
@@ -142,37 +144,34 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     struct Proposal {
         bytes32 id;
-        address proposer;
+        address payable proposer;
         string url;
-        uint block;
+        uint256 block;
     }
 
     struct Seed {
-        uint id;
-        uint status;
-        uint weiRaised;
+        uint256 id;
+        uint256 status;
+        uint256 weiRaised;
         Reputation reputation;
-        uint nProposals;
+        uint256 nProposals;
         bytes32 winningProposal;
         mapping(bytes32=>Proposal) proposals;
     }
 
     function init() public {
       genesisProtocolParams = [
-      50,     //_preBoostedVoteRequiredPercentage=50,
-      11557600,     //_preBoostedVotePeriodLimit=60, (in seconds) -- 3 months
+      50,     //_queuedVoteRequiredPercentage=50,
+      11557600,     //_queuedVotePeriodLimit=60, (in seconds) -- 3 months
       300,     //_boostedVotePeriodLimit=60,
-      100 ether, //_thresholdConstA=1, -- n# of GENs you need to stake for boosting when there are 0 proposals
-      5,      //_thresholdConstB=1,
-      0,      //_minimumStakingFee=0,
-      60,      //_quietEndingPeriod=0
-      0,      //_proposingRepRewardConstA=60000 //it does not matter for Plantoid
-      0,      //_proposingRepRewardConstB=1000
-      20,      //_stakerFeeRatioForVoters=10,
-      0,      //_votersReputationLossRatio=10  -- 100 so they can vote only once?
-      100,      //_votersGainRepRatioFromLostRep=80
-      30,      //_daoBountyConst = 15,
-      20      //_daoBountyLimit = 10
+      300,    //_preBoostedVotePeriodLimit
+      2000,   //_thresholdConst
+      60,     //_quietEndingPeriod
+      0,      //_proposingRepReward
+      0,      //_votersReputationLossRatio
+      1 ether,      //_minimumDaoBounty
+      10,      //_daoBountyConst = 15,
+      0 //_activationTime
       ];
     }
 
@@ -185,24 +184,24 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     }
 
     // Simple callback function
-    function () public payable {
+    function () external payable {
         fund();
     }
 
-    function getSeed(uint _id)
+    function getSeed(uint256 _id)
         public
         view
-        returns(uint status,
-                uint weis,
+        returns(uint256 status,
+                uint256 weis,
                 address reputation,
-                uint nProps,
+                uint256 nProps,
                 bytes32 winner)
     {
         Seed storage seed = seeds[_id];
-        return (seed.status, seed.weiRaised, seed.reputation, seed.nProposals, seed.winningProposal);
+        return (seed.status, seed.weiRaised, address(seed.reputation), seed.nProposals, seed.winningProposal);
     }
 
-    function addProposal(uint256 _id, string _url) public ifStatus(_id, 1) {
+    function addProposal(uint256 _id, string memory _url) public ifStatus(_id, 1) {
         Seed storage currSeed = seeds[_id]; // try with 'memory' instead of 'storage'
         Proposal memory newprop;
         newprop.id = GenesisProtocol(voteMachine).propose(2, genesisParams, msg.sender, address(0));
@@ -218,14 +217,14 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         pid2id[newprop.id] = _id;
     }
 
-    function voteProposal(uint256 _id, bytes32 _pid, uint _vote) public ifStatus(_id, 1) {
+    function voteProposal(uint256 _id, bytes32 _pid, uint256 _vote) public ifStatus(_id, 1) {
 
         Seed storage currSeed = seeds[pid2id[_pid]];
-        GenesisProtocol(voteMachine).vote(_pid, _vote, msg.sender);
+        GenesisProtocol(voteMachine).vote(_pid, _vote, 0, msg.sender);
         emit VotingProposal(_id, _pid, msg.sender, currSeed.reputation.balanceOfAt(msg.sender,currSeed.proposals[_pid].block), _vote);
     }
 
-    function getProposal(uint256 _id, bytes32 _pid) public constant returns(bytes32 pid, address from, string url) {
+    function getProposal(uint256 _id, bytes32 _pid) public view returns(bytes32 pid, address from, string memory url) {
         from = seeds[_id].proposals[_pid].proposer;
         url = seeds[_id].proposals[_pid].url;
         pid = seeds[_id].proposals[_pid].id;
@@ -233,7 +232,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     // External fund function
     function fund() public payable {
-        uint funds = msg.value;
+        uint256 funds = msg.value;
         // Log that the Plantoid received a new donation
         emit GotDonation(msg.sender, msg.value, seedCnt);
 
@@ -243,9 +242,9 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     }
 
     // Internal fund function
-    function _fund(uint _donation) internal returns(uint overflow) {
+    function _fund(uint256 _donation) internal returns(uint256 overflow) {
 
-        uint donation;
+        uint256 donation;
         Seed storage currSeed = seeds[seedCnt];
 
       // Check if there is an overflow
@@ -282,7 +281,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     function executeProposal(bytes32 pid, int decision) external onlyVotingMachine  returns(bool) {
 
-      uint id = pid2id[pid];
+      uint256 id = pid2id[pid];
 
       require(seeds[id].status == 1,"require status to be 1");
 
@@ -298,13 +297,13 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
      function approveExecution(bytes32 _pid) public {
          require(msg.sender == artist);
-         uint id = pid2id[_pid];
+         uint256 id = pid2id[_pid];
          require(seeds[id].winningProposal != 0,"require winning proposal");
          require(seeds[id].winningProposal == _pid, "require _pid is winningProposal");
          require(seeds[id].status == 2, "requiring status == 2");
          seeds[id].status = 3;
 
-         uint portion = threshold/10;
+         uint256 portion = threshold/10;
          artist.transfer(portion);
          parent.transfer(portion);
          seeds[id].proposals[_pid].proposer.transfer(threshold - portion*2);
@@ -316,31 +315,31 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 // FUNCTIONS for GenesisProtocolCallbacksInterface
 
     function getTotalReputationSupply(bytes32 pid) external view returns(uint256) {
-        uint id = pid2id[pid];
+        uint256 id = pid2id[pid];
         return seeds[id].reputation.totalSupplyAt(seeds[id].proposals[pid].block);
     }
 
-    function mintReputation(uint _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
-      uint id = pid2id[pid];
+    function mintReputation(uint256 _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
+      uint256 id = pid2id[pid];
       return seeds[id].reputation.mint(_beneficiary,_amount);
     }
 
-    function burnReputation(uint _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
-      uint id = pid2id[pid];
+    function burnReputation(uint256 _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
+      uint256 id = pid2id[pid];
       return seeds[id].reputation.burn(_beneficiary,_amount);
     }
 
-    function reputationOf(address _owner,bytes32 pid) view external returns(uint) {
-        uint id = pid2id[pid];
-        uint rep = seeds[id].reputation.balanceOfAt(_owner, seeds[id].proposals[pid].block);
+    function reputationOf(address _owner,bytes32 pid) view external returns(uint256) {
+        uint256 id = pid2id[pid];
+        uint256 rep = seeds[id].reputation.balanceOfAt(_owner, seeds[id].proposals[pid].block);
         return rep;
     }
 
-    function stakingTokenTransfer(StandardToken _stakingToken, address _beneficiary,uint _amount,bytes32) external onlyVotingMachine returns(bool) {
+    function stakingTokenTransfer(IERC20 _stakingToken, address _beneficiary,uint256 _amount,bytes32) external onlyVotingMachine returns(bool) {
       return _stakingToken.transfer(_beneficiary,_amount);
     }
 
-    function balanceOfStakingToken(StandardToken, bytes32) external view returns(uint) {
+    function balanceOfStakingToken(IERC20, bytes32) external view returns(uint256) {
     }
 
 }
