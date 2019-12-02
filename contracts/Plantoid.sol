@@ -86,10 +86,11 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     event Reproducing(uint256 seedCnt);
     event NewProposal(uint256 id, bytes32 pid, address _proposer, string url);
     event VotingProposal(uint256 id, bytes32 pid, address _voter, uint256 _reputation, uint256 _vote);
-    event ExecuteProposal(uint256 id, bytes32 pid, int decision, address _proposer, uint256 b4balance);
+    event ExecuteProposal(uint256 id, bytes32 pid, int decision, address _proposer, uint256 b4balance, string url);
     event NewVotingMachine(address voteMachine);
     event Execution(bytes32 pid, address addr, int _decision);
-    event ApprovedExecution(bytes32 pid, address proposer);
+    event ApprovedExecution(uint256 id, bytes32 pid, address proposer);
+    event VetoedExecution(uint256 id, bytes32 pid);
     event ReputationOf(address _owner, uint256 rep);
 
 
@@ -122,8 +123,9 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     //Using "status" instead:
     // - 0: Collecting money
     // - 1: Bidding and Voting
-    // - 2: Hiring and Milestones
-    // - 3: Reproduction complete
+    // - 2: Potential Winner awaiting approval
+    // - 3: Approved Winner
+
     modifier ifStatus (uint256 _id, uint256 _status) {
         require(seeds[_id].status == _status);
         _;
@@ -147,6 +149,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         address payable proposer;
         string url;
         uint256 block;
+        int decision;
     }
 
     struct Seed {
@@ -285,13 +288,16 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
       require(seeds[id].status == 1,"require status to be 1");
 
+      seeds[id].proposals[pid].decision = decision;
+
       if(decision == 1) {
           seeds[id].status = 2;
           seeds[id].winningProposal = pid;
         }
 
         address proposer = seeds[id].proposals[pid].proposer;
-        emit ExecuteProposal(id, pid, decision, proposer, proposer.balance );
+        string memory url = seeds[id].proposals[pid].url;
+        emit ExecuteProposal(id, pid, decision, proposer, proposer.balance, url);
 
     }
 
@@ -308,9 +314,22 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
          parent.transfer(portion);
          seeds[id].proposals[_pid].proposer.transfer(threshold - portion*2);
 
-         emit ApprovedExecution(_pid, seeds[id].proposals[_pid].proposer);
+         emit ApprovedExecution(id, _pid, seeds[id].proposals[_pid].proposer);
 
      }
+
+     function vetoExecution(bytes32 _pid) public {
+          require(msg.sender == artist);
+          uint256 id = pid2id[_pid];
+          require(seeds[id].winningProposal == _pid, "required _pid is winnigProposal");
+          require(seeds[id].status == 2, "requiring status == 2");
+
+          seeds[id].status = 1;
+          seeds[id].winningProposal = 0;
+          seeds[id].proposals[_pid].decision = 2;
+          emit VetoedExecution(id, _pid);
+     }
+
 
 // FUNCTIONS for GenesisProtocolCallbacksInterface
 

@@ -1,5 +1,5 @@
 const Plantoid = artifacts.require("./Plantoid.sol");
-var ERC827TokenMock = artifacts.require("./ERC827TokenMock.sol");
+//var ERC827TokenMock = artifacts.require("./ERC827TokenMock.sol");
 var GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 var Proxy = artifacts.require("./Proxy.sol");
 

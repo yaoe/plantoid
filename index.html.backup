@@ -421,11 +421,15 @@ ExecuteProposalEvent.watch(function(err, result) {
       + "id :" + result.args.id + " pid: " + result.args.pid + " winner address = " + result.args._proposer + "with previous balance = " + result.args.b4balance;
       SeedStatus[result.args.id]=2; SeedWinner[result.args.id] = result.args.pid;
       WinningProposal(result.args.pid);
+      UpdateProposals4Seed(result.args.id);
+
 
   } else {
       document.getElementById("transactionLog").innerHTML += "We got a LOOSER !!@#!@  :DDD<br/>"
       SeedStatus[result.args.id]=2;
       LoosingProposal(result.args.pid);
+      UpdateProposals4Seed(result.args.id);
+
 
   }
 });

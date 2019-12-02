@@ -1,787 +1,791 @@
 [
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "genesisParams", 
+        "constant": true,
+        "inputs": [],
+        "name": "genesisParams",
         "outputs": [
             {
-                "type": "bytes32", 
-                "name": ""
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x0118dbb7", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "orgHash", 
+        "constant": true,
+        "inputs": [],
+        "name": "orgHash",
         "outputs": [
             {
-                "type": "bytes32", 
-                "name": ""
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x04a37614", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "seedCnt", 
+        "constant": true,
+        "inputs": [],
+        "name": "seedCnt",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x0b5d71b7", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "constant": true, 
-        "name": "genesisProtocolParams", 
+        ],
+        "name": "genesisProtocolParams",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x1b8de575", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "bytes32", 
-                "name": ""
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "constant": true, 
-        "name": "pid2id", 
+        ],
+        "name": "pid2id",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x406df2c0", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "threshold", 
+        "constant": true,
+        "inputs": [],
+        "name": "threshold",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x42cde4e8", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "artist", 
+        "constant": true,
+        "inputs": [],
+        "name": "artist",
         "outputs": [
             {
-                "type": "address", 
-                "name": ""
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x43bc1612", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "parent", 
+        "constant": true,
+        "inputs": [],
+        "name": "parent",
         "outputs": [
             {
-                "type": "address", 
-                "name": ""
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x60f96a8f", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "owner", 
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
         "outputs": [
             {
-                "type": "address", 
-                "name": ""
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x8da5cb5b", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "voteMachine", 
+        "constant": true,
+        "inputs": [],
+        "name": "voteMachine",
         "outputs": [
             {
-                "type": "address", 
-                "name": ""
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x997ca764", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "save1", 
+        "constant": true,
+        "inputs": [],
+        "name": "save1",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0xee180727", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "constant": true, 
-        "name": "seeds", 
+        ],
+        "name": "seeds",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "id"
-            }, 
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "type": "uint256", 
-                "name": "status"
-            }, 
+                "name": "status",
+                "type": "uint256"
+            },
             {
-                "type": "uint256", 
-                "name": "weiRaised"
-            }, 
+                "name": "weiRaised",
+                "type": "uint256"
+            },
             {
-                "type": "address", 
-                "name": "reputation"
-            }, 
+                "name": "reputation",
+                "type": "address"
+            },
             {
-                "type": "uint256", 
-                "name": "nProposals"
-            }, 
+                "name": "nProposals",
+                "type": "uint256"
+            },
             {
-                "type": "bytes32", 
-                "name": "winningProposal"
+                "name": "winningProposal",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0xf0503e80", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "stateMutability": "payable", 
-        "payable": true, 
+        "payable": true,
+        "stateMutability": "payable",
         "type": "fallback"
-    }, 
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_donor"
-            }, 
+                "indexed": false,
+                "name": "_donor",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "amount"
-            }, 
+                "indexed": false,
+                "name": "amount",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "_seed"
+                "indexed": false,
+                "name": "_seed",
+                "type": "uint256"
             }
-        ], 
-        "type": "event", 
-        "name": "GotDonation", 
-        "anonymous": false, 
-        "signature": "0x05d849511389acf8398eb3be2d83b299a252a59cbf60e6d23f7fd1c47da7c528"
-    }, 
+        ],
+        "name": "GotDonation",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_donor"
-            }, 
+                "indexed": false,
+                "name": "_donor",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "amount"
-            }, 
+                "indexed": false,
+                "name": "amount",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "_seed"
+                "indexed": false,
+                "name": "_seed",
+                "type": "uint256"
             }
-        ], 
-        "type": "event", 
-        "name": "AcceptedDonation", 
-        "anonymous": false, 
-        "signature": "0xb91e55f2b1f2ec3cf712638397bb1029d751647d8850a42a4e2969f721d95f7e"
-    }, 
+        ],
+        "name": "AcceptedDonation",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "seedCnt"
+                "indexed": false,
+                "name": "seedCnt",
+                "type": "uint256"
             }
-        ], 
-        "type": "event", 
-        "name": "Reproducing", 
-        "anonymous": false, 
-        "signature": "0x297a9c8cef1d465aaa82ca580c8affb30d9582a96066e37f42b3a98a2a451114"
-    }, 
+        ],
+        "name": "Reproducing",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "id"
-            }, 
+                "indexed": false,
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid"
-            }, 
+                "indexed": false,
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_proposer"
-            }, 
+                "indexed": false,
+                "name": "_proposer",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "string", 
-                "name": "url"
+                "indexed": false,
+                "name": "url",
+                "type": "string"
             }
-        ], 
-        "type": "event", 
-        "name": "NewProposal", 
-        "anonymous": false, 
-        "signature": "0x40b5355208340c3f3f4d7d5a625416bce4b69d9f97cc17f530daf7d5d4ced8ac"
-    }, 
+        ],
+        "name": "NewProposal",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "id"
-            }, 
+                "indexed": false,
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid"
-            }, 
+                "indexed": false,
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_voter"
-            }, 
+                "indexed": false,
+                "name": "_voter",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "_reputation"
-            }, 
+                "indexed": false,
+                "name": "_reputation",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "_vote"
+                "indexed": false,
+                "name": "_vote",
+                "type": "uint256"
             }
-        ], 
-        "type": "event", 
-        "name": "VotingProposal", 
-        "anonymous": false, 
-        "signature": "0x3892cb41e45f9ce0292aa9b2a75a75bd14e19e8521fc93c222bc9ba3c2e30e09"
-    }, 
+        ],
+        "name": "VotingProposal",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "id"
-            }, 
+                "indexed": false,
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid"
-            }, 
+                "indexed": false,
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "indexed": false, 
-                "type": "int256", 
-                "name": "decision"
-            }, 
+                "indexed": false,
+                "name": "decision",
+                "type": "int256"
+            },
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_proposer"
-            }, 
+                "indexed": false,
+                "name": "_proposer",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "b4balance"
+                "indexed": false,
+                "name": "b4balance",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "url",
+                "type": "string"
             }
-        ], 
-        "type": "event", 
-        "name": "ExecuteProposal", 
-        "anonymous": false, 
-        "signature": "0x378620d60095687884fd11d36515f498ed7f603aa35a53260c7c2f8525364a14"
-    }, 
+        ],
+        "name": "ExecuteProposal",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "voteMachine"
+                "indexed": false,
+                "name": "voteMachine",
+                "type": "address"
             }
-        ], 
-        "type": "event", 
-        "name": "NewVotingMachine", 
-        "anonymous": false, 
-        "signature": "0x10cc0c35ed9aba20a2e1ff3ec33c3e6da5b0e3c88881da4ab24dbcdd72a3c69b"
-    }, 
+        ],
+        "name": "NewVotingMachine",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid"
-            }, 
+                "indexed": false,
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "addr"
-            }, 
+                "indexed": false,
+                "name": "addr",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "int256", 
-                "name": "_decision"
+                "indexed": false,
+                "name": "_decision",
+                "type": "int256"
             }
-        ], 
-        "type": "event", 
-        "name": "Execution", 
-        "anonymous": false, 
-        "signature": "0x7b0bafff17017b9534a5c471200865e490a1898ff38c1ff5667edceba85f7ba5"
-    }, 
+        ],
+        "name": "Execution",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid"
-            }, 
+                "indexed": false,
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "proposer"
+                "indexed": false,
+                "name": "pid",
+                "type": "bytes32"
+            },
+            {
+                "indexed": false,
+                "name": "proposer",
+                "type": "address"
             }
-        ], 
-        "type": "event", 
-        "name": "ApprovedExecution", 
-        "anonymous": false, 
-        "signature": "0x6d4ebd1eda22e198bc92e520a4171c6d73366a5ce3554d0a2728fcc59bf4ea1e"
-    }, 
+        ],
+        "name": "ApprovedExecution",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_owner"
-            }, 
+                "indexed": false,
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "rep"
+                "indexed": false,
+                "name": "pid",
+                "type": "bytes32"
             }
-        ], 
-        "type": "event", 
-        "name": "ReputationOf", 
-        "anonymous": false, 
-        "signature": "0x00565c152fb1615ca7f5594913b5d610c211370f28bcf0242cd36fe9f91d8275"
-    }, 
+        ],
+        "name": "VetoedExecution",
+        "type": "event"
+    },
     {
-        "inputs": [], 
-        "constant": false, 
-        "name": "init", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "signature": "0xe1c7392a", 
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "_owner",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "rep",
+                "type": "uint256"
+            }
+        ],
+        "name": "ReputationOf",
+        "type": "event"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "init",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "address", 
-                "name": "_voteM"
+                "name": "_voteM",
+                "type": "address"
             }
-        ], 
-        "constant": false, 
-        "name": "setVotingMachine", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "signature": "0xaf8b912d", 
+        ],
+        "name": "setVotingMachine",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "_id"
+                "name": "_id",
+                "type": "uint256"
             }
-        ], 
-        "constant": true, 
-        "name": "getSeed", 
+        ],
+        "name": "getSeed",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "status"
-            }, 
+                "name": "status",
+                "type": "uint256"
+            },
             {
-                "type": "uint256", 
-                "name": "weis"
-            }, 
+                "name": "weis",
+                "type": "uint256"
+            },
             {
-                "type": "address", 
-                "name": "reputation"
-            }, 
+                "name": "reputation",
+                "type": "address"
+            },
             {
-                "type": "uint256", 
-                "name": "nProps"
-            }, 
+                "name": "nProps",
+                "type": "uint256"
+            },
             {
-                "type": "bytes32", 
-                "name": "winner"
+                "name": "winner",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0xe0d4ea37", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "_id"
-            }, 
+                "name": "_id",
+                "type": "uint256"
+            },
             {
-                "type": "string", 
-                "name": "_url"
+                "name": "_url",
+                "type": "string"
             }
-        ], 
-        "constant": false, 
-        "name": "addProposal", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "signature": "0x051097ef", 
+        ],
+        "name": "addProposal",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "_id"
-            }, 
+                "name": "_id",
+                "type": "uint256"
+            },
             {
-                "type": "bytes32", 
-                "name": "_pid"
-            }, 
+                "name": "_pid",
+                "type": "bytes32"
+            },
             {
-                "type": "uint256", 
-                "name": "_vote"
+                "name": "_vote",
+                "type": "uint256"
             }
-        ], 
-        "constant": false, 
-        "name": "voteProposal", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "signature": "0x72ff1879", 
+        ],
+        "name": "voteProposal",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "_id"
-            }, 
+                "name": "_id",
+                "type": "uint256"
+            },
             {
-                "type": "bytes32", 
-                "name": "_pid"
+                "name": "_pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": true, 
-        "name": "getProposal", 
+        ],
+        "name": "getProposal",
         "outputs": [
             {
-                "type": "bytes32", 
-                "name": "pid"
-            }, 
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "type": "address", 
-                "name": "from"
-            }, 
+                "name": "from",
+                "type": "address"
+            },
             {
-                "type": "string", 
-                "name": "url"
+                "name": "url",
+                "type": "string"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x5c475676", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": false, 
-        "name": "fund", 
-        "outputs": [], 
-        "stateMutability": "payable", 
-        "payable": true, 
-        "signature": "0xb60d4288", 
+        "constant": false,
+        "inputs": [],
+        "name": "fund",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "bytes32", 
-                "name": "pid"
-            }, 
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "type": "int256", 
-                "name": "decision"
+                "name": "decision",
+                "type": "int256"
             }
-        ], 
-        "constant": false, 
-        "name": "executeProposal", 
+        ],
+        "name": "executeProposal",
         "outputs": [
             {
-                "type": "bool", 
-                "name": ""
+                "name": "",
+                "type": "bool"
             }
-        ], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "signature": "0x9d4c162d", 
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "bytes32", 
-                "name": "_pid"
+                "name": "_pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": false, 
-        "name": "approveExecution", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "signature": "0x0856b981", 
+        ],
+        "name": "approveExecution",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "bytes32", 
-                "name": "pid"
+                "name": "_pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": true, 
-        "name": "getTotalReputationSupply", 
+        ],
+        "name": "vetoExecution",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "pid",
+                "type": "bytes32"
+            }
+        ],
+        "name": "getTotalReputationSupply",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0xb551c373", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "_amount"
-            }, 
+                "name": "_amount",
+                "type": "uint256"
+            },
             {
-                "type": "address", 
-                "name": "_beneficiary"
-            }, 
+                "name": "_beneficiary",
+                "type": "address"
+            },
             {
-                "type": "bytes32", 
-                "name": "pid"
+                "name": "pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": false, 
-        "name": "mintReputation", 
+        ],
+        "name": "mintReputation",
         "outputs": [
             {
-                "type": "bool", 
-                "name": ""
+                "name": "",
+                "type": "bool"
             }
-        ], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "signature": "0xd29b5d2f", 
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "_amount"
-            }, 
+                "name": "_amount",
+                "type": "uint256"
+            },
             {
-                "type": "address", 
-                "name": "_beneficiary"
-            }, 
+                "name": "_beneficiary",
+                "type": "address"
+            },
             {
-                "type": "bytes32", 
-                "name": "pid"
+                "name": "pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": false, 
-        "name": "burnReputation", 
+        ],
+        "name": "burnReputation",
         "outputs": [
             {
-                "type": "bool", 
-                "name": ""
+                "name": "",
+                "type": "bool"
             }
-        ], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "signature": "0xf81f8bf6", 
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "address", 
-                "name": "_owner"
-            }, 
+                "name": "_owner",
+                "type": "address"
+            },
             {
-                "type": "bytes32", 
-                "name": "pid"
+                "name": "pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": true, 
-        "name": "reputationOf", 
+        ],
+        "name": "reputationOf",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x9588378e", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "address", 
-                "name": "_stakingToken"
-            }, 
+                "name": "_stakingToken",
+                "type": "address"
+            },
             {
-                "type": "address", 
-                "name": "_beneficiary"
-            }, 
+                "name": "_beneficiary",
+                "type": "address"
+            },
             {
-                "type": "uint256", 
-                "name": "_amount"
-            }, 
+                "name": "_amount",
+                "type": "uint256"
+            },
             {
-                "type": "bytes32", 
-                "name": ""
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "constant": false, 
-        "name": "stakingTokenTransfer", 
+        ],
+        "name": "stakingTokenTransfer",
         "outputs": [
             {
-                "type": "bool", 
-                "name": ""
+                "name": "",
+                "type": "bool"
             }
-        ], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "signature": "0xbea75f28", 
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "address", 
-                "name": ""
-            }, 
+                "name": "",
+                "type": "address"
+            },
             {
-                "type": "bytes32", 
-                "name": ""
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "constant": true, 
-        "name": "balanceOfStakingToken", 
+        ],
+        "name": "balanceOfStakingToken",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x6b8eb403", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
     }
 ]

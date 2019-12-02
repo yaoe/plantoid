@@ -135,6 +135,9 @@ input.propInput {
 	padding-top: 20px;
 }
 
+.winnerProp {
+	color: LightGreen;
+}
 .winProp {
 	color: Orange;
 }
@@ -142,7 +145,12 @@ input.propInput {
 	color: Gray;
 }
 
-#approve {
+.from {
+	color: Gray;
+	font-size: 11px;
+}
+
+#approve, #veto {
 	margin-left: 20px;
 	background-color: black;
   color: Orange;

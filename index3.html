@@ -137,8 +137,40 @@ if(typeof web3 !== 'undefined') {
 }
 
 
-var plantoid = web3.eth.contract([{"inputs":[],"constant":true,"name":"genesisParams","outputs":[{"type":"bytes32","name":""}],"stateMutability":"view","payable":false,"signature":"0x0118dbb7","type":"function"},{"inputs":[],"constant":true,"name":"orgHash","outputs":[{"type":"bytes32","name":""}],"stateMutability":"view","payable":false,"signature":"0x04a37614","type":"function"},{"inputs":[],"constant":true,"name":"seedCnt","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x0b5d71b7","type":"function"},{"inputs":[{"type":"uint256","name":""}],"constant":true,"name":"genesisProtocolParams","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x1b8de575","type":"function"},{"inputs":[{"type":"bytes32","name":""}],"constant":true,"name":"pid2id","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x406df2c0","type":"function"},{"inputs":[],"constant":true,"name":"threshold","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x42cde4e8","type":"function"},{"inputs":[],"constant":true,"name":"artist","outputs":[{"type":"address","name":""}],"stateMutability":"view","payable":false,"signature":"0x43bc1612","type":"function"},{"inputs":[],"constant":true,"name":"parent","outputs":[{"type":"address","name":""}],"stateMutability":"view","payable":false,"signature":"0x60f96a8f","type":"function"},{"inputs":[],"constant":true,"name":"owner","outputs":[{"type":"address","name":""}],"stateMutability":"view","payable":false,"signature":"0x8da5cb5b","type":"function"},{"inputs":[],"constant":true,"name":"voteMachine","outputs":[{"type":"address","name":""}],"stateMutability":"view","payable":false,"signature":"0x997ca764","type":"function"},{"inputs":[],"constant":true,"name":"save1","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0xee180727","type":"function"},{"inputs":[{"type":"uint256","name":""}],"constant":true,"name":"seeds","outputs":[{"type":"uint256","name":"id"},{"type":"uint256","name":"status"},{"type":"uint256","name":"weiRaised"},{"type":"address","name":"reputation"},{"type":"uint256","name":"nProposals"},{"type":"bytes32","name":"winningProposal"}],"stateMutability":"view","payable":false,"signature":"0xf0503e80","type":"function"},{"stateMutability":"payable","payable":true,"type":"fallback"},{"inputs":[{"indexed":false,"type":"address","name":"_donor"},{"indexed":false,"type":"uint256","name":"amount"},{"indexed":false,"type":"uint256","name":"_seed"}],"type":"event","name":"GotDonation","anonymous":false,"signature":"0x05d849511389acf8398eb3be2d83b299a252a59cbf60e6d23f7fd1c47da7c528"},{"inputs":[{"indexed":false,"type":"address","name":"_donor"},{"indexed":false,"type":"uint256","name":"amount"},{"indexed":false,"type":"uint256","name":"_seed"}],"type":"event","name":"AcceptedDonation","anonymous":false,"signature":"0xb91e55f2b1f2ec3cf712638397bb1029d751647d8850a42a4e2969f721d95f7e"},{"inputs":[{"indexed":false,"type":"uint256","name":"seedCnt"}],"type":"event","name":"Reproducing","anonymous":false,"signature":"0x297a9c8cef1d465aaa82ca580c8affb30d9582a96066e37f42b3a98a2a451114"},{"inputs":[{"indexed":false,"type":"uint256","name":"id"},{"indexed":false,"type":"bytes32","name":"pid"},{"indexed":false,"type":"address","name":"_proposer"},{"indexed":false,"type":"string","name":"url"}],"type":"event","name":"NewProposal","anonymous":false,"signature":"0x40b5355208340c3f3f4d7d5a625416bce4b69d9f97cc17f530daf7d5d4ced8ac"},{"inputs":[{"indexed":false,"type":"uint256","name":"id"},{"indexed":false,"type":"bytes32","name":"pid"},{"indexed":false,"type":"address","name":"_voter"},{"indexed":false,"type":"uint256","name":"_reputation"},{"indexed":false,"type":"uint256","name":"_vote"}],"type":"event","name":"VotingProposal","anonymous":false,"signature":"0x3892cb41e45f9ce0292aa9b2a75a75bd14e19e8521fc93c222bc9ba3c2e30e09"},{"inputs":[{"indexed":false,"type":"uint256","name":"id"},{"indexed":false,"type":"bytes32","name":"pid"},{"indexed":false,"type":"int256","name":"decision"},{"indexed":false,"type":"address","name":"_proposer"},{"indexed":false,"type":"uint256","name":"b4balance"}],"type":"event","name":"ExecuteProposal","anonymous":false,"signature":"0x378620d60095687884fd11d36515f498ed7f603aa35a53260c7c2f8525364a14"},{"inputs":[{"indexed":false,"type":"address","name":"voteMachine"}],"type":"event","name":"NewVotingMachine","anonymous":false,"signature":"0x10cc0c35ed9aba20a2e1ff3ec33c3e6da5b0e3c88881da4ab24dbcdd72a3c69b"},{"inputs":[{"indexed":false,"type":"bytes32","name":"pid"},{"indexed":false,"type":"address","name":"addr"},{"indexed":false,"type":"int256","name":"_decision"}],"type":"event","name":"Execution","anonymous":false,"signature":"0x7b0bafff17017b9534a5c471200865e490a1898ff38c1ff5667edceba85f7ba5"},{"inputs":[{"indexed":false,"type":"bytes32","name":"pid"},{"indexed":false,"type":"address","name":"proposer"}],"type":"event","name":"ApprovedExecution","anonymous":false,"signature":"0x6d4ebd1eda22e198bc92e520a4171c6d73366a5ce3554d0a2728fcc59bf4ea1e"},{"inputs":[{"indexed":false,"type":"address","name":"_owner"},{"indexed":false,"type":"uint256","name":"rep"}],"type":"event","name":"ReputationOf","anonymous":false,"signature":"0x00565c152fb1615ca7f5594913b5d610c211370f28bcf0242cd36fe9f91d8275"},{"inputs":[],"constant":false,"name":"init","outputs":[],"stateMutability":"nonpayable","payable":false,"signature":"0xe1c7392a","type":"function"},{"inputs":[{"type":"address","name":"_voteM"}],"constant":false,"name":"setVotingMachine","outputs":[],"stateMutability":"nonpayable","payable":false,"signature":"0xaf8b912d","type":"function"},{"inputs":[{"type":"uint256","name":"_id"}],"constant":true,"name":"getSeed","outputs":[{"type":"uint256","name":"status"},{"type":"uint256","name":"weis"},{"type":"address","name":"reputation"},{"type":"uint256","name":"nProps"},{"type":"bytes32","name":"winner"}],"stateMutability":"view","payable":false,"signature":"0xe0d4ea37","type":"function"},{"inputs":[{"type":"uint256","name":"_id"},{"type":"string","name":"_url"}],"constant":false,"name":"addProposal","outputs":[],"stateMutability":"nonpayable","payable":false,"signature":"0x051097ef","type":"function"},{"inputs":[{"type":"uint256","name":"_id"},{"type":"bytes32","name":"_pid"},{"type":"uint256","name":"_vote"}],"constant":false,"name":"voteProposal","outputs":[],"stateMutability":"nonpayable","payable":false,"signature":"0x72ff1879","type":"function"},{"inputs":[{"type":"uint256","name":"_id"},{"type":"bytes32","name":"_pid"}],"constant":true,"name":"getProposal","outputs":[{"type":"bytes32","name":"pid"},{"type":"address","name":"from"},{"type":"string","name":"url"}],"stateMutability":"view","payable":false,"signature":"0x5c475676","type":"function"},{"inputs":[],"constant":false,"name":"fund","outputs":[],"stateMutability":"payable","payable":true,"signature":"0xb60d4288","type":"function"},{"inputs":[{"type":"bytes32","name":"pid"},{"type":"int256","name":"decision"}],"constant":false,"name":"executeProposal","outputs":[{"type":"bool","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0x9d4c162d","type":"function"},{"inputs":[{"type":"bytes32","name":"_pid"}],"constant":false,"name":"approveExecution","outputs":[],"stateMutability":"nonpayable","payable":false,"signature":"0x0856b981","type":"function"},{"inputs":[{"type":"bytes32","name":"pid"}],"constant":true,"name":"getTotalReputationSupply","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0xb551c373","type":"function"},{"inputs":[{"type":"uint256","name":"_amount"},{"type":"address","name":"_beneficiary"},{"type":"bytes32","name":"pid"}],"constant":false,"name":"mintReputation","outputs":[{"type":"bool","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0xd29b5d2f","type":"function"},{"inputs":[{"type":"uint256","name":"_amount"},{"type":"address","name":"_beneficiary"},{"type":"bytes32","name":"pid"}],"constant":false,"name":"burnReputation","outputs":[{"type":"bool","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0xf81f8bf6","type":"function"},{"inputs":[{"type":"address","name":"_owner"},{"type":"bytes32","name":"pid"}],"constant":true,"name":"reputationOf","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x9588378e","type":"function"},{"inputs":[{"type":"address","name":"_stakingToken"},{"type":"address","name":"_beneficiary"},{"type":"uint256","name":"_amount"},{"type":"bytes32","name":""}],"constant":false,"name":"stakingTokenTransfer","outputs":[{"type":"bool","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0xbea75f28","type":"function"},{"inputs":[{"type":"address","name":""},{"type":"bytes32","name":""}],"constant":true,"name":"balanceOfStakingToken","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x6b8eb403","type":"function"}]).at("ETHHH");
-var genesis = web3.eth.contract([{"inputs":[{"type":"bytes32","name":""}],"constant":true,"name":"parameters","outputs":[{"type":"uint256","name":"preBoostedVoteRequiredPercentage"},{"type":"uint256","name":"preBoostedVotePeriodLimit"},{"type":"uint256","name":"boostedVotePeriodLimit"},{"type":"uint256","name":"thresholdConstA"},{"type":"uint256","name":"thresholdConstB"},{"type":"uint256","name":"minimumStakingFee"},{"type":"uint256","name":"quietEndingPeriod"},{"type":"uint256","name":"proposingRepRewardConstA"},{"type":"uint256","name":"proposingRepRewardConstB"},{"type":"uint256","name":"stakerFeeRatioForVoters"},{"type":"uint256","name":"votersReputationLossRatio"},{"type":"uint256","name":"votersGainRepRatioFromLostRep"},{"type":"address","name":"voteOnBehalf"}],"stateMutability":"view","payable":false,"signature":"0x02506804","type":"function"},{"inputs":[],"constant":true,"name":"NO","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x0d483442","type":"function"},{"inputs":[],"constant":true,"name":"proposalsCnt","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x21b4b3dc","type":"function"},{"inputs":[],"constant":true,"name":"DELEGATION_HASH_EIP712","outputs":[{"type":"bytes32","name":""}],"stateMutability":"view","payable":false,"signature":"0x30ca0a53","type":"function"},{"inputs":[{"type":"bytes32","name":""}],"constant":true,"name":"proposals","outputs":[{"type":"bytes32","name":"organizationId"},{"type":"address","name":"callbacks"},{"type":"uint256","name":"numOfChoices"},{"type":"uint256","name":"votersStakes"},{"type":"uint256","name":"submittedTime"},{"type":"uint256","name":"boostedPhaseTime"},{"type":"uint8","name":"state"},{"type":"uint256","name":"winningVote"},{"type":"address","name":"proposer"},{"type":"uint256","name":"currentBoostedVotePeriodLimit"},{"type":"bytes32","name":"paramsHash"},{"type":"uint256","name":"daoBountyRemain"}],"stateMutability":"view","payable":false,"signature":"0x32ed5b12","type":"function"},{"inputs":[],"constant":true,"name":"stakingToken","outputs":[{"type":"address","name":""}],"stateMutability":"view","payable":false,"signature":"0x72f702f3","type":"function"},{"inputs":[],"constant":true,"name":"ETH_SIGN_PREFIX","outputs":[{"type":"string","name":""}],"stateMutability":"view","payable":false,"signature":"0x7cb6cf3e","type":"function"},{"inputs":[],"constant":true,"name":"NUM_OF_CHOICES","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x9bc5689d","type":"function"},{"inputs":[],"constant":true,"name":"YES","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0xb2449d65","type":"function"},{"inputs":[{"type":"bytes32","name":""}],"constant":true,"name":"organizations","outputs":[{"type":"address","name":""}],"stateMutability":"view","payable":false,"signature":"0xba51b14e","type":"function"},{"inputs":[{"type":"bytes32","name":""}],"constant":true,"name":"orgBoostedProposalsCnt","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0xfb6c0cbb","type":"function"},{"stateMutability":"nonpayable","inputs":[{"type":"address","name":"_stakingToken"}],"signature":"constructor","type":"constructor","payable":false},{"inputs":[{"indexed":true,"type":"bytes32","name":"_proposalId"},{"indexed":true,"type":"address","name":"_organization"},{"indexed":true,"type":"address","name":"_staker"},{"indexed":false,"type":"uint256","name":"_vote"},{"indexed":false,"type":"uint256","name":"_amount"}],"type":"event","name":"Stake","anonymous":false,"signature":"0xd0239d7d4acf51def4507fa173be466927de5d75d8b10d840cd6994d6e102310"},{"inputs":[{"indexed":true,"type":"bytes32","name":"_proposalId"},{"indexed":true,"type":"address","name":"_organization"},{"indexed":true,"type":"address","name":"_beneficiary"},{"indexed":false,"type":"uint256","name":"_amount"}],"type":"event","name":"Redeem","anonymous":false,"signature":"0x6d26871c9f457d104b2122485f659f126f7a0cf6938cf20482c03f49794a2fbf"},{"inputs":[{"indexed":true,"type":"bytes32","name":"_proposalId"},{"indexed":true,"type":"address","name":"_organization"},{"indexed":true,"type":"address","name":"_beneficiary"},{"indexed":false,"type":"uint256","name":"_amount"}],"type":"event","name":"RedeemDaoBounty","anonymous":false,"signature":"0xb4a37163ec93e05e09b62e52f7f2ea8cfde431802edede7dfebe53d2ad969dbb"},{"inputs":[{"indexed":true,"type":"bytes32","name":"_proposalId"},{"indexed":true,"type":"address","name":"_organization"},{"indexed":true,"type":"address","name":"_beneficiary"},{"indexed":false,"type":"uint256","name":"_amount"}],"type":"event","name":"RedeemReputation","anonymous":false,"signature":"0x7419b736daacf66d5c1645948c956fca2b83be1e2e02d486d65713f289d683b8"},{"inputs":[{"indexed":true,"type":"bytes32","name":"_proposalId"},{"indexed":false,"type":"uint8","name":"_executionState"}],"type":"event","name":"GPExecuteProposal","anonymous":false,"signature":"0x46a713b994c752c68fbefa9048bec9a0010cc7d933ad95a3c3dbb25931a167e7"},{"inputs":[{"indexed":true,"type":"bytes32","name":"_proposalId"},{"indexed":true,"type":"address","name":"_organization"},{"indexed":false,"type":"uint256","name":"_numOfChoices"},{"indexed":false,"type":"address","name":"_proposer"},{"indexed":false,"type":"bytes32","name":"_paramsHash"}],"type":"event","name":"NewProposal","anonymous":false,"signature":"0x75b4ff136cc5de5957574c797de3334eb1c141271922b825eb071e0487ba2c5c"},{"inputs":[{"indexed":true,"type":"bytes32","name":"_proposalId"},{"indexed":true,"type":"address","name":"_organization"},{"indexed":false,"type":"uint256","name":"_decision"},{"indexed":false,"type":"uint256","name":"_totalReputation"}],"type":"event","name":"ExecuteProposal","anonymous":false,"signature":"0x37471b9c9d295ffb1309ad070b8964700bfb7b555e8e8292d0b6cbc7dba35d10"},{"inputs":[{"indexed":true,"type":"bytes32","name":"_proposalId"},{"indexed":true,"type":"address","name":"_organization"},{"indexed":true,"type":"address","name":"_voter"},{"indexed":false,"type":"uint256","name":"_vote"},{"indexed":false,"type":"uint256","name":"_reputation"}],"type":"event","name":"VoteProposal","anonymous":false,"signature":"0x066c061a3792cb3eb64a441a928655fcbafb4a54b49725fe9cd2951df5e7189e"},{"inputs":[{"indexed":true,"type":"bytes32","name":"_proposalId"},{"indexed":true,"type":"address","name":"_organization"}],"type":"event","name":"CancelProposal","anonymous":false,"signature":"0x2eb3e89618ae3f1716cf6615be7ce4bbafed3578d8bc1de99897063e9db6a9f6"},{"inputs":[{"indexed":true,"type":"bytes32","name":"_proposalId"},{"indexed":true,"type":"address","name":"_organization"},{"indexed":true,"type":"address","name":"_voter"}],"type":"event","name":"CancelVoting","anonymous":false,"signature":"0x0ecab23267930de581498fac1af19a95c888ec6583921ee9c47473e16245d3c8"},{"inputs":[{"type":"uint256","name":"_numOfChoices"},{"type":"bytes32","name":"_paramsHash"},{"type":"address","name":"_proposer"},{"type":"address","name":"_organization"}],"constant":false,"name":"propose","outputs":[{"type":"bytes32","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0x88737b5e","type":"function"},{"inputs":[{"type":"bytes32","name":""}],"constant":false,"name":"cancelProposal","outputs":[{"type":"bool","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0x37376ca8","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"},{"type":"uint256","name":"_vote"},{"type":"uint256","name":"_amount"}],"constant":false,"name":"stake","outputs":[{"type":"bool","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0x2daedd52","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"},{"type":"uint256","name":"_vote"},{"type":"uint256","name":"_amount"},{"type":"uint256","name":"_nonce"},{"type":"uint256","name":"_signatureType"},{"type":"bytes","name":"_signature"}],"constant":false,"name":"stakeWithSignature","outputs":[{"type":"bool","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0x488c65fc","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"},{"type":"uint256","name":"_vote"},{"type":"address","name":"_voter"}],"constant":false,"name":"vote","outputs":[{"type":"bool","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0x76124dac","type":"function"},{"inputs":[{"type":"bytes32","name":""},{"type":"uint256","name":""},{"type":"address","name":""}],"constant":false,"name":"ownerVote","outputs":[{"type":"bool","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0x339e23d1","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"},{"type":"uint256","name":"_vote"},{"type":"uint256","name":"_rep"},{"type":"uint256","name":""},{"type":"address","name":"_voter"}],"constant":false,"name":"voteWithSpecifiedAmounts","outputs":[{"type":"bool","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0x39500019","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"}],"constant":false,"name":"cancelVote","outputs":[],"stateMutability":"nonpayable","payable":false,"signature":"0x9525c0cc","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"}],"constant":true,"name":"getNumberOfChoices","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0xa003651d","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"},{"type":"address","name":"_voter"}],"constant":true,"name":"voteInfo","outputs":[{"type":"uint256","name":""},{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x119ce91b","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"},{"type":"uint256","name":"_choice"}],"constant":true,"name":"voteStatus","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0xb4512913","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"}],"constant":true,"name":"isVotable","outputs":[{"type":"bool","name":""}],"stateMutability":"view","payable":false,"signature":"0xc0835106","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"}],"constant":true,"name":"proposalStatus","outputs":[{"type":"uint256","name":""},{"type":"uint256","name":""},{"type":"uint256","name":""},{"type":"uint256","name":""},{"type":"uint256","name":""},{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x79a1c1f6","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"}],"constant":true,"name":"getProposalOrganization","outputs":[{"type":"bytes32","name":""}],"stateMutability":"view","payable":false,"signature":"0x1702ef0c","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"},{"type":"address","name":"_staker"}],"constant":true,"name":"getStaker","outputs":[{"type":"uint256","name":""},{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x16db5172","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"},{"type":"uint256","name":"_vote"}],"constant":true,"name":"voteStake","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x70743768","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"}],"constant":true,"name":"winningVote","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0x3c133818","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"}],"constant":true,"name":"state","outputs":[{"type":"uint8","name":""}],"stateMutability":"view","payable":false,"signature":"0x61d585da","type":"function"},{"inputs":[],"constant":true,"name":"isAbstainAllow","outputs":[{"type":"bool","name":""}],"stateMutability":"pure","payable":false,"signature":"0x51d997b2","type":"function"},{"inputs":[],"constant":true,"name":"getAllowedRangeOfChoices","outputs":[{"type":"uint256","name":"min"},{"type":"uint256","name":"max"}],"stateMutability":"pure","payable":false,"signature":"0x5142bc1e","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"}],"constant":false,"name":"execute","outputs":[{"type":"bool","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0xe751f271","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"},{"type":"address","name":"_beneficiary"}],"constant":false,"name":"redeem","outputs":[{"type":"uint256[5]","name":"rewards"}],"stateMutability":"nonpayable","payable":false,"signature":"0xcc3bf9e9","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"},{"type":"address","name":"_beneficiary"}],"constant":false,"name":"redeemDaoBounty","outputs":[{"type":"uint256","name":"redeemedAmount"},{"type":"uint256","name":"potentialAmount"}],"stateMutability":"nonpayable","payable":false,"signature":"0x6359036b","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"}],"constant":true,"name":"shouldBoost","outputs":[{"type":"bool","name":""}],"stateMutability":"view","payable":false,"signature":"0x80f5e0a1","type":"function"},{"inputs":[{"type":"bytes32","name":"_proposalId"}],"constant":true,"name":"score","outputs":[{"type":"int256","name":""}],"stateMutability":"view","payable":false,"signature":"0xe5af18c5","type":"function"},{"inputs":[{"type":"bytes32","name":"_organizationId"}],"constant":true,"name":"getBoostedProposalsCount","outputs":[{"type":"uint256","name":""}],"stateMutability":"view","payable":false,"signature":"0xeafd7189","type":"function"},{"inputs":[{"type":"bytes32","name":"_paramsHash"},{"type":"bytes32","name":"_organizationId"}],"constant":true,"name":"threshold","outputs":[{"type":"int256","name":""}],"stateMutability":"view","payable":false,"signature":"0x2d598e58","type":"function"},{"inputs":[{"type":"uint256[14]","name":"_params"},{"type":"address","name":"_voteOnBehalf"}],"constant":false,"name":"setParameters","outputs":[{"type":"bytes32","name":""}],"stateMutability":"nonpayable","payable":false,"signature":"0x245d775e","type":"function"},{"inputs":[{"type":"uint256[14]","name":"_params"},{"type":"address","name":"_voteOnBehalf"}],"constant":true,"name":"getParametersHash","outputs":[{"type":"bytes32","name":""}],"stateMutability":"pure","payable":false,"signature":"0x369847cb","type":"function"}]).at("GPPP");
+
+// Modern dapp browsers...
+    if (window.ethereum) {
+        window.web3 = new Web3(ethereum);
+        try {
+            // Request account access if needed
+            //await ethereum.enable();
+            ethereum.enable();
+            // Acccounts now exposed
+          //  web3.eth.sendTransaction({/* ... */});
+        } catch (error) {
+            // User denied account access...
+        }
+    }
+    // Legacy dapp browsers...
+    else if (window.web3) {
+        window.web3 = new Web3(web3.currentProvider);
+        // Acccounts always exposed
+      //  web3.eth.sendTransaction({/* ... */});
+    }
+    // Non-dapp browsers...
+    else {
+        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+    }
+
+
+web3.eth.defaultAccount = web3.eth.accounts[0];
+console.log("account 0 = " + web3.currentProvider);
+console.log("account ===" + web3.eth.defaultAccount);
+
+
+
+var plantoid = web3.eth.contract([{"constant":true,"inputs":[],"name":"genesisParams","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"orgHash","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"seedCnt","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"genesisProtocolParams","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"pid2id","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"threshold","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"artist","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"parent","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"voteMachine","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"save1","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"seeds","outputs":[{"name":"id","type":"uint256"},{"name":"status","type":"uint256"},{"name":"weiRaised","type":"uint256"},{"name":"reputation","type":"address"},{"name":"nProposals","type":"uint256"},{"name":"winningProposal","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_donor","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"_seed","type":"uint256"}],"name":"GotDonation","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_donor","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"_seed","type":"uint256"}],"name":"AcceptedDonation","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"seedCnt","type":"uint256"}],"name":"Reproducing","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"id","type":"uint256"},{"indexed":false,"name":"pid","type":"bytes32"},{"indexed":false,"name":"_proposer","type":"address"},{"indexed":false,"name":"url","type":"string"}],"name":"NewProposal","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"id","type":"uint256"},{"indexed":false,"name":"pid","type":"bytes32"},{"indexed":false,"name":"_voter","type":"address"},{"indexed":false,"name":"_reputation","type":"uint256"},{"indexed":false,"name":"_vote","type":"uint256"}],"name":"VotingProposal","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"id","type":"uint256"},{"indexed":false,"name":"pid","type":"bytes32"},{"indexed":false,"name":"decision","type":"int256"},{"indexed":false,"name":"_proposer","type":"address"},{"indexed":false,"name":"b4balance","type":"uint256"},{"indexed":false,"name":"url","type":"string"}],"name":"ExecuteProposal","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"voteMachine","type":"address"}],"name":"NewVotingMachine","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"pid","type":"bytes32"},{"indexed":false,"name":"addr","type":"address"},{"indexed":false,"name":"_decision","type":"int256"}],"name":"Execution","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"id","type":"uint256"},{"indexed":false,"name":"pid","type":"bytes32"},{"indexed":false,"name":"proposer","type":"address"}],"name":"ApprovedExecution","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"id","type":"uint256"},{"indexed":false,"name":"pid","type":"bytes32"}],"name":"VetoedExecution","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_owner","type":"address"},{"indexed":false,"name":"rep","type":"uint256"}],"name":"ReputationOf","type":"event"},{"constant":false,"inputs":[],"name":"init","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_voteM","type":"address"}],"name":"setVotingMachine","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_id","type":"uint256"}],"name":"getSeed","outputs":[{"name":"status","type":"uint256"},{"name":"weis","type":"uint256"},{"name":"reputation","type":"address"},{"name":"nProps","type":"uint256"},{"name":"winner","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_id","type":"uint256"},{"name":"_url","type":"string"}],"name":"addProposal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_id","type":"uint256"},{"name":"_pid","type":"bytes32"},{"name":"_vote","type":"uint256"}],"name":"voteProposal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_id","type":"uint256"},{"name":"_pid","type":"bytes32"}],"name":"getProposal","outputs":[{"name":"pid","type":"bytes32"},{"name":"from","type":"address"},{"name":"url","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"fund","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"pid","type":"bytes32"},{"name":"decision","type":"int256"}],"name":"executeProposal","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_pid","type":"bytes32"}],"name":"approveExecution","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_pid","type":"bytes32"}],"name":"vetoExecution","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"pid","type":"bytes32"}],"name":"getTotalReputationSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_amount","type":"uint256"},{"name":"_beneficiary","type":"address"},{"name":"pid","type":"bytes32"}],"name":"mintReputation","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_amount","type":"uint256"},{"name":"_beneficiary","type":"address"},{"name":"pid","type":"bytes32"}],"name":"burnReputation","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"pid","type":"bytes32"}],"name":"reputationOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_stakingToken","type":"address"},{"name":"_beneficiary","type":"address"},{"name":"_amount","type":"uint256"},{"name":"","type":"bytes32"}],"name":"stakingTokenTransfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"bytes32"}],"name":"balanceOfStakingToken","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]).at("ETHHH");
+var genesis = web3.eth.contract([{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"parameters","outputs":[{"name":"queuedVoteRequiredPercentage","type":"uint256"},{"name":"queuedVotePeriodLimit","type":"uint256"},{"name":"boostedVotePeriodLimit","type":"uint256"},{"name":"preBoostedVotePeriodLimit","type":"uint256"},{"name":"thresholdConst","type":"uint256"},{"name":"limitExponentValue","type":"uint256"},{"name":"quietEndingPeriod","type":"uint256"},{"name":"proposingRepReward","type":"uint256"},{"name":"votersReputationLossRatio","type":"uint256"},{"name":"minimumDaoBounty","type":"uint256"},{"name":"daoBountyConst","type":"uint256"},{"name":"activationTime","type":"uint256"},{"name":"voteOnBehalf","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_params","type":"uint256[11]"},{"name":"_voteOnBehalf","type":"address"}],"name":"getParametersHash","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"NO","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"proposalsCnt","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_paramsHash","type":"bytes32"},{"name":"_organizationId","type":"bytes32"}],"name":"threshold","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"DELEGATION_HASH_EIP712","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"proposals","outputs":[{"name":"organizationId","type":"bytes32"},{"name":"callbacks","type":"address"},{"name":"state","type":"uint8"},{"name":"winningVote","type":"uint256"},{"name":"proposer","type":"address"},{"name":"currentBoostedVotePeriodLimit","type":"uint256"},{"name":"paramsHash","type":"bytes32"},{"name":"daoBountyRemain","type":"uint256"},{"name":"daoBounty","type":"uint256"},{"name":"totalStakes","type":"uint256"},{"name":"confidenceThreshold","type":"uint256"},{"name":"secondsFromTimeOutTillExecuteBoosted","type":"uint256"},{"name":"daoRedeemItsWinnings","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"calcExecuteCallBounty","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_proposalId","type":"bytes32"},{"name":"_beneficiary","type":"address"}],"name":"redeemDaoBounty","outputs":[{"name":"redeemedAmount","type":"uint256"},{"name":"potentialAmount","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"stakingToken","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"shouldBoost","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"","type":"uint256"},{"name":"_paramsHash","type":"bytes32"},{"name":"_proposer","type":"address"},{"name":"_organization","type":"address"}],"name":"propose","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_params","type":"uint256[11]"},{"name":"_voteOnBehalf","type":"address"}],"name":"setParameters","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"NUM_OF_CHOICES","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"stakesNonce","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"YES","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"organizations","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"averagesDownstakesOfBoosted","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"executeBoosted","outputs":[{"name":"expirationCallBounty","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_proposalId","type":"bytes32"},{"name":"_beneficiary","type":"address"}],"name":"redeem","outputs":[{"name":"rewards","type":"uint256[3]"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"orgBoostedProposalsCnt","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"_stakingToken","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":true,"name":"_organization","type":"address"},{"indexed":true,"name":"_staker","type":"address"},{"indexed":false,"name":"_vote","type":"uint256"},{"indexed":false,"name":"_amount","type":"uint256"}],"name":"Stake","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":true,"name":"_organization","type":"address"},{"indexed":true,"name":"_beneficiary","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"}],"name":"Redeem","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":true,"name":"_organization","type":"address"},{"indexed":true,"name":"_beneficiary","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"}],"name":"RedeemDaoBounty","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":true,"name":"_organization","type":"address"},{"indexed":true,"name":"_beneficiary","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"}],"name":"RedeemReputation","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":false,"name":"_proposalState","type":"uint8"}],"name":"StateChange","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":false,"name":"_executionState","type":"uint8"}],"name":"GPExecuteProposal","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":true,"name":"_beneficiary","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"}],"name":"ExpirationCallBounty","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":false,"name":"_confidenceThreshold","type":"uint256"}],"name":"ConfidenceLevelChange","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":true,"name":"_organization","type":"address"},{"indexed":false,"name":"_numOfChoices","type":"uint256"},{"indexed":false,"name":"_proposer","type":"address"},{"indexed":false,"name":"_paramsHash","type":"bytes32"}],"name":"NewProposal","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":true,"name":"_organization","type":"address"},{"indexed":false,"name":"_decision","type":"uint256"},{"indexed":false,"name":"_totalReputation","type":"uint256"}],"name":"ExecuteProposal","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":true,"name":"_organization","type":"address"},{"indexed":true,"name":"_voter","type":"address"},{"indexed":false,"name":"_vote","type":"uint256"},{"indexed":false,"name":"_reputation","type":"uint256"}],"name":"VoteProposal","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":true,"name":"_organization","type":"address"}],"name":"CancelProposal","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_proposalId","type":"bytes32"},{"indexed":true,"name":"_organization","type":"address"},{"indexed":true,"name":"_voter","type":"address"}],"name":"CancelVoting","type":"event"},{"constant":false,"inputs":[{"name":"_proposalId","type":"bytes32"},{"name":"_vote","type":"uint256"},{"name":"_amount","type":"uint256"}],"name":"stake","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_proposalId","type":"bytes32"},{"name":"_vote","type":"uint256"},{"name":"_amount","type":"uint256"},{"name":"_nonce","type":"uint256"},{"name":"_signatureType","type":"uint256"},{"name":"_signature","type":"bytes"}],"name":"stakeWithSignature","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_proposalId","type":"bytes32"},{"name":"_vote","type":"uint256"},{"name":"_amount","type":"uint256"},{"name":"_voter","type":"address"}],"name":"vote","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"cancelVote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"execute","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"getNumberOfChoices","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"getProposalTimes","outputs":[{"name":"times","type":"uint256[3]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"},{"name":"_voter","type":"address"}],"name":"voteInfo","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"},{"name":"_choice","type":"uint256"}],"name":"voteStatus","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"isVotable","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"proposalStatus","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"},{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"getProposalOrganization","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"},{"name":"_staker","type":"address"}],"name":"getStaker","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"},{"name":"_vote","type":"uint256"}],"name":"voteStake","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"winningVote","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"state","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"isAbstainAllow","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"getAllowedRangeOfChoices","outputs":[{"name":"min","type":"uint256"},{"name":"max","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"_proposalId","type":"bytes32"}],"name":"score","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]).at("GPPP");
 var proxy = web3.eth.contract(PRO).at("ETHHH");
 
 
@@ -160,7 +192,8 @@ function getBalance() {
 
 function getInfo() {
 
-  proxy._implementation.call(function(err, res) {
+  //proxy._implementation.call(function(err, res) {
+  proxy.artist.call(function(err, res) {
     document.getElementById('PlantoidCreator').innerHTML = res;
   });
 
@@ -209,6 +242,7 @@ function ListSeeds() {
             //  console.log("seed # "+ i + ": " + values);
 
               SeedStatus[i] = values[0];
+              console.log("CREATING NEW SEED WITH SEED STATUS = " + values[0]);
 
               if(SeedStatus[i] == 3) {  SeedWinner[i] = values[4];  }
 
@@ -237,7 +271,7 @@ function ListSeeds() {
         cell1.innerHTML = "Seed<br/># " + i;
         cell2.innerHTML = "Status:<br/>" + values[0];
         cell3.innerHTML = "Funds:<br/>" + values[1] + " / " + threshold;
-        if(SeedStatus[i] == 1) {
+        if(SeedStatus[i] == 1 || SeedStatus[i] == 2) {
               cell4.innerHTML =
               '<span class="submitText">Submit a proposal:<br/></span>' +
               '<input type="text" class="propInput" id="propURL'+i+'" size=60 placeholder="Enter link to proposal (HTML or IPFS)">' +
@@ -284,22 +318,49 @@ function ListSeeds() {
 
    function UpdateProposals4Seed(i) {
 
+
       console.log("updating proposals for Seed # " + i);
+
+      //first collect the list of Vetoed proposals
+      plantoid.VetoedExecution({}, {fromBlock: 0, toBlock: 'latest'}).get((eerr, eev) => {
+        if(eerr)
+          console.log('Error in ExecuteProposal handler: '+ eerr);
+
+        else {
+
+          var pC = eev.length;
+          for(var m = 0; m < pC; m++) {
+            var res = eev[m].args;
+            if(!SeedLoosers[res.id]) { SeedLoosers[res.id] = new Array(); }
+            SeedLoosers[res.id].push(res.pid);
+          }
 
 
       //first collect the list of loosing Proposals
       plantoid.ExecuteProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((err, ev) => {
         if(err)
           console.log('Error in ExecuteProposal handler: '+ err);
+
         else {
+
           var propC = ev.length; console.log("******** length of EXECUTED props == "+ ev.length);
+
             for(var k = 0; k < propC; k++) {
               var results = ev[k].args;  console.log("curennt decision === " + results.decision);
-              if(results.decision == 1) {
+
+              if(! SeedStatus[results.id]) { console.log("returning........."); return; }
+
+              if(SeedLoosers[results.id] && SeedLoosers[results.id].indexOf(results.pid)!= -1) { console.log("continueeeeeeee..."); continue; }
+
+              if((results.decision == 1) && (SeedStatus[results.id]!=1)) {
                 SeedWinner[results.id] = results.pid;
+                console.log("we got a winer?!?!?  with seed status = " + SeedStatus[results.id]);
+
               } else {
+                console.log('inserting looser PID as === '+results.pid);
                 if(!SeedLoosers[results.id]) { SeedLoosers[results.id] = new Array(); }
                 SeedLoosers[results.id].push(results.pid);
+                console.log("OVERALL ARRAY OF LOSERS: "+ SeedLoosers[results.id]);
               }
             }
 
@@ -310,13 +371,16 @@ function ListSeeds() {
         else {
 
           var propCounter = eventResult.length;
-          var w1 = ""; var w2 = "";
-          var d = "";
+
 
             for(var j = 0; j < propCounter; j++) {
 
               var args = eventResult[j].args;
-      //        console.log("processing proposition ... " + args.url + " from ID = " + args.id + " of---- " + i);
+             console.log("processing proposition ... " + args.url + " from ID = " + args.id + " of---- " + i);
+
+              var w1 = ""; var w2 = "";
+              var d = "";
+
 
               if(args.id == i) {
 
@@ -324,26 +388,33 @@ function ListSeeds() {
                   var prop = document.getElementById("Proposal"+args.pid);
 
                   if(! prop) {
+                     console.log('No prop for .....' + args.pid + '........ '+prop);
 
-                        if( (SeedStatus[args.id]==2) || (SeedStatus[args.id]==3) && (SeedWinner[args.id] == args.pid)) {
+                    var g = document.createElement('div'); g.setAttribute("id", "Proposal"+args.pid);
+                    cell.appendChild(g);
+
+                        if( (SeedStatus[args.id]==2)  && (SeedWinner[args.id] == args.pid)) {
                           w1 = '<span class="winProp">';
                           w2 = '</span>';
                           d = 'disabled';
-                        } else {
-                          if( SeedLoosers[args.id] && (SeedLoosers[args.id].indexOf(args.pid)!= -1)) {
+                        }  else if( (SeedStatus[args.id]==3) && (SeedWinner[args.id] == args.pid)) {
+                            w1 = '<span class="winnerProp">';
+                            w2 = '</span>';
+                            d = 'disabled';
+                        }  else if( SeedLoosers[args.id] && (SeedLoosers[args.id].indexOf(args.pid)!= -1)) {
                             w1 = '<span class="looseProp">';
                             w2 = '</span>';
                             d = 'disabled';
                           }
 
-                        }
 
-                      cell.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a>"+ w2 + " <br></span>"
-                      cell.innerHTML += "from: "+args._proposer+" <br>";
-                      cell.innerHTML += '<input type="image" src="./assets/images/upvote' + d + '.png" height=25 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
-                      cell.innerHTML += "<span id='VotesPos"+args.pid+"'> 00 </span>";
-                      cell.innerHTML += '<input type="image" src="./assets/images/downvote' + d + '.png" height=20 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
-                      cell.innerHTML += "<span id='VotesNeg"+args.pid+"'> 00 </span>";
+
+                      g.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a>"+ w2 + " <br></span>"
+                      g.innerHTML += "<span class='from'>(from: <i>"+args._proposer+"</i>) <br></span>";
+                      g.innerHTML += '<input type="image" src="./assets/images/upvote' + d + '.png" height=25 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
+                      g.innerHTML += "<span id='VotesPos"+args.pid+"'> 00 </span>";
+                      g.innerHTML += '<input type="image" src="./assets/images/downvote' + d + '.png" height=20 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 2)"' + d + '/>';
+                      g.innerHTML += "<span id='VotesNeg"+args.pid+"'> 00 </span>";
 
 /*
                       cell.innerHTML += '<input type="image" src="./images/upvote.png" height=25 id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' +
@@ -351,67 +422,149 @@ function ListSeeds() {
                       cell.innerHTML += '<input type="image" src="./images/downvote.png" height=20 id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\', 2)"' +
                       ((SeedStatus[args.id]==1) && ( (!SeedLoosers[args.id]) || (SeedLoosers[args.id].indexOf(args.pid)==-1) ) || 'disabled') +'/> <br/>';
 */
-                      if(SeedStatus[args.id]==2) {
-                        cell.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
+                      if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
+                        g.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
+                        g.innerHTML += '<button type="button" id="veto" onclick="VetoPid(\'' + args.pid + '\')">Veto</button>';
                       }
 
-                      var g = document.createElement('div'); g.setAttribute("id", "Proposal"+args.pid);
-                      cell.appendChild(g);
+                      g.innerHTML += "<br/><br/>"
+
+
 
                       updateVotesforPidPos(args.pid);
                       updateVotesforPidNeg(args.pid);
                     }
+                    else { console.log('PRPOSITION already exists...'); }
+
                 } else { console.log(args.id + " != " + i);}
               }
           }
       });
     }
   });
-
 }
+});
+}
+
 
 
 
 function updateVotesforPidPos(pid) {
   genesis.voteStatus.call(pid, 1, function(err, val) {
     var p = document.getElementById("VotesPos"+pid);
-    p.innerHTML = val / threshold * 100 + "%"; // will need to fix this once reputation starts changing !
+    var n = val / threshold * 100;
+    p.innerHTML = n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
   });
 }
 
 function updateVotesforPidNeg(pid) {
   genesis.voteStatus.call(pid, 2, function(err, val) {
     var p = document.getElementById("VotesNeg"+pid);
-    p.innerHTML = val / threshold * 100 + "%"; // will need to fix this once reputation starts changing !
+    var n = val / threshold * 100;
+    p.innerHTML = n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
   });
 }
 
 
 
+function updateProposalbyPid(args) {
+
+  var prop = document.getElementById("Proposal"+args.pid);
+
+  console.log("looking for Prop (" + prop + ") with args.pid = " + args.pid);
+
+if(prop) {
+  var w1 = ""; var w2 = "";
+  var d = "";
+
+  console.log('Args.id === ' + args.id + ' seedStatus = ' + SeedStatus[args.id] + ' SeedWinner = ' + SeedWinner[args.id]);
 
 
-function WinningProposal(pid) {
-  var cell = document.getElementById("PID"+pid);
+  if( SeedLoosers[args.id] && (SeedLoosers[args.id].indexOf(args.pid)!= -1)) {
+    w1 = '<span class="looseProp">';
+    w2 = '</span>';
+    d = 'disabled';
+  } else if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
+    w1 = '<span class="winProp">';
+    w2 = '</span>';
+    d = 'disabled';
+  } else if( (SeedStatus[args.id]==3) && (SeedWinner[args.id] == args.pid)) {
+    w1 = '<span class="winnerProp">';
+    w2 = '</span>';
+    d = 'disabled';
+  }
+
+//  var spans = prop.querySelectorAll("span");
+//  var url = spans[0].querySelector("a");
+  var url = prop.querySelector("a");
+  var _proposer = prop.querySelector("i");
+  console.log("HERE'S SOME STUFFFFffff");
+  console.log(url.innerHTML);
+  console.log(_proposer.innerHTML);
+
+  prop.innerHTML = "";
+
+  prop.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal # " + args.pid + " : <a href='"+url+"'>"+url+"</a>"+ w2 + " <br></span>"
+  prop.innerHTML += "<span class='from'>(from: <i>"+_proposer.innerHTML+"</i>) <br></span>";
+  prop.innerHTML += '<input type="image" src="./assets/images/upvote' + d + '.png" height=25 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
+  prop.innerHTML += "<span id='VotesPos"+args.pid+"'> 00 </span>";
+  prop.innerHTML += '<input type="image" src="./assets/images/downvote' + d + '.png" height=20 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 2)"' + d + '/>';
+  prop.innerHTML += "<span id='VotesNeg"+args.pid+"'> 00 </span>";
+
+  if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
+    prop.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
+    prop.innerHTML += '<button type="button" id="veto" onclick="VetoPid(\'' + args.pid + '\')">Veto</button>';
+  }
+
+  prop.innerHTML += "<br/><br/>"
+
+  updateVotesforPidPos(args.pid);
+  updateVotesforPidNeg(args.pid);
+
+}
+}
+
+
+
+
+function WinningProposal(args) {
+/*  var cell = document.getElementById("PID"+args.pid);
   var content = cell.innerHTML;
   var w1 = '<span class="winProp">';
   var w2 = '</span>';
   cell.innerHTML = w1+content+w2;
+*/
+
+
+  SeedWinner[args.id] = args.pid;
+  updateProposalbyPid(args)
 
 }
 
-function LoosingProposal(pid) {
-  var cell = document.getElementById("PID"+pid);
+function LoosingProposal(args) {
+/*  var cell = document.getElementById("PID"+args.pid);
   var content = cell.innerHTML;
   var w1 = '<span class="looseProp">';
   var w2 = '</span>';
   cell.innerHTML = w1+content+w2;
+*/
+if(!SeedLoosers[args.id]) { SeedLoosers[args.id] = new Array(); }
+SeedLoosers[args.id].push(args.pid);
+  updateProposalbyPid(args)
 
 }
 
-function ApprovePid(pid) {
-    plantoid.approveExecution(pid, function(err, values) {
-      console.log("approving execution.... " + pid);
+function ApprovePid(args) {
+    plantoid.approveExecution(args, function(err, values) {
+      console.log("approving execution.... " + args);
     });
+}
+
+function VetoPid(args) {
+  plantoid.vetoExecution(args, function(err, values) {
+    console.log("vetoooing execution.... " + args);
+  });
+
 }
 
 function sendFunds() {
@@ -517,12 +670,12 @@ ExecuteProposalEvent.watch(function(err, result) {
       document.getElementById("transactionLog").innerHTML += "We got a winner !!@#!@  :DDD<br/>"
       + "id :" + result.args.id + " pid: " + result.args.pid + " winner address = " + result.args._proposer + "with previous balance = " + result.args.b4balance;
       SeedStatus[result.args.id]=2; SeedWinner[result.args.id] = result.args.pid;
-      WinningProposal(result.args.pid);
+      WinningProposal(result.args);
 
   } else {
       document.getElementById("transactionLog").innerHTML += "We got a LOOSER !!@#!@  :DDD<br/>"
       SeedStatus[result.args.id]=2;
-      LoosingProposal(result.args.pid);
+      LoosingProposal(result.args);
 
   }
 });
@@ -531,7 +684,30 @@ ExecuteProposalEvent.watch(function(err, result) {
 var ApprovedExecutionEvent = plantoid.ApprovedExecution();
 ApprovedExecutionEvent.watch(function(err, result) {
   console.log("Approved Execution by artist ---> ")
+
+  SeedStatus[result.args.id] = 3;
+  SeedWinner[result.args.id] == result.args.pid
+  updateProposalbyPid(result.args);
 });
+
+
+
+var VetoedExecutionEvent = plantoid.VetoedExecution();
+VetoedExecutionEvent.watch(function(err, result) {
+  console.log("VETOED Execution by artist ---> ");
+
+  if(!SeedLoosers[result.args.id]) { SeedLoosers[result.args.id] = new Array(); }
+  SeedLoosers[result.args.id].push(result.args.pid);
+
+  SeedStatus[result.args.id]= 1;
+  SeedWinner[result.args.id] = 0;
+
+  updateProposalbyPid(result.args);
+});
+
+
+
+
 
 /*
 var UpgradedEvent = plantoid.Upgraded();

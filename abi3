@@ -1,198 +1,186 @@
 [
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "constant": true, 
-        "name": "genesisProtocolParams", 
+        ],
+        "name": "genesisProtocolParams",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x1b8de575", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "threshold", 
+        "constant": true,
+        "inputs": [],
+        "name": "threshold",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": ""
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x42cde4e8", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "artist", 
+        "constant": true,
+        "inputs": [],
+        "name": "artist",
         "outputs": [
             {
-                "type": "address", 
-                "name": ""
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x43bc1612", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "_implementation", 
+        "constant": true,
+        "inputs": [],
+        "name": "_implementation",
         "outputs": [
             {
-                "type": "address", 
-                "name": ""
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x59679b0f", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "parent", 
+        "constant": true,
+        "inputs": [],
+        "name": "parent",
         "outputs": [
             {
-                "type": "address", 
-                "name": ""
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x60f96a8f", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "owner", 
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
         "outputs": [
             {
-                "type": "address", 
-                "name": ""
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x8da5cb5b", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "stateMutability": "nonpayable", 
         "inputs": [
             {
-                "type": "address", 
-                "name": "_artist"
-            }, 
+                "name": "_artist",
+                "type": "address"
+            },
             {
-                "type": "address", 
-                "name": "_parent"
-            }, 
+                "name": "_parent",
+                "type": "address"
+            },
             {
-                "type": "uint256", 
-                "name": "_threshold"
+                "name": "_threshold",
+                "type": "uint256"
             }
-        ], 
-        "signature": "constructor", 
-        "type": "constructor", 
-        "payable": false
-    }, 
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
     {
-        "stateMutability": "payable", 
-        "payable": true, 
+        "payable": true,
+        "stateMutability": "payable",
         "type": "fallback"
-    }, 
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": true, 
-                "type": "address", 
-                "name": "previousOwner"
-            }, 
+                "indexed": true,
+                "name": "previousOwner",
+                "type": "address"
+            },
             {
-                "indexed": true, 
-                "type": "address", 
-                "name": "newOwner"
+                "indexed": true,
+                "name": "newOwner",
+                "type": "address"
             }
-        ], 
-        "type": "event", 
-        "name": "OwnershipTransferred", 
-        "anonymous": false, 
-        "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
-    }, 
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": true, 
-                "type": "address", 
-                "name": "implementation"
+                "indexed": true,
+                "name": "implementation",
+                "type": "address"
             }
-        ], 
-        "type": "event", 
-        "name": "Upgraded", 
-        "anonymous": false, 
-        "signature": "0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b"
-    }, 
+        ],
+        "name": "Upgraded",
+        "type": "event"
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "implementation", 
+        "constant": true,
+        "inputs": [],
+        "name": "implementation",
         "outputs": [
             {
-                "type": "address", 
-                "name": ""
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
-        "signature": "0x5c60da1b", 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "address", 
-                "name": "impl"
+                "name": "impl",
+                "type": "address"
             }
-        ], 
-        "constant": false, 
-        "name": "upgradeTo", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "signature": "0x3659cfe6", 
+        ],
+        "name": "upgradeTo",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "address", 
-                "name": "_newOwner"
+                "name": "_newOwner",
+                "type": "address"
             }
-        ], 
-        "constant": false, 
-        "name": "transferOwnership", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "signature": "0xf2fde38b", 
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
     }
 ]
