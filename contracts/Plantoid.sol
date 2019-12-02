@@ -112,9 +112,14 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
 // GENESIS PROTOCOL VARIABLES
 
-    address public voteMachine;
+    address public hcVoteMachine;
     bytes32 public genesisParams;
     bytes32 public orgHash;
+
+// ABSOLUTE MAJORITY VM
+    address public amVoteMachine;
+    bytes32 public amParams;
+    bytes32 public amOrgHash;
 
     mapping (uint256 => Seed) public seeds;
 // TILL HERE
@@ -132,7 +137,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     }
 
     modifier onlyVotingMachine() {
-        require(msg.sender == voteMachine,"only VotingMachine");
+        require((msg.sender == hcVoteMachine || msg.sender == amVoteMachine), "only VotingMachine");
         _;
     }
 
@@ -178,12 +183,20 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
       ];
     }
 
-    function setVotingMachine(address _voteM) public onlyOwner {
-        require(voteMachine == address(0));
-        voteMachine = _voteM;
-        emit NewVotingMachine(voteMachine);
-        genesisParams = GenesisProtocol(voteMachine).setParameters(genesisProtocolParams, address(this));
-        orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(voteMachine), address(this)));
+    function setHCVotingMachine(address _voteM) public onlyOwner {
+        require(hcVoteMachine == address(0));
+        hcVoteMachine = _voteM;
+        emit NewVotingMachine(hcVoteMachine);
+        genesisParams = GenesisProtocol(hcVoteMachine).setParameters(genesisProtocolParams, address(this));
+        orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(hcVoteMachine), address(this)));
+    }
+
+    function setAMVotingMachine(address _voteM) public onlyOwner {
+        require(amVoteMachine == address(0));
+        amVoteMachine = _voteM;
+        emit NewVotingMachine(amVoteMachine);
+        amParams = AbsoluteVote(amVoteMachine).setParameters(50, address(this));
+        amOrgHash = keccak256(abi.encodePacked(amParams, IntVoteInterface(amVoteMachine), address(this)));
     }
 
     // Simple callback function
@@ -207,7 +220,24 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     function addProposal(uint256 _id, string memory _url) public ifStatus(_id, 1) {
         Seed storage currSeed = seeds[_id]; // try with 'memory' instead of 'storage'
         Proposal memory newprop;
-        newprop.id = GenesisProtocol(voteMachine).propose(2, genesisParams, msg.sender, address(0));
+        newprop.id = GenesisProtocol(hcVoteMachine).propose(2, genesisParams, msg.sender, address(0));
+
+        newprop.proposer = msg.sender;
+        newprop.url = _url;
+        newprop.block = block.number;
+
+        currSeed.proposals[newprop.id] = newprop;
+        currSeed.nProposals++;
+        emit NewProposal(_id, newprop.id, msg.sender, _url);
+        //add the pid to the pid2id arrays (for the callback interface functions)
+        pid2id[newprop.id] = _id;
+    }
+
+
+    function addAMProposal(uint256 _id , bytes32 _pid) public ifStatus(_id, 1) {
+        Seed storage currSeed = seeds[_id]; // try with 'memory' instead of 'storage'
+        Proposal memory newprop;
+        newprop.id = AbsoluteVote(amVoteMachine).propose(2, amParams, msg.sender, address(0));
 
         newprop.proposer = msg.sender;
         newprop.url = _url;
@@ -223,7 +253,14 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     function voteProposal(uint256 _id, bytes32 _pid, uint256 _vote) public ifStatus(_id, 1) {
 
         Seed storage currSeed = seeds[pid2id[_pid]];
-        GenesisProtocol(voteMachine).vote(_pid, _vote, 0, msg.sender);
+        GenesisProtocol(hcVoteMachine).vote(_pid, _vote, 0, msg.sender);
+        emit VotingProposal(_id, _pid, msg.sender, currSeed.reputation.balanceOfAt(msg.sender,currSeed.proposals[_pid].block), _vote);
+    }
+
+    function voteAMProposal(uint256 _id, bytes32 _pid, uint256 _vote) public ifStatus(_id, 1) {
+
+        Seed storage currSeed = seeds[pid2id[_pid]];
+        AbsoluteVote(amVoteMachine).vote(_pid, _vote, 0, msg.sender);
         emit VotingProposal(_id, _pid, msg.sender, currSeed.reputation.balanceOfAt(msg.sender,currSeed.proposals[_pid].block), _vote);
     }
 
@@ -284,6 +321,16 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     function executeProposal(bytes32 pid, int decision) external onlyVotingMachine  returns(bool) {
 
+      if (msg.sender == hcVoteMachine) {
+        //Contributor decision
+      } else {
+          //Founder decision
+          if (decision == 1) {
+            approveExecution(pid);
+          } else {
+            vetoExecution(pid);
+          }
+      }
       uint256 id = pid2id[pid];
 
       require(seeds[id].status == 1,"require status to be 1");
@@ -298,6 +345,8 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         address proposer = seeds[id].proposals[pid].proposer;
         string memory url = seeds[id].proposals[pid].url;
         emit ExecuteProposal(id, pid, decision, proposer, proposer.balance, url);
+
+        addAMProposal(id, pid);
 
     }
 
