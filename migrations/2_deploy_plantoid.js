@@ -37,5 +37,7 @@ module.exports = async function(deployer,network,provider) {
       await plantoid.setAMVotingMachine(AMmachine.address, [artist, ganache2, ganache1]);
       await proxy.transferOwnership(artist);
       console.log(await proxy.owner());
+
+      console.log("sh deploy.sh",proxy.address,genesisProtocol.address,AMmachine.address);
   });
 };

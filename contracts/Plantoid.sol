@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.14;
 
 import "@daostack/infra/contracts/Reputation.sol";
 import "@daostack/infra/contracts/VotingMachines/VotingMachineCallbacksInterface.sol";
@@ -20,8 +20,8 @@ contract Proxy {
     uint256[11] public genesisProtocolParams;
 
     event OwnershipTransferred(
-      address indexed previousOwner,
-      address indexed newOwner
+        address indexed previousOwner,
+        address indexed newOwner
     );
 
     constructor(address payable _artist, address payable _parent, uint256 _threshold) public {
@@ -113,9 +113,9 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     mapping (bytes32=>uint256) public pid2id;
 
 
-    //list of the current Administrators of the Plantoid
-    address[] public Administrators;
-    Reputation public AdminRep;
+    //list of the current administrators of the Plantoid
+    address[] public administrators;
+    Reputation public adminRep;
 
 
 // GENESIS PROTOCOL VARIABLES
@@ -211,11 +211,11 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         amParams = AbsoluteVote(amVoteMachine).setParameters(50, address(this));
         amOrgHash = keccak256(abi.encodePacked(amParams, IntVoteInterface(amVoteMachine), address(this)));
 
-        AdminRep = new Reputation();
+        adminRep = new Reputation();
         // Increase the reputation of the donor (for that particular Seed)
         for(uint256 i = 0; i < _owners.length; i++) {
-            Administrators.push(_owners[i]);
-            AdminRep.mint(_owners[i], 100/_owners.length);
+            administrators.push(_owners[i]);
+            adminRep.mint(_owners[i], 100/_owners.length);
         }
     }
 
@@ -224,12 +224,12 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         fund();
     }
 
-    function getAdmins() external returns ( address[] memory){
-        return Administrators;
+    function getAdmins() external view returns ( address[] memory){
+        return administrators;
     }
 
-    function getAdminBalance( address _admin) external returns (address, uint256) {
-        return (_admin, AdminRep.balanceOf(_admin));
+    function getAdminBalance( address _admin) external view returns (address, uint256) {
+        return (_admin, adminRep.balanceOf(_admin));
     }
 
 
@@ -288,7 +288,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     function voteAMProposal(uint256 _id, bytes32 _pid, uint256 _vote) public ifStatus(_id, 2) {
 
         AbsoluteVote(amVoteMachine).vote(_pid, _vote, 0, msg.sender);
-        emit VotingAMProposal(_id, _pid, msg.sender, AdminRep.balanceOf(msg.sender), _vote);
+        emit VotingAMProposal(_id, _pid, msg.sender, adminRep.balanceOf(msg.sender), _vote);
     }
 
     function getProposal(uint256 _id, bytes32 _pid) public view returns(bytes32 pid, address from, string memory url) {
@@ -296,7 +296,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         url = seeds[_id].proposals[_pid].url;
         pid = seeds[_id].proposals[_pid].id;
     }
-
+//sh deploy.sh 0xbfBf9Baf86Ca3168e4D18b28E44336538C04DE63 0x7Ada5B9D71830eFcd29C2E49f11a48eff4f5B152 0x89fa4ABdDE46BF3a42AaF21aA4CAc127AB851f3D
     // External fund function
     function fund() public payable {
         uint256 funds = msg.value;
@@ -355,68 +355,62 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
       emit ExecuteProposal(id, pid, decision, proposer, proposer.balance, url);
 
 
-      if (msg.sender == amVoteMachine) {
+        if (msg.sender == amVoteMachine) {
           //Founder decision
+            require(seeds[id].status == 2,"require status to be 2");
+            if (decision == 1) {
+                approveExecution(pid);
+                return true;
 
-          require(seeds[id].status == 2,"require status to be 2");
-
-          if (decision == 1) {
-            approveExecution(pid);
-            return true;
-
-          } else {
-            vetoExecution(pid);
-            return false;
-          }
-      }
+            } else {
+                vetoExecution(pid);
+                return false;
+            }
+        }
 
       //else:  Contributor decision
+        require(seeds[id].status == 1, "require status to be 1");
 
+        seeds[id].proposals[pid].decision = decision;
 
+        if(decision == 1) {
+            seeds[id].status = 2;
+            seeds[id].winningProposal = pid;
+            addAMProposal(id);
 
-      require(seeds[id].status == 1,"require status to be 1");
-
-      seeds[id].proposals[pid].decision = decision;
-
-      if(decision == 1) {
-          seeds[id].status = 2;
-          seeds[id].winningProposal = pid;
-          addAMProposal(id);
-
-      }
+        }
 
     }
 
      function approveExecution(bytes32 _pid) public {
          //require(msg.sender == artist);
-         uint256 id = pid2id[_pid];
-         require(seeds[id].winningProposal != 0,"require winning proposal");
-         require(seeds[id].winningProposal == _pid, "require _pid is winningProposal");
-         require(seeds[id].status == 2, "requiring status == 2");
+        uint256 id = pid2id[_pid];
+        require(seeds[id].winningProposal != 0, "require winning proposal");
+        require(seeds[id].winpid == _pid, "require _pid is winningProposal");
+        require(seeds[id].status == 2, "requiring status == 2");
 
-         seeds[id].status = 3;
+        seeds[id].status = 3;
 
-         uint256 portion = threshold/10;
-         artist.transfer(portion);
-         parent.transfer(portion);
-         seeds[id].proposals[_pid].proposer.transfer(threshold - portion*2);
+        uint256 portion = threshold/10;
+        artist.transfer(portion);
+        parent.transfer(portion);
+        seeds[id].proposals[_pid].proposer.transfer(threshold - portion*2);
 
-         emit ApprovedExecution(id, _pid, seeds[id].winpid);
-
-     }
+        emit ApprovedExecution(id, _pid, seeds[id].winpid);
+    }
 
      function vetoExecution(bytes32 _pid) public {
           //require(msg.sender == artist);
-          uint256 id = pid2id[_pid];
-          require(seeds[id].winningProposal == _pid, "required _pid is winnigProposal");
-          require(seeds[id].status == 2, "requiring status == 2");
+        uint256 id = pid2id[_pid];
+        require(seeds[id].winpid == _pid, "required _pid is winnigProposal");
+        require(seeds[id].status == 2, "requiring status == 2");
 
-          emit VetoedExecution(id, _pid, seeds[id].winpid);
+        emit VetoedExecution(id, _pid, seeds[id].winpid);
 
-          seeds[id].status = 1;
-          seeds[id].winningProposal = 0;
-          seeds[id].winpid = 0;
-          seeds[id].proposals[_pid].decision = 2;
+        seeds[id].status = 1;
+        seeds[id].winningProposal = 0;
+        seeds[id].winpid = 0;
+        seeds[id].proposals[_pid].decision = 2;
      }
 
 
@@ -441,7 +435,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
       if (msg.sender == amVoteMachine) {
           //Founder vote
-          return AdminRep.balanceOf(_owner);
+          return adminRep.balanceOf(_owner);
 
       } else if (msg.sender == hcVoteMachine) {
           //Contributor vote

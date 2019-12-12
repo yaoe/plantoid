@@ -313,8 +313,6 @@ function ListSeeds() {
   }
 
 
-
-
     function UpdateSeeds(i) {
       var table = document.getElementById("SeedTable");
       console.log("looking for..,,.,.,.,.,.,.,.: "+"Seed"+i);
@@ -581,7 +579,7 @@ SeedLoosers[args.id].push(args.pid);
 function ApprovePid(id, winpid) {
 //    plantoid.approveExecution(args, function(err, values) {
     var _vote = 1;
-      plantoid.voteAMProposal(id, winpid, _vote, {gas: 7000000}, function(err, values) {
+      plantoid.voteAMProposal(id, winpid, _vote, function(err, values) {
           console.log("approving execution.... " );
     });
 }
@@ -614,8 +612,9 @@ function sendProposal(id) {
 }
 
 function voteProposal(id, pid, vote) {
-  plantoid.voteProposal(id, pid, vote, {gas: 7000000}, function(err, values) {
-        console.log("voting on proposal ID: "+ pid + "for Seed: "+id + "with decision = " + vote);
+  plantoid.voteProposal(id, pid, vote, function(err, values) {
+        console.log("error:" ,err);
+        console.log("voting on proposal ID: "+ pid + "for Seed: "+id + " with decision = " + vote);
    });
   console.log("voting on proposal ID: "+ pid + " for Seed: "+id +"   -> "+ typeof(pid.toString()));
 

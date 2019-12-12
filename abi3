@@ -1,186 +1,202 @@
 [
     {
-        "constant": true,
+        "stateMutability": "nonpayable", 
         "inputs": [
             {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "genesisProtocolParams",
-        "outputs": [
+                "type": "address", 
+                "name": "_artist", 
+                "internalType": "address payable"
+            }, 
             {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "threshold",
-        "outputs": [
+                "type": "address", 
+                "name": "_parent", 
+                "internalType": "address payable"
+            }, 
             {
-                "name": "",
-                "type": "uint256"
+                "type": "uint256", 
+                "name": "_threshold", 
+                "internalType": "uint256"
             }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "artist",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "_implementation",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "parent",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "owner",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
+        ], 
+        "type": "constructor", 
+        "payable": false
+    }, 
     {
         "inputs": [
             {
-                "name": "_artist",
-                "type": "address"
-            },
+                "indexed": true, 
+                "type": "address", 
+                "name": "previousOwner", 
+                "internalType": "address"
+            }, 
             {
-                "name": "_parent",
-                "type": "address"
-            },
-            {
-                "name": "_threshold",
-                "type": "uint256"
+                "indexed": true, 
+                "type": "address", 
+                "name": "newOwner", 
+                "internalType": "address"
             }
-        ],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
+        ], 
+        "type": "event", 
+        "name": "OwnershipTransferred", 
+        "anonymous": false
+    }, 
     {
-        "payable": true,
-        "stateMutability": "payable",
+        "inputs": [
+            {
+                "indexed": true, 
+                "type": "address", 
+                "name": "implementation", 
+                "internalType": "address"
+            }
+        ], 
+        "type": "event", 
+        "name": "Upgraded", 
+        "anonymous": false
+    }, 
+    {
+        "stateMutability": "payable", 
+        "payable": true, 
         "type": "fallback"
-    },
+    }, 
     {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "name": "previousOwner",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "name": "newOwner",
-                "type": "address"
-            }
-        ],
-        "name": "OwnershipTransferred",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "name": "implementation",
-                "type": "address"
-            }
-        ],
-        "name": "Upgraded",
-        "type": "event"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "implementation",
+        "inputs": [], 
+        "constant": true, 
+        "name": "_implementation", 
         "outputs": [
             {
-                "name": "",
-                "type": "address"
+                "type": "address", 
+                "name": "", 
+                "internalType": "address"
             }
-        ],
-        "payable": false,
-        "stateMutability": "view",
+        ], 
+        "stateMutability": "view", 
+        "payable": false, 
         "type": "function"
-    },
+    }, 
     {
-        "constant": false,
+        "inputs": [], 
+        "constant": true, 
+        "name": "artist", 
+        "outputs": [
+            {
+                "type": "address", 
+                "name": "", 
+                "internalType": "address payable"
+            }
+        ], 
+        "stateMutability": "view", 
+        "payable": false, 
+        "type": "function"
+    }, 
+    {
         "inputs": [
             {
-                "name": "impl",
-                "type": "address"
+                "type": "uint256", 
+                "name": "", 
+                "internalType": "uint256"
             }
-        ],
-        "name": "upgradeTo",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
+        ], 
+        "constant": true, 
+        "name": "genesisProtocolParams", 
+        "outputs": [
+            {
+                "type": "uint256", 
+                "name": "", 
+                "internalType": "uint256"
+            }
+        ], 
+        "stateMutability": "view", 
+        "payable": false, 
         "type": "function"
-    },
+    }, 
     {
-        "constant": false,
+        "inputs": [], 
+        "constant": true, 
+        "name": "owner", 
+        "outputs": [
+            {
+                "type": "address", 
+                "name": "", 
+                "internalType": "address"
+            }
+        ], 
+        "stateMutability": "view", 
+        "payable": false, 
+        "type": "function"
+    }, 
+    {
+        "inputs": [], 
+        "constant": true, 
+        "name": "parent", 
+        "outputs": [
+            {
+                "type": "address", 
+                "name": "", 
+                "internalType": "address payable"
+            }
+        ], 
+        "stateMutability": "view", 
+        "payable": false, 
+        "type": "function"
+    }, 
+    {
+        "inputs": [], 
+        "constant": true, 
+        "name": "threshold", 
+        "outputs": [
+            {
+                "type": "uint256", 
+                "name": "", 
+                "internalType": "uint256"
+            }
+        ], 
+        "stateMutability": "view", 
+        "payable": false, 
+        "type": "function"
+    }, 
+    {
+        "inputs": [], 
+        "constant": true, 
+        "name": "implementation", 
+        "outputs": [
+            {
+                "type": "address", 
+                "name": "", 
+                "internalType": "address"
+            }
+        ], 
+        "stateMutability": "view", 
+        "payable": false, 
+        "type": "function"
+    }, 
+    {
         "inputs": [
             {
-                "name": "_newOwner",
-                "type": "address"
+                "type": "address", 
+                "name": "impl", 
+                "internalType": "address"
             }
-        ],
-        "name": "transferOwnership",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
+        ], 
+        "constant": false, 
+        "name": "upgradeTo", 
+        "outputs": [], 
+        "stateMutability": "nonpayable", 
+        "payable": false, 
+        "type": "function"
+    }, 
+    {
+        "inputs": [
+            {
+                "type": "address", 
+                "name": "_newOwner", 
+                "internalType": "address"
+            }
+        ], 
+        "constant": false, 
+        "name": "transferOwnership", 
+        "outputs": [], 
+        "stateMutability": "nonpayable", 
+        "payable": false, 
         "type": "function"
     }
 ]

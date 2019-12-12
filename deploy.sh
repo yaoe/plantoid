@@ -23,3 +23,5 @@ sed -i.bak "s/ETHHH/$1/g" index5.html
 sed -i.bak "s/GPPP/$2/g" index5.html
 
 sed -i.bak "s/BSOLUTE/$3/g" index5.html
+
+echo "deployed! :)"
