@@ -150,7 +150,7 @@ input.propInput {
 	font-size: 11px;
 }
 
-#approve, #veto {
+.winpid-button {
 	margin-left: 20px;
 	background-color: black;
   color: Orange;

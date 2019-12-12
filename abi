@@ -49,6 +49,25 @@
                 "type": "uint256"
             }
         ],
+        "name": "Administrators",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
         "name": "genesisProtocolParams",
         "outputs": [
             {
@@ -110,6 +129,34 @@
     {
         "constant": true,
         "inputs": [],
+        "name": "amOrgHash",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "amVoteMachine",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
         "name": "parent",
         "outputs": [
             {
@@ -138,11 +185,25 @@
     {
         "constant": true,
         "inputs": [],
-        "name": "voteMachine",
+        "name": "hcVoteMachine",
         "outputs": [
             {
                 "name": "",
                 "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "amParams",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
             }
         ],
         "payable": false,
@@ -196,6 +257,24 @@
             {
                 "name": "winningProposal",
                 "type": "bytes32"
+            },
+            {
+                "name": "winpid",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "AdminRep",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
             }
         ],
         "payable": false,
@@ -337,6 +416,38 @@
             },
             {
                 "indexed": false,
+                "name": "_voter",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "_reputation",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "_vote",
+                "type": "uint256"
+            }
+        ],
+        "name": "VotingAMProposal",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "pid",
+                "type": "bytes32"
+            },
+            {
+                "indexed": false,
                 "name": "decision",
                 "type": "int256"
             },
@@ -408,8 +519,8 @@
             },
             {
                 "indexed": false,
-                "name": "proposer",
-                "type": "address"
+                "name": "winpid",
+                "type": "bytes32"
             }
         ],
         "name": "ApprovedExecution",
@@ -426,6 +537,11 @@
             {
                 "indexed": false,
                 "name": "pid",
+                "type": "bytes32"
+            },
+            {
+                "indexed": false,
+                "name": "winpid",
                 "type": "bytes32"
             }
         ],
@@ -450,6 +566,23 @@
         "type": "event"
     },
     {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "winpid",
+                "type": "bytes32"
+            }
+        ],
+        "name": "NewAMProposal",
+        "type": "event"
+    },
+    {
         "constant": false,
         "inputs": [],
         "name": "init",
@@ -466,8 +599,63 @@
                 "type": "address"
             }
         ],
-        "name": "setVotingMachine",
+        "name": "setHCVotingMachine",
         "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_voteM",
+                "type": "address"
+            },
+            {
+                "name": "_owners",
+                "type": "address[]"
+            }
+        ],
+        "name": "setAMVotingMachine",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "getAdmins",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_admin",
+                "type": "address"
+            }
+        ],
+        "name": "getAdminBalance",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
         "payable": false,
         "stateMutability": "nonpayable",
         "type": "function"
@@ -508,6 +696,29 @@
         "type": "function"
     },
     {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            }
+        ],
+        "name": "getWinpid4Seed",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            },
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "constant": false,
         "inputs": [
             {
@@ -531,6 +742,20 @@
             {
                 "name": "_id",
                 "type": "uint256"
+            }
+        ],
+        "name": "addAMProposal",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
             },
             {
                 "name": "_pid",
@@ -542,6 +767,28 @@
             }
         ],
         "name": "voteProposal",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            },
+            {
+                "name": "_pid",
+                "type": "bytes32"
+            },
+            {
+                "name": "_vote",
+                "type": "uint256"
+            }
+        ],
+        "name": "voteAMProposal",
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",

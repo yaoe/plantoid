@@ -4,6 +4,7 @@ import "@daostack/infra/contracts/Reputation.sol";
 import "@daostack/infra/contracts/VotingMachines/VotingMachineCallbacksInterface.sol";
 import "@daostack/infra/contracts/VotingMachines/ProposalExecuteInterface.sol";
 import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
+import "@daostack/infra/contracts/VotingMachines/AbsoluteVote.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 
@@ -86,13 +87,14 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     event Reproducing(uint256 seedCnt);
     event NewProposal(uint256 id, bytes32 pid, address _proposer, string url);
     event VotingProposal(uint256 id, bytes32 pid, address _voter, uint256 _reputation, uint256 _vote);
+    event VotingAMProposal(uint256 id, bytes32 pid, address _voter, uint256 _reputation, uint256 _vote);
     event ExecuteProposal(uint256 id, bytes32 pid, int decision, address _proposer, uint256 b4balance, string url);
     event NewVotingMachine(address voteMachine);
     event Execution(bytes32 pid, address addr, int _decision);
-    event ApprovedExecution(uint256 id, bytes32 pid, address proposer);
-    event VetoedExecution(uint256 id, bytes32 pid);
+    event ApprovedExecution(uint256 id, bytes32 pid, bytes32 winpid);
+    event VetoedExecution(uint256 id, bytes32 pid, bytes32 winpid);
     event ReputationOf(address _owner, uint256 rep);
-
+    event NewAMProposal(uint256 id, bytes32 winpid);
 
 // NEVER TOUCH
     uint256 public save1;
@@ -103,12 +105,18 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     address payable public parent;
     uint256 public threshold;
 
-    uint256[11] public genesisProtocolParams;
-
+    //list of Seeds
+    mapping (uint256 => Seed) public seeds;
     uint256 public seedCnt = 9;
 
     //mapping between proposal to seed index
     mapping (bytes32=>uint256) public pid2id;
+
+
+    //list of the current Administrators of the Plantoid
+    address[] public Administrators;
+    Reputation public AdminRep;
+
 
 // GENESIS PROTOCOL VARIABLES
 
@@ -116,12 +124,16 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     bytes32 public genesisParams;
     bytes32 public orgHash;
 
+    uint256[11] public genesisProtocolParams;
+
+
 // ABSOLUTE MAJORITY VM
     address public amVoteMachine;
     bytes32 public amParams;
     bytes32 public amOrgHash;
 
-    mapping (uint256 => Seed) public seeds;
+
+
 // TILL HERE
 
     //enum Phase { Capitalisation, Mating, Hiring, Finish }
@@ -163,7 +175,8 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         uint256 weiRaised;
         Reputation reputation;
         uint256 nProposals;
-        bytes32 winningProposal;
+        bytes32 winningProposal;  // the pid of the winningProposal
+        bytes32 winpid;            // the pid of winningProposal for the AM voting machine
         mapping(bytes32=>Proposal) proposals;
     }
 
@@ -191,18 +204,35 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(hcVoteMachine), address(this)));
     }
 
-    function setAMVotingMachine(address _voteM) public onlyOwner {
+    function setAMVotingMachine(address _voteM, address[] memory _owners) public onlyOwner {
         require(amVoteMachine == address(0));
         amVoteMachine = _voteM;
         emit NewVotingMachine(amVoteMachine);
         amParams = AbsoluteVote(amVoteMachine).setParameters(50, address(this));
         amOrgHash = keccak256(abi.encodePacked(amParams, IntVoteInterface(amVoteMachine), address(this)));
+
+        AdminRep = new Reputation();
+        // Increase the reputation of the donor (for that particular Seed)
+        for(uint256 i = 0; i < _owners.length; i++) {
+            Administrators.push(_owners[i]);
+            AdminRep.mint(_owners[i], 100/_owners.length);
+        }
     }
 
     // Simple callback function
     function () external payable {
         fund();
     }
+
+    function getAdmins() external returns ( address[] memory){
+        return Administrators;
+    }
+
+    function getAdminBalance( address _admin) external returns (address, uint256) {
+        return (_admin, AdminRep.balanceOf(_admin));
+    }
+
+
 
     function getSeed(uint256 _id)
         public
@@ -217,6 +247,11 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         return (seed.status, seed.weiRaised, address(seed.reputation), seed.nProposals, seed.winningProposal);
     }
 
+    function getWinpid4Seed(uint256 _id) public view returns (bytes32, bytes32) {
+      return (seeds[_id].winningProposal, seeds[_id].winpid);
+    }
+
+// this function is called when a user submits a new proposal from the interface
     function addProposal(uint256 _id, string memory _url) public ifStatus(_id, 1) {
         Seed storage currSeed = seeds[_id]; // try with 'memory' instead of 'storage'
         Proposal memory newprop;
@@ -233,21 +268,14 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         pid2id[newprop.id] = _id;
     }
 
-
-    function addAMProposal(uint256 _id , bytes32 _pid) public ifStatus(_id, 1) {
+//this function is called when a submitted proposal is approved by the Contributor's reputation chamber
+    function addAMProposal(uint256 _id) public ifStatus(_id, 2) {
         Seed storage currSeed = seeds[_id]; // try with 'memory' instead of 'storage'
-        Proposal memory newprop;
-        newprop.id = AbsoluteVote(amVoteMachine).propose(2, amParams, msg.sender, address(0));
 
-        newprop.proposer = msg.sender;
-        newprop.url = _url;
-        newprop.block = block.number;
+        currSeed.winpid = AbsoluteVote(amVoteMachine).propose(2, amParams, msg.sender, address(0));
 
-        currSeed.proposals[newprop.id] = newprop;
-        currSeed.nProposals++;
-        emit NewProposal(_id, newprop.id, msg.sender, _url);
-        //add the pid to the pid2id arrays (for the callback interface functions)
-        pid2id[newprop.id] = _id;
+        emit NewAMProposal(_id, currSeed.winpid);
+
     }
 
     function voteProposal(uint256 _id, bytes32 _pid, uint256 _vote) public ifStatus(_id, 1) {
@@ -257,11 +285,10 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         emit VotingProposal(_id, _pid, msg.sender, currSeed.reputation.balanceOfAt(msg.sender,currSeed.proposals[_pid].block), _vote);
     }
 
-    function voteAMProposal(uint256 _id, bytes32 _pid, uint256 _vote) public ifStatus(_id, 1) {
+    function voteAMProposal(uint256 _id, bytes32 _pid, uint256 _vote) public ifStatus(_id, 2) {
 
-        Seed storage currSeed = seeds[pid2id[_pid]];
         AbsoluteVote(amVoteMachine).vote(_pid, _vote, 0, msg.sender);
-        emit VotingProposal(_id, _pid, msg.sender, currSeed.reputation.balanceOfAt(msg.sender,currSeed.proposals[_pid].block), _vote);
+        emit VotingAMProposal(_id, _pid, msg.sender, AdminRep.balanceOf(msg.sender), _vote);
     }
 
     function getProposal(uint256 _id, bytes32 _pid) public view returns(bytes32 pid, address from, string memory url) {
@@ -321,17 +348,31 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     function executeProposal(bytes32 pid, int decision) external onlyVotingMachine  returns(bool) {
 
-      if (msg.sender == hcVoteMachine) {
-        //Contributor decision
-      } else {
+      uint256 id = pid2id[pid];
+
+      address proposer = seeds[id].proposals[pid].proposer;
+      string memory url = seeds[id].proposals[pid].url;
+      emit ExecuteProposal(id, pid, decision, proposer, proposer.balance, url);
+
+
+      if (msg.sender == amVoteMachine) {
           //Founder decision
+
+          require(seeds[id].status == 2,"require status to be 2");
+
           if (decision == 1) {
             approveExecution(pid);
+            return true;
+
           } else {
             vetoExecution(pid);
+            return false;
           }
       }
-      uint256 id = pid2id[pid];
+
+      //else:  Contributor decision
+
+
 
       require(seeds[id].status == 1,"require status to be 1");
 
@@ -340,22 +381,19 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
       if(decision == 1) {
           seeds[id].status = 2;
           seeds[id].winningProposal = pid;
-        }
+          addAMProposal(id);
 
-        address proposer = seeds[id].proposals[pid].proposer;
-        string memory url = seeds[id].proposals[pid].url;
-        emit ExecuteProposal(id, pid, decision, proposer, proposer.balance, url);
-
-        addAMProposal(id, pid);
+      }
 
     }
 
      function approveExecution(bytes32 _pid) public {
-         require(msg.sender == artist);
+         //require(msg.sender == artist);
          uint256 id = pid2id[_pid];
          require(seeds[id].winningProposal != 0,"require winning proposal");
          require(seeds[id].winningProposal == _pid, "require _pid is winningProposal");
          require(seeds[id].status == 2, "requiring status == 2");
+
          seeds[id].status = 3;
 
          uint256 portion = threshold/10;
@@ -363,20 +401,22 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
          parent.transfer(portion);
          seeds[id].proposals[_pid].proposer.transfer(threshold - portion*2);
 
-         emit ApprovedExecution(id, _pid, seeds[id].proposals[_pid].proposer);
+         emit ApprovedExecution(id, _pid, seeds[id].winpid);
 
      }
 
      function vetoExecution(bytes32 _pid) public {
-          require(msg.sender == artist);
+          //require(msg.sender == artist);
           uint256 id = pid2id[_pid];
           require(seeds[id].winningProposal == _pid, "required _pid is winnigProposal");
           require(seeds[id].status == 2, "requiring status == 2");
 
+          emit VetoedExecution(id, _pid, seeds[id].winpid);
+
           seeds[id].status = 1;
           seeds[id].winningProposal = 0;
+          seeds[id].winpid = 0;
           seeds[id].proposals[_pid].decision = 2;
-          emit VetoedExecution(id, _pid);
      }
 
 
@@ -398,10 +438,18 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     }
 
     function reputationOf(address _owner,bytes32 pid) view external returns(uint256) {
+
+      if (msg.sender == amVoteMachine) {
+          //Founder vote
+          return AdminRep.balanceOf(_owner);
+
+      } else if (msg.sender == hcVoteMachine) {
+          //Contributor vote
         uint256 id = pid2id[pid];
         uint256 rep = seeds[id].reputation.balanceOfAt(_owner, seeds[id].proposals[pid].block);
         return rep;
     }
+  }
 
     function stakingTokenTransfer(IERC20 _stakingToken, address _beneficiary,uint256 _amount,bytes32) external onlyVotingMachine returns(bool) {
       return _stakingToken.transfer(_beneficiary,_amount);

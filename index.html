@@ -71,6 +71,10 @@
                     <span class="w3-small">Address: </span><br/>
                     <span class="w3-small">Creator: </span><br/>
                     <span class="w3-small">Parent: </span><br/>
+                    <hr>
+                    <span class="w3-medium">Ownership: </span><br/>
+                    <table id="owners"></table>
+                    <hr>
                 </div>
 
                 <div class="w3-col w3-container w3-threequarter w3-padding-0">
@@ -171,7 +175,9 @@ console.log("account ===" + web3.eth.defaultAccount);
 
 var plantoid = web3.eth.contract(ABI).at("ETHHH");
 var genesis = web3.eth.contract(IBA).at("GPPP");
-var proxy = web3.eth.contract(PRO).at("ETHHH");
+var absolute = web3.eth.contract(ABS).at("BSOLUTE");
+var proxy = web3.eth.contract(PROX).at("ETHHH");
+
 
 
 var threshold;
@@ -205,10 +211,27 @@ function getInfo() {
     threshold = res;
   });
 
+  ListAdmins();
+
   ListSeeds();
 }
 
 
+function ListAdmins() {
+
+  plantoid.getAdmins.call( function(err, values) {
+    console.log("GET ADMINS: ");
+    console.log(values);
+
+    var own = document.getElementById('owners');
+    for(var i = 0; i < values.length; i++) {
+      plantoid.getAdminBalance.call(values[i], function (err,v){
+        own.innerHTML += '<td><span class="w3-tiny">' + v[0] + '</td><td>(' + v[1] + '%)</span></td><tr/>';
+      });
+    }
+   });
+
+}
 
 var rows = 0;
 
@@ -324,7 +347,7 @@ function ListSeeds() {
       //first collect the list of Vetoed proposals
       plantoid.VetoedExecution({}, {fromBlock: 0, toBlock: 'latest'}).get((eerr, eev) => {
         if(eerr)
-          console.log('Error in ExecuteProposal handler: '+ eerr);
+          console.log('Error in VetoedExecution handler: '+ eerr);
 
         else {
 
@@ -334,7 +357,6 @@ function ListSeeds() {
             if(!SeedLoosers[res.id]) { SeedLoosers[res.id] = new Array(); }
             SeedLoosers[res.id].push(res.pid);
           }
-
 
       //first collect the list of loosing Proposals
       plantoid.ExecuteProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((err, ev) => {
@@ -363,6 +385,8 @@ function ListSeeds() {
                 console.log("OVERALL ARRAY OF LOSERS: "+ SeedLoosers[results.id]);
               }
             }
+
+
 
       //then collect the list of proposals for Seed = i
       plantoid.NewProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((error, eventResult) => {
@@ -409,12 +433,14 @@ function ListSeeds() {
 
 
 
+
+
                       g.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a>"+ w2 + " <br></span>"
                       g.innerHTML += "<span class='from'>(from: <i>"+args._proposer+"</i>) <br></span>";
                       g.innerHTML += '<input type="image" src="./assets/images/upvote' + d + '.png" height=25 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
-                      g.innerHTML += "<span id='VotesPos"+args.pid+"'> 00 </span>";
+                      g.innerHTML += "<span id='VotesPos"+args.pid+"'> 0% </span>";
                       g.innerHTML += '<input type="image" src="./assets/images/downvote' + d + '.png" height=20 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 2)"' + d + '/>';
-                      g.innerHTML += "<span id='VotesNeg"+args.pid+"'> 00 </span>";
+                      g.innerHTML += "<span id='VotesNeg"+args.pid+"'> 0% </span>";
 
 /*
                       cell.innerHTML += '<input type="image" src="./images/upvote.png" height=25 id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' +
@@ -423,16 +449,16 @@ function ListSeeds() {
                       ((SeedStatus[args.id]==1) && ( (!SeedLoosers[args.id]) || (SeedLoosers[args.id].indexOf(args.pid)==-1) ) || 'disabled') +'/> <br/>';
 */
                       if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
-                        g.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
-                        g.innerHTML += '<button type="button" id="veto" onclick="VetoPid(\'' + args.pid + '\')">Veto</button>';
+                        showApproveVeto(args.id, args.pid)
+                    //    g.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
+                    //    g.innerHTML += '<button type="button" id="veto" onclick="VetoPid(\'' + args.pid + '\')">Veto</button>';
                       }
 
-                      g.innerHTML += "<br/><br/>"
-
-
+                      //g.innerHTML += "<br/><br/>"
 
                       updateVotesforPidPos(args.pid);
                       updateVotesforPidNeg(args.pid);
+
                     }
                     else { console.log('PRPOSITION already exists...'); }
 
@@ -453,7 +479,7 @@ function updateVotesforPidPos(pid) {
   genesis.voteStatus.call(pid, 1, function(err, val) {
     var p = document.getElementById("VotesPos"+pid);
     var n = val / threshold * 100;
-    p.innerHTML = n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
+    if(p) p.innerHTML = n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
   });
 }
 
@@ -461,7 +487,7 @@ function updateVotesforPidNeg(pid) {
   genesis.voteStatus.call(pid, 2, function(err, val) {
     var p = document.getElementById("VotesNeg"+pid);
     var n = val / threshold * 100;
-    p.innerHTML = n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
+    if(p) p.innerHTML = n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
   });
 }
 
@@ -471,13 +497,13 @@ function updateProposalbyPid(args) {
 
   var prop = document.getElementById("Proposal"+args.pid);
 
-  console.log("looking for Prop (" + prop + ") with args.pid = " + args.pid);
+  //console.log("looking for Prop (" + prop + ") with args.pid = " + args.pid);
 
 if(prop) {
   var w1 = ""; var w2 = "";
   var d = "";
 
-  console.log('Args.id === ' + args.id + ' seedStatus = ' + SeedStatus[args.id] + ' SeedWinner = ' + SeedWinner[args.id]);
+  ///console.log('Args.id === ' + args.id + ' seedStatus = ' + SeedStatus[args.id] + ' SeedWinner = ' + SeedWinner[args.id]);
 
 
   if( SeedLoosers[args.id] && (SeedLoosers[args.id].indexOf(args.pid)!= -1)) {
@@ -498,9 +524,6 @@ if(prop) {
 //  var url = spans[0].querySelector("a");
   var url = prop.querySelector("a");
   var _proposer = prop.querySelector("i");
-  console.log("HERE'S SOME STUFFFFffff");
-  console.log(url.innerHTML);
-  console.log(_proposer.innerHTML);
 
   prop.innerHTML = "";
 
@@ -512,11 +535,12 @@ if(prop) {
   prop.innerHTML += "<span id='VotesNeg"+args.pid+"'> 00 </span>";
 
   if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
-    prop.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
-    prop.innerHTML += '<button type="button" id="veto" onclick="VetoPid(\'' + args.pid + '\')">Veto</button>';
+    showApproveVeto(args.id, args.pid);
+  //  prop.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
+  //  prop.innerHTML += '<button type="button" id="veto" onclick="VetoPid(\'' + args.pid + '\')">Veto</button>';
   }
 
-  prop.innerHTML += "<br/><br/>"
+  //prop.innerHTML += "<br/><br/>"
 
   updateVotesforPidPos(args.pid);
   updateVotesforPidNeg(args.pid);
@@ -554,15 +578,21 @@ SeedLoosers[args.id].push(args.pid);
 
 }
 
-function ApprovePid(args) {
-    plantoid.approveExecution(args, function(err, values) {
-      console.log("approving execution.... " + args);
+function ApprovePid(id, winpid) {
+//    plantoid.approveExecution(args, function(err, values) {
+    var _vote = 1;
+      plantoid.voteAMProposal(id, winpid, _vote, {gas: 7000000}, function(err, values) {
+          console.log("approving execution.... " );
     });
 }
 
-function VetoPid(args) {
-  plantoid.vetoExecution(args, function(err, values) {
-    console.log("vetoooing execution.... " + args);
+function VetoPid(id, winpid) {
+//  plantoid.vetoExecution(args, function(err, values) {
+    var _vote = 2;
+    console.log("vetoooing execution.... with following parameters : ID= "+id+" winpid = "+winpid );
+
+    plantoid.voteAMProposal(id, winpid, _vote, function(err, values) {
+          console.log("vetoooing execution.... " );
   });
 
 }
@@ -646,6 +676,13 @@ NewProposalEvent.watch(function(err, result) {
   document.getElementById("transactionLog").innerHTML += "The plantoid received a new proposal: "+ result.args.url+ " from " + result.args._proposer+ "<br/>";
 });
 
+var NewAMProposalEvent = plantoid.NewAMProposal();
+NewProposalEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("New((((AM))))Proposal Event!");
+  document.getElementById("transactionLog").innerHTML += "The plantoid received a new AM proposal: "+ result.args.id+ " winpid: " + result.args.winpid+ "<br/>";
+});
+
 var VotingProposalEvent = plantoid.VotingProposal();
 VotingProposalEvent.watch(function(err, result) {
   if(err) { console.log(err); return; }
@@ -663,7 +700,7 @@ var ExecuteProposalEvent = plantoid.ExecuteProposal();
 ExecuteProposalEvent.watch(function(err, result) {
   if(err) { console.log(err); return; }
   getBalance();
-  console.log("ExecuteProposal Event!");
+  console.log("ExecuteProposal Event! with decision == " + result.args.decision);
 
   if(result.args.decision == 1) {
 
@@ -693,8 +730,9 @@ ApprovedExecutionEvent.watch(function(err, result) {
 
 
 var VetoedExecutionEvent = plantoid.VetoedExecution();
+
 VetoedExecutionEvent.watch(function(err, result) {
-  console.log("VETOED Execution by artist ---> ");
+  console.log("VETOED Execution by artist --->  " + result.args.pid + " ---- AM : " + result.args.winpid);
 
   if(!SeedLoosers[result.args.id]) { SeedLoosers[result.args.id] = new Array(); }
   SeedLoosers[result.args.id].push(result.args.pid);
@@ -705,6 +743,50 @@ VetoedExecutionEvent.watch(function(err, result) {
   updateProposalbyPid(result.args);
 });
 
+
+function showApproveVeto(id, pid) {
+
+    plantoid.getWinpid4Seed(id, function(e, v) {
+      var p = v[0]; var winpid = v[1];
+
+      console.log("WINPID ====== "+ winpid);
+      console.log("PID ===" + p);
+
+      var div = document.getElementById("Proposal"+p);
+      var g = document.getElementById("Vote-"+winpid);
+
+      console.log("GGGGG ----- " + g + "(and div ====== " + div);
+
+      if(!g) {
+        g = document.createElement('span'); g.setAttribute("id", "Vote-"+winpid);
+        div.appendChild(g);
+
+        g.innerHTML += '<button type=button class="winpid-button" id="approve-'+winpid+ '" onClick="ApprovePid(\'' + id + '\',\'' + winpid + '\')">Approve</button>';
+        g.innerHTML += '<button type=button class="winpid-button" id="veto-'+winpid +   '" onclick="VetoPid(\''    + id + '\',\'' + winpid + '\')">Veto</button>';
+      }
+
+  //    cell.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
+
+
+      console.log("GGGGG ----- " + g + "(and div ====== " + div);
+
+
+      if(winpid) {
+          absolute.voteStatus.call(winpid, 1, function(err, val) {
+          var appr = document.getElementById("approve-"+winpid);
+          var veto = document.getElementById("veto-"+winpid);
+          console.log("VAAAAAAAAAAAAAAL: " + val);
+          var n = val ;
+          if(appr) appr.innerHTML = "Approve: "+ n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
+          if(veto) veto.innerHTML = "Veto: " +  n.toFixed(0) + "%";
+    });
+
+  }
+
+  });
+
+
+}
 
 
 
