@@ -399,7 +399,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         emit ApprovedExecution(id, _pid, seeds[id].winpid);
     }
 
-     function vetoExecution(bytes32 _pid) public {
+    function vetoExecution(bytes32 _pid) public {
           //require(msg.sender == artist);
         uint256 id = pid2id[_pid];
         require(seeds[id].winpid == _pid, "required _pid is winnigProposal");
@@ -413,12 +413,14 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         seeds[id].proposals[_pid].decision = 2;
      }
 
-
 // FUNCTIONS for GenesisProtocolCallbacksInterface
-
     function getTotalReputationSupply(bytes32 pid) external view returns(uint256) {
-        uint256 id = pid2id[pid];
-        return seeds[id].reputation.totalSupplyAt(seeds[id].proposals[pid].block);
+      if (msg.sender == amVoteMachine) {
+            return adminRep.totalSupply();
+        } else if (msg.sender == hcVoteMachine) {
+            uint256 id = pid2id[pid];
+            return seeds[id].reputation.totalSupplyAt(seeds[id].proposals[pid].block);
+        }
     }
 
     function mintReputation(uint256 _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
