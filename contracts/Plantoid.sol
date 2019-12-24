@@ -37,29 +37,8 @@ contract Proxy {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-      require(msg.sender == owner);
-      _;
-    }
-
-
-    function implementation() public view returns (address) {
-        return _implementation;
-    }
-
-    function upgradeTo(address impl) public onlyOwner {
-        require(_implementation != impl);
-        _implementation = impl;
-        emit Upgraded(impl);
-    }
-
-    /**
-     * @dev Transfers control of the contract to a newOwner.
-     * @param _newOwner The address to transfer ownership to.
-     */
-    function transferOwnership(address _newOwner) public onlyOwner {
-      require(_newOwner != address(0));
-      emit OwnershipTransferred(owner, _newOwner);
-      owner = _newOwner;
+        require(msg.sender == owner);
+        _;
     }
 
     function () external payable {
@@ -78,7 +57,27 @@ contract Proxy {
         }
     }
 
+    function implementation() public view returns (address) {
+        return _implementation;
+    }
+
+    function upgradeTo(address impl) public onlyOwner {
+        require(_implementation != impl);
+        _implementation = impl;
+        emit Upgraded(impl);
+    }
+
+    /**
+     * @dev Transfers control of the contract to a newOwner.
+     * @param _newOwner The address to transfer ownership to.
+     */
+    function transferOwnership(address _newOwner) public onlyOwner {
+        require(_newOwner != address(0));
+        emit OwnershipTransferred(owner, _newOwner);
+        owner = _newOwner;
+    }
 }
+
 
 contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
@@ -157,8 +156,8 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-      require(msg.sender == owner);
-      _;
+        require(msg.sender == owner);
+        _;
     }
 
     struct Proposal {
@@ -180,20 +179,108 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         mapping(bytes32=>Proposal) proposals;
     }
 
+    // Simple callback function
+    function () external payable {
+        fund();
+    }
+
+    function mintReputation(uint256 _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
+        uint256 id = pid2id[pid];
+        return seeds[id].reputation.mint(_beneficiary, _amount);
+    }
+
+    function burnReputation(uint256 _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
+        uint256 id = pid2id[pid];
+        return seeds[id].reputation.burn(_beneficiary, _amount);
+    }
+
+    // FUNCTIONS for ProposalExecuteInterface
+    function executeProposal(bytes32 pid, int decision) external onlyVotingMachine  returns(bool) {
+
+        uint256 id = pid2id[pid];
+        address proposer = seeds[id].proposals[pid].proposer;
+        string memory url = seeds[id].proposals[pid].url;
+        emit ExecuteProposal(id, pid, decision, proposer, proposer.balance, url);
+
+        if (msg.sender == amVoteMachine) {
+              //Founder decision
+            require(seeds[id].status == 2,"require status to be 2");
+            if (decision == 1) {
+                approveExecution(pid);
+                return true;
+            } else {
+                vetoExecution(pid);
+                return false;
+              }
+        }
+
+          //else:  Contributor decision
+        require(seeds[id].status == 1, "require status to be 1");
+        seeds[id].proposals[pid].decision = decision;
+
+        if(decision == 1) {
+            seeds[id].status = 2;
+            seeds[id].winningProposal = pid;
+            addAMProposal(id);
+        }
+    }
+
+    function stakingTokenTransfer(IERC20 _stakingToken, address _beneficiary,uint256 _amount,bytes32)
+    external
+    onlyVotingMachine
+    returns(bool) {
+        return _stakingToken.transfer(_beneficiary,_amount);
+    }
+
+    function getAdmins() external view returns ( address[] memory){
+        return administrators;
+    }
+
+    function getAdminBalance( address _admin) external view returns (address, uint256) {
+        return (_admin, adminRep.balanceOf(_admin));
+    }
+
+    function balanceOfStakingToken(IERC20, bytes32) external view returns(uint256) {
+    }
+
+    // FUNCTIONS for GenesisProtocolCallbacksInterface
+    function getTotalReputationSupply(bytes32 pid) external view returns(uint256) {
+        if (msg.sender == amVoteMachine) {
+            return adminRep.totalSupply();
+        } else if (msg.sender == hcVoteMachine) {
+            uint256 id = pid2id[pid];
+            return seeds[id].reputation.totalSupplyAt(seeds[id].proposals[pid].block);
+        }
+    }
+
+    function reputationOf(address _owner,bytes32 pid) view external returns(uint256) {
+
+        if (msg.sender == amVoteMachine) {
+          //Founder vote
+            return adminRep.balanceOf(_owner);
+
+        } else if (msg.sender == hcVoteMachine) {
+          //Contributor vote
+            uint256 id = pid2id[pid];
+            return seeds[id].reputation.balanceOfAt(_owner, seeds[id].proposals[pid].block);
+        }
+    }
+
+
     function init() public {
-      genesisProtocolParams = [
-      50,     //_queuedVoteRequiredPercentage=50,
-      11557600,     //_queuedVotePeriodLimit=60, (in seconds) -- 3 months
-      300,     //_boostedVotePeriodLimit=60,
-      300,    //_preBoostedVotePeriodLimit
-      2000,   //_thresholdConst
-      60,     //_quietEndingPeriod
-      0,      //_proposingRepReward
-      0,      //_votersReputationLossRatio
-      1 ether,      //_minimumDaoBounty
-      10,      //_daoBountyConst = 15,
-      0 //_activationTime
-      ];
+        genesisProtocolParams = [
+        50,     //_queuedVoteRequiredPercentage=50,
+        11557600,     //_queuedVotePeriodLimit=60, (in seconds) -- 3 months
+        300,     //_boostedVotePeriodLimit=60,
+        300,    //_preBoostedVotePeriodLimit
+        2000,   //_thresholdConst
+        60,     //_quietEndingPeriod
+        0,      //_proposingRepReward
+        0,      //_votersReputationLossRatio
+        1 ether,      //_minimumDaoBounty
+        10,      //_daoBountyConst = 15,
+        0 //_activationTime
+        ];
     }
 
     function setHCVotingMachine(address _voteM) public onlyOwner {
@@ -213,26 +300,11 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
         adminRep = new Reputation();
         // Increase the reputation of the donor (for that particular Seed)
-        for(uint256 i = 0; i < _owners.length; i++) {
+        for (uint256 i = 0; i < _owners.length; i++) {
             administrators.push(_owners[i]);
             adminRep.mint(_owners[i], 100/_owners.length);
         }
     }
-
-    // Simple callback function
-    function () external payable {
-        fund();
-    }
-
-    function getAdmins() external view returns ( address[] memory){
-        return administrators;
-    }
-
-    function getAdminBalance( address _admin) external view returns (address, uint256) {
-        return (_admin, adminRep.balanceOf(_admin));
-    }
-
-
 
     function getSeed(uint256 _id)
         public
@@ -248,7 +320,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     }
 
     function getWinpid4Seed(uint256 _id) public view returns (bytes32, bytes32) {
-      return (seeds[_id].winningProposal, seeds[_id].winpid);
+        return (seeds[_id].winningProposal, seeds[_id].winpid);
     }
 
 // this function is called when a user submits a new proposal from the interface
@@ -282,7 +354,11 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
         Seed storage currSeed = seeds[pid2id[_pid]];
         GenesisProtocol(hcVoteMachine).vote(_pid, _vote, 0, msg.sender);
-        emit VotingProposal(_id, _pid, msg.sender, currSeed.reputation.balanceOfAt(msg.sender,currSeed.proposals[_pid].block), _vote);
+        emit VotingProposal(_id,
+                            _pid,
+                            msg.sender,
+                            currSeed.reputation.balanceOfAt(msg.sender, currSeed.proposals[_pid].block),
+                            _vote);
     }
 
     function voteAMProposal(uint256 _id, bytes32 _pid, uint256 _vote) public ifStatus(_id, 2) {
@@ -296,7 +372,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         url = seeds[_id].proposals[_pid].url;
         pid = seeds[_id].proposals[_pid].id;
     }
-//sh deploy.sh 0xbfBf9Baf86Ca3168e4D18b28E44336538C04DE63 0x7Ada5B9D71830eFcd29C2E49f11a48eff4f5B152 0x89fa4ABdDE46BF3a42AaF21aA4CAc127AB851f3D
+
     // External fund function
     function fund() public payable {
         uint256 funds = msg.value;
@@ -308,81 +384,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         }
     }
 
-    // Internal fund function
-    function _fund(uint256 _donation) internal returns(uint256 overflow) {
-
-        uint256 donation;
-        Seed storage currSeed = seeds[seedCnt];
-
-      // Check if there is an overflow
-        if (currSeed.weiRaised + _donation > threshold) {
-            overflow = currSeed.weiRaised + _donation - threshold;
-            donation = threshold - currSeed.weiRaised;
-        } else {
-            donation = _donation;
-
-           emit AcceptedDonation(msg.sender, donation, seedCnt);
-        }
-      // Increase the amount of weiRaised (for that particular Seed)
-        currSeed.weiRaised += donation;
-
-      // instantiate a new Reputation system (DAOstack) if one doesnt exist
-       if((seeds[seedCnt].reputation) == Reputation(0)) {
-          seeds[seedCnt].reputation = new Reputation();
-       }
-      // Increase the reputation of the donor (for that particular Seed)
-       seeds[seedCnt].reputation.mint(msg.sender, donation);
-
-      if (currSeed.weiRaised >= threshold) {
-          emit Reproducing(seedCnt);
-            // change status of the seeds
-          seeds[seedCnt].status = 1;
-            // Create new Seed:
-          seedCnt++;
-          seeds[seedCnt].id = seedCnt;
-          seeds[seedCnt].reputation = new Reputation();
-        }
-    }
-
-// FUNCTIONS for ProposalExecuteInterface
-
-    function executeProposal(bytes32 pid, int decision) external onlyVotingMachine  returns(bool) {
-
-      uint256 id = pid2id[pid];
-
-      address proposer = seeds[id].proposals[pid].proposer;
-      string memory url = seeds[id].proposals[pid].url;
-      emit ExecuteProposal(id, pid, decision, proposer, proposer.balance, url);
-
-
-        if (msg.sender == amVoteMachine) {
-          //Founder decision
-            require(seeds[id].status == 2,"require status to be 2");
-            if (decision == 1) {
-                approveExecution(pid);
-                return true;
-
-            } else {
-                vetoExecution(pid);
-                return false;
-            }
-        }
-
-      //else:  Contributor decision
-        require(seeds[id].status == 1, "require status to be 1");
-
-        seeds[id].proposals[pid].decision = decision;
-
-        if(decision == 1) {
-            seeds[id].status = 2;
-            seeds[id].winningProposal = pid;
-            addAMProposal(id);
-
-        }
-
-    }
-
-     function approveExecution(bytes32 _pid) public {
+    function approveExecution(bytes32 _pid) public {
          //require(msg.sender == artist);
         uint256 id = pid2id[_pid];
         require(seeds[id].winningProposal != 0, "require winning proposal");
@@ -413,45 +415,38 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         seeds[id].proposals[_pid].decision = 2;
      }
 
-// FUNCTIONS for GenesisProtocolCallbacksInterface
-    function getTotalReputationSupply(bytes32 pid) external view returns(uint256) {
-      if (msg.sender == amVoteMachine) {
-            return adminRep.totalSupply();
-        } else if (msg.sender == hcVoteMachine) {
-            uint256 id = pid2id[pid];
-            return seeds[id].reputation.totalSupplyAt(seeds[id].proposals[pid].block);
+    // Internal fund function
+    function _fund(uint256 _donation) internal returns(uint256 overflow) {
+
+        uint256 donation;
+        Seed storage currSeed = seeds[seedCnt];
+
+      // Check if there is an overflow
+        if (currSeed.weiRaised + _donation > threshold) {
+            overflow = currSeed.weiRaised + _donation - threshold;
+            donation = threshold - currSeed.weiRaised;
+        } else {
+            donation = _donation;
+            emit AcceptedDonation(msg.sender, donation, seedCnt);
         }
-    }
+      // Increase the amount of weiRaised (for that particular Seed)
+        currSeed.weiRaised += donation;
 
-    function mintReputation(uint256 _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
-      uint256 id = pid2id[pid];
-      return seeds[id].reputation.mint(_beneficiary,_amount);
-    }
-
-    function burnReputation(uint256 _amount,address _beneficiary,bytes32 pid) external onlyVotingMachine returns(bool) {
-      uint256 id = pid2id[pid];
-      return seeds[id].reputation.burn(_beneficiary,_amount);
-    }
-
-    function reputationOf(address _owner,bytes32 pid) view external returns(uint256) {
-
-      if (msg.sender == amVoteMachine) {
-          //Founder vote
-          return adminRep.balanceOf(_owner);
-
-      } else if (msg.sender == hcVoteMachine) {
-          //Contributor vote
-        uint256 id = pid2id[pid];
-        uint256 rep = seeds[id].reputation.balanceOfAt(_owner, seeds[id].proposals[pid].block);
-        return rep;
-    }
-  }
-
-    function stakingTokenTransfer(IERC20 _stakingToken, address _beneficiary,uint256 _amount,bytes32) external onlyVotingMachine returns(bool) {
-      return _stakingToken.transfer(_beneficiary,_amount);
-    }
-
-    function balanceOfStakingToken(IERC20, bytes32) external view returns(uint256) {
+      // instantiate a new Reputation system (DAOstack) if one doesnt exist
+        if ((seeds[seedCnt].reputation) == Reputation(0)) {
+            seeds[seedCnt].reputation = new Reputation();
+        }
+      // Increase the reputation of the donor (for that particular Seed)
+        seeds[seedCnt].reputation.mint(msg.sender, donation);
+        if (currSeed.weiRaised >= threshold) {
+            emit Reproducing(seedCnt);
+            // change status of the seeds
+            seeds[seedCnt].status = 1;
+            // Create new Seed:
+            seedCnt++;
+            seeds[seedCnt].id = seedCnt;
+            seeds[seedCnt].reputation = new Reputation();
+        }
     }
 
 }
