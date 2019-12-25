@@ -452,6 +452,10 @@ function ListSeeds() {
                     //    g.innerHTML += '<button type="button" id="veto" onclick="VetoPid(\'' + args.pid + '\')">Veto</button>';
                       }
 
+                      if( SeedLoosers[args.id] && (SeedLoosers[args.id].indexOf(args.pid)!= -1)) {
+                        showApproveVeto(args.id,args.pid)
+                      }
+
                       //g.innerHTML += "<br/><br/>"
 
                       updateVotesforPidPos(args.pid);
@@ -495,7 +499,7 @@ function updateProposalbyPid(args) {
 
   var prop = document.getElementById("Proposal"+args.pid);
 
-  //console.log("looking for Prop (" + prop + ") with args.pid = " + args.pid);
+  console.log("looking for Prop (" + prop + ") with args.pid = " + args.pid);
 
 if(prop) {
   var w1 = ""; var w2 = "";
@@ -734,9 +738,10 @@ VetoedExecutionEvent.watch(function(err, result) {
   console.log("VETOED Execution by artist --->  " + result.args.pid + " ---- AM : " + result.args.winpid);
 
   if(!SeedLoosers[result.args.id]) { SeedLoosers[result.args.id] = new Array(); }
+
   SeedLoosers[result.args.id].push(result.args.pid);
 
-  SeedStatus[result.args.id]= 1;
+  SeedStatus[result.args.id] = 1;
   SeedWinner[result.args.id] = 0;
 
   updateProposalbyPid(result.args);
@@ -745,8 +750,11 @@ VetoedExecutionEvent.watch(function(err, result) {
 
 function showApproveVeto(id, pid) {
 
-    plantoid.getWinpid4Seed(id, function(e, v) {
-      var p = v[0]; var winpid = v[1];
+//    plantoid.getWinpid4Seed(id, function(e, v) {
+
+      plantoid.getAMpid4Seed(id, pid, function(e,v) {
+//      var p = v[0]; var winpid = v[1];
+      var p = pid; var winpid = v;
 
       console.log("WINPID ====== "+ winpid);
       console.log("PID ===" + p);
@@ -771,16 +779,19 @@ function showApproveVeto(id, pid) {
 
 
       if(winpid) {
-          absolute.voteStatus.call(winpid, 1, function(err, val) {
-          var appr = document.getElementById("approve-"+winpid);
-          var veto = document.getElementById("veto-"+winpid);
-          console.log("VAAAAAAAAAAAAAAL: " + val);
-          var n = val ;
-          if(appr) appr.innerHTML = "Approve: "+ n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
-          if(veto) veto.innerHTML = "Veto: " +  n.toFixed(0) + "%";
-    });
+          absolute.voteStatus.call(winpid, 1, function(err, val) { // call voteStatus of AbsoluteVoting machine, to know how many votes on "yes"
+              var appr = document.getElementById("approve-"+winpid);
+              console.log("APPROVE VAL: " + val);
+              if(appr) appr.innerHTML = "Approve: "+ val.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
+            });
 
-  }
+          absolute.voteStatus.call(winpid, 2, function(err, val) { // call voteStatus on AbsoluteVoting machine, to know how many votes on "no"
+              var veto = document.getElementById("veto-"+winpid);
+              console.log("VETO VAL: " + val);
+              if(veto) veto.innerHTML = "Veto: " +  val.toFixed(0) + "%";
+            });
+
+      }
 
   });
 

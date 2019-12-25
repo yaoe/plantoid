@@ -1,1162 +1,1188 @@
 [
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_donor", 
-                "internalType": "address"
-            }, 
+                "indexed": false,
+                "internalType": "address",
+                "name": "_donor",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "amount", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "_seed", 
-                "internalType": "uint256"
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "_seed",
+                "type": "uint256"
             }
-        ], 
-        "type": "event", 
-        "name": "AcceptedDonation", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "AcceptedDonation",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "id", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
-            }, 
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "winpid", 
-                "internalType": "bytes32"
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "winpid",
+                "type": "bytes32"
             }
-        ], 
-        "type": "event", 
-        "name": "ApprovedExecution", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "ApprovedExecution",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "id", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
-            }, 
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "indexed": false, 
-                "type": "int256", 
-                "name": "decision", 
-                "internalType": "int256"
-            }, 
+                "indexed": false,
+                "internalType": "int256",
+                "name": "decision",
+                "type": "int256"
+            },
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_proposer", 
-                "internalType": "address"
-            }, 
+                "indexed": false,
+                "internalType": "address",
+                "name": "_proposer",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "b4balance", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "b4balance",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "string", 
-                "name": "url", 
-                "internalType": "string"
+                "indexed": false,
+                "internalType": "string",
+                "name": "url",
+                "type": "string"
             }
-        ], 
-        "type": "event", 
-        "name": "ExecuteProposal", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "ExecuteProposal",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
-            }, 
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "addr", 
-                "internalType": "address"
-            }, 
+                "indexed": false,
+                "internalType": "address",
+                "name": "addr",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "int256", 
-                "name": "_decision", 
-                "internalType": "int256"
+                "indexed": false,
+                "internalType": "int256",
+                "name": "_decision",
+                "type": "int256"
             }
-        ], 
-        "type": "event", 
-        "name": "Execution", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "Execution",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_donor", 
-                "internalType": "address"
-            }, 
+                "indexed": false,
+                "internalType": "address",
+                "name": "_donor",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "amount", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "_seed", 
-                "internalType": "uint256"
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "_seed",
+                "type": "uint256"
             }
-        ], 
-        "type": "event", 
-        "name": "GotDonation", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "GotDonation",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "id", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "winpid", 
-                "internalType": "bytes32"
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "winpid",
+                "type": "bytes32"
             }
-        ], 
-        "type": "event", 
-        "name": "NewAMProposal", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "NewAMProposal",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "id", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
-            }, 
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_proposer", 
-                "internalType": "address"
-            }, 
+                "indexed": false,
+                "internalType": "address",
+                "name": "_proposer",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "string", 
-                "name": "url", 
-                "internalType": "string"
+                "indexed": false,
+                "internalType": "string",
+                "name": "url",
+                "type": "string"
             }
-        ], 
-        "type": "event", 
-        "name": "NewProposal", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "NewProposal",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "voteMachine", 
-                "internalType": "address"
+                "indexed": false,
+                "internalType": "address",
+                "name": "voteMachine",
+                "type": "address"
             }
-        ], 
-        "type": "event", 
-        "name": "NewVotingMachine", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "NewVotingMachine",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "seedCnt", 
-                "internalType": "uint256"
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "seedCnt",
+                "type": "uint256"
             }
-        ], 
-        "type": "event", 
-        "name": "Reproducing", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "Reproducing",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_owner", 
-                "internalType": "address"
-            }, 
+                "indexed": false,
+                "internalType": "address",
+                "name": "_owner",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "rep", 
-                "internalType": "uint256"
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "rep",
+                "type": "uint256"
             }
-        ], 
-        "type": "event", 
-        "name": "ReputationOf", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "ReputationOf",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "id", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
-            }, 
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "winpid", 
-                "internalType": "bytes32"
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "winpid",
+                "type": "bytes32"
             }
-        ], 
-        "type": "event", 
-        "name": "VetoedExecution", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "VetoedExecution",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "id", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
-            }, 
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_voter", 
-                "internalType": "address"
-            }, 
+                "indexed": false,
+                "internalType": "address",
+                "name": "_voter",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "_reputation", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "_reputation",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "_vote", 
-                "internalType": "uint256"
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "_vote",
+                "type": "uint256"
             }
-        ], 
-        "type": "event", 
-        "name": "VotingAMProposal", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "VotingAMProposal",
+        "type": "event"
+    },
     {
+        "anonymous": false,
         "inputs": [
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "id", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
-            }, 
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "indexed": false, 
-                "type": "address", 
-                "name": "_voter", 
-                "internalType": "address"
-            }, 
+                "indexed": false,
+                "internalType": "address",
+                "name": "_voter",
+                "type": "address"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "_reputation", 
-                "internalType": "uint256"
-            }, 
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "_reputation",
+                "type": "uint256"
+            },
             {
-                "indexed": false, 
-                "type": "uint256", 
-                "name": "_vote", 
-                "internalType": "uint256"
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "_vote",
+                "type": "uint256"
             }
-        ], 
-        "type": "event", 
-        "name": "VotingProposal", 
-        "anonymous": false
-    }, 
+        ],
+        "name": "VotingProposal",
+        "type": "event"
+    },
     {
-        "stateMutability": "payable", 
-        "payable": true, 
+        "payable": true,
+        "stateMutability": "payable",
         "type": "fallback"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "adminRep", 
+        "constant": true,
+        "inputs": [],
+        "name": "adminRep",
         "outputs": [
             {
-                "type": "address", 
-                "name": "", 
-                "internalType": "contract Reputation"
+                "internalType": "contract Reputation",
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "constant": true, 
-        "name": "administrators", 
+        ],
+        "name": "administrators",
         "outputs": [
             {
-                "type": "address", 
-                "name": "", 
-                "internalType": "address"
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "amOrgHash", 
+        "constant": true,
+        "inputs": [],
+        "name": "amOrgHash",
         "outputs": [
             {
-                "type": "bytes32", 
-                "name": "", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "amParams", 
+        "constant": true,
+        "inputs": [],
+        "name": "amParams",
         "outputs": [
             {
-                "type": "bytes32", 
-                "name": "", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "amVoteMachine", 
+        "constant": true,
+        "inputs": [],
+        "name": "amVoteMachine",
         "outputs": [
             {
-                "type": "address", 
-                "name": "", 
-                "internalType": "address"
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "artist", 
+        "constant": true,
+        "inputs": [],
+        "name": "artist",
         "outputs": [
             {
-                "type": "address", 
-                "name": "", 
-                "internalType": "address payable"
+                "internalType": "address payable",
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "genesisParams", 
+        "constant": true,
+        "inputs": [],
+        "name": "genesisParams",
         "outputs": [
             {
-                "type": "bytes32", 
-                "name": "", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "constant": true, 
-        "name": "genesisProtocolParams", 
+        ],
+        "name": "genesisProtocolParams",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "hcVoteMachine", 
+        "constant": true,
+        "inputs": [],
+        "name": "hcVoteMachine",
         "outputs": [
             {
-                "type": "address", 
-                "name": "", 
-                "internalType": "address"
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "orgHash", 
+        "constant": true,
+        "inputs": [],
+        "name": "orgHash",
         "outputs": [
             {
-                "type": "bytes32", 
-                "name": "", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "owner", 
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
         "outputs": [
             {
-                "type": "address", 
-                "name": "", 
-                "internalType": "address"
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "parent", 
+        "constant": true,
+        "inputs": [],
+        "name": "parent",
         "outputs": [
             {
-                "type": "address", 
-                "name": "", 
-                "internalType": "address payable"
+                "internalType": "address payable",
+                "name": "",
+                "type": "address"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "bytes32", 
-                "name": "", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "constant": true, 
-        "name": "pid2id", 
+        ],
+        "name": "pid2id",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "save1", 
+        "constant": true,
+        "inputs": [],
+        "name": "save1",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "seedCnt", 
+        "constant": true,
+        "inputs": [],
+        "name": "seedCnt",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "constant": true, 
-        "name": "seeds", 
+        ],
+        "name": "seeds",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "id", 
-                "internalType": "uint256"
-            }, 
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
             {
-                "type": "uint256", 
-                "name": "status", 
-                "internalType": "uint256"
-            }, 
+                "internalType": "uint256",
+                "name": "status",
+                "type": "uint256"
+            },
             {
-                "type": "uint256", 
-                "name": "weiRaised", 
-                "internalType": "uint256"
-            }, 
+                "internalType": "uint256",
+                "name": "weiRaised",
+                "type": "uint256"
+            },
             {
-                "type": "address", 
-                "name": "reputation", 
-                "internalType": "contract Reputation"
-            }, 
+                "internalType": "contract Reputation",
+                "name": "reputation",
+                "type": "address"
+            },
             {
-                "type": "uint256", 
-                "name": "nProposals", 
-                "internalType": "uint256"
-            }, 
+                "internalType": "uint256",
+                "name": "nProposals",
+                "type": "uint256"
+            },
             {
-                "type": "bytes32", 
-                "name": "winningProposal", 
-                "internalType": "bytes32"
-            }, 
+                "internalType": "bytes32",
+                "name": "winningProposal",
+                "type": "bytes32"
+            },
             {
-                "type": "bytes32", 
-                "name": "winpid", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "winpid",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "threshold", 
+        "constant": true,
+        "inputs": [],
+        "name": "threshold",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": false, 
-        "name": "init", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
+        "constant": false,
+        "inputs": [],
+        "name": "init",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "address", 
-                "name": "_voteM", 
-                "internalType": "address"
+                "internalType": "address",
+                "name": "_voteM",
+                "type": "address"
             }
-        ], 
-        "constant": false, 
-        "name": "setHCVotingMachine", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
+        ],
+        "name": "setHCVotingMachine",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "address", 
-                "name": "_voteM", 
-                "internalType": "address"
-            }, 
+                "internalType": "address",
+                "name": "_voteM",
+                "type": "address"
+            },
             {
-                "type": "address[]", 
-                "name": "_owners", 
-                "internalType": "address[]"
+                "internalType": "address[]",
+                "name": "_owners",
+                "type": "address[]"
             }
-        ], 
-        "constant": false, 
-        "name": "setAMVotingMachine", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
+        ],
+        "name": "setAMVotingMachine",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": true, 
-        "name": "getAdmins", 
+        "constant": true,
+        "inputs": [],
+        "name": "getAdmins",
         "outputs": [
             {
-                "type": "address[]", 
-                "name": "", 
-                "internalType": "address[]"
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "address", 
-                "name": "_admin", 
-                "internalType": "address"
+                "internalType": "address",
+                "name": "_admin",
+                "type": "address"
             }
-        ], 
-        "constant": true, 
-        "name": "getAdminBalance", 
+        ],
+        "name": "getAdminBalance",
         "outputs": [
             {
-                "type": "address", 
-                "name": "", 
-                "internalType": "address"
-            }, 
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "_id", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "_id",
+                "type": "uint256"
             }
-        ], 
-        "constant": true, 
-        "name": "getSeed", 
+        ],
+        "name": "getSeed",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "status", 
-                "internalType": "uint256"
-            }, 
+                "internalType": "uint256",
+                "name": "status",
+                "type": "uint256"
+            },
             {
-                "type": "uint256", 
-                "name": "weis", 
-                "internalType": "uint256"
-            }, 
+                "internalType": "uint256",
+                "name": "weis",
+                "type": "uint256"
+            },
             {
-                "type": "address", 
-                "name": "reputation", 
-                "internalType": "address"
-            }, 
+                "internalType": "address",
+                "name": "reputation",
+                "type": "address"
+            },
             {
-                "type": "uint256", 
-                "name": "nProps", 
-                "internalType": "uint256"
-            }, 
+                "internalType": "uint256",
+                "name": "nProps",
+                "type": "uint256"
+            },
             {
-                "type": "bytes32", 
-                "name": "winner", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "winner",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "_id", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "_id",
+                "type": "uint256"
             }
-        ], 
-        "constant": true, 
-        "name": "getWinpid4Seed", 
+        ],
+        "name": "getWinpid4Seed",
         "outputs": [
             {
-                "type": "bytes32", 
-                "name": "", 
-                "internalType": "bytes32"
-            }, 
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            },
             {
-                "type": "bytes32", 
-                "name": "", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "_id", 
-                "internalType": "uint256"
-            }, 
+                "internalType": "uint256",
+                "name": "_id",
+                "type": "uint256"
+            },
             {
-                "type": "string", 
-                "name": "_url", 
-                "internalType": "string"
+                "internalType": "bytes32",
+                "name": "_pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": false, 
-        "name": "addProposal", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "type": "function"
-    }, 
-    {
-        "inputs": [
-            {
-                "type": "uint256", 
-                "name": "_id", 
-                "internalType": "uint256"
-            }
-        ], 
-        "constant": false, 
-        "name": "addAMProposal", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "type": "function"
-    }, 
-    {
-        "inputs": [
-            {
-                "type": "uint256", 
-                "name": "_id", 
-                "internalType": "uint256"
-            }, 
-            {
-                "type": "bytes32", 
-                "name": "_pid", 
-                "internalType": "bytes32"
-            }, 
-            {
-                "type": "uint256", 
-                "name": "_vote", 
-                "internalType": "uint256"
-            }
-        ], 
-        "constant": false, 
-        "name": "voteProposal", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "type": "function"
-    }, 
-    {
-        "inputs": [
-            {
-                "type": "uint256", 
-                "name": "_id", 
-                "internalType": "uint256"
-            }, 
-            {
-                "type": "bytes32", 
-                "name": "_pid", 
-                "internalType": "bytes32"
-            }, 
-            {
-                "type": "uint256", 
-                "name": "_vote", 
-                "internalType": "uint256"
-            }
-        ], 
-        "constant": false, 
-        "name": "voteAMProposal", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "type": "function"
-    }, 
-    {
-        "inputs": [
-            {
-                "type": "uint256", 
-                "name": "_id", 
-                "internalType": "uint256"
-            }, 
-            {
-                "type": "bytes32", 
-                "name": "_pid", 
-                "internalType": "bytes32"
-            }
-        ], 
-        "constant": true, 
-        "name": "getProposal", 
+        ],
+        "name": "getAMpid4Seed",
         "outputs": [
             {
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
-            }, 
-            {
-                "type": "address", 
-                "name": "from", 
-                "internalType": "address"
-            }, 
-            {
-                "type": "string", 
-                "name": "url", 
-                "internalType": "string"
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
-        "inputs": [], 
-        "constant": false, 
-        "name": "fund", 
-        "outputs": [], 
-        "stateMutability": "payable", 
-        "payable": true, 
-        "type": "function"
-    }, 
-    {
+        "constant": false,
         "inputs": [
             {
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
-            }, 
+                "internalType": "uint256",
+                "name": "_id",
+                "type": "uint256"
+            },
             {
-                "type": "int256", 
-                "name": "decision", 
-                "internalType": "int256"
+                "internalType": "string",
+                "name": "_url",
+                "type": "string"
             }
-        ], 
-        "constant": false, 
-        "name": "executeProposal", 
+        ],
+        "name": "addProposal",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_id",
+                "type": "uint256"
+            }
+        ],
+        "name": "addAMProposal",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_id",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "_pid",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_vote",
+                "type": "uint256"
+            }
+        ],
+        "name": "voteProposal",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_id",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "_pid",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_vote",
+                "type": "uint256"
+            }
+        ],
+        "name": "voteAMProposal",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_id",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "_pid",
+                "type": "bytes32"
+            }
+        ],
+        "name": "getProposal",
         "outputs": [
             {
-                "type": "bool", 
-                "name": "", 
-                "internalType": "bool"
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "url",
+                "type": "string"
             }
-        ], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
+        "inputs": [],
+        "name": "fund",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": false,
         "inputs": [
             {
-                "type": "bytes32", 
-                "name": "_pid", 
-                "internalType": "bytes32"
-            }
-        ], 
-        "constant": false, 
-        "name": "approveExecution", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "type": "function"
-    }, 
-    {
-        "inputs": [
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
+            },
             {
-                "type": "bytes32", 
-                "name": "_pid", 
-                "internalType": "bytes32"
+                "internalType": "int256",
+                "name": "decision",
+                "type": "int256"
             }
-        ], 
-        "constant": false, 
-        "name": "vetoExecution", 
-        "outputs": [], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
-        "type": "function"
-    }, 
-    {
-        "inputs": [
-            {
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
-            }
-        ], 
-        "constant": true, 
-        "name": "getTotalReputationSupply", 
+        ],
+        "name": "executeProposal",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "_amount", 
-                "internalType": "uint256"
-            }, 
-            {
-                "type": "address", 
-                "name": "_beneficiary", 
-                "internalType": "address"
-            }, 
-            {
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "_pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": false, 
-        "name": "mintReputation", 
-        "outputs": [
-            {
-                "type": "bool", 
-                "name": "", 
-                "internalType": "bool"
-            }
-        ], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
+        ],
+        "name": "approveExecution",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "uint256", 
-                "name": "_amount", 
-                "internalType": "uint256"
-            }, 
-            {
-                "type": "address", 
-                "name": "_beneficiary", 
-                "internalType": "address"
-            }, 
-            {
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "_pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": false, 
-        "name": "burnReputation", 
-        "outputs": [
-            {
-                "type": "bool", 
-                "name": "", 
-                "internalType": "bool"
-            }
-        ], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
+        ],
+        "name": "vetoExecution",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": true,
         "inputs": [
             {
-                "type": "address", 
-                "name": "_owner", 
-                "internalType": "address"
-            }, 
-            {
-                "type": "bytes32", 
-                "name": "pid", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": true, 
-        "name": "reputationOf", 
+        ],
+        "name": "getTotalReputationSupply",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "address", 
-                "name": "_stakingToken", 
-                "internalType": "contract IERC20"
-            }, 
+                "internalType": "uint256",
+                "name": "_amount",
+                "type": "uint256"
+            },
             {
-                "type": "address", 
-                "name": "_beneficiary", 
-                "internalType": "address"
-            }, 
+                "internalType": "address",
+                "name": "_beneficiary",
+                "type": "address"
+            },
             {
-                "type": "uint256", 
-                "name": "_amount", 
-                "internalType": "uint256"
-            }, 
-            {
-                "type": "bytes32", 
-                "name": "", 
-                "internalType": "bytes32"
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": false, 
-        "name": "stakingTokenTransfer", 
+        ],
+        "name": "mintReputation",
         "outputs": [
             {
-                "type": "bool", 
-                "name": "", 
-                "internalType": "bool"
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
             }
-        ], 
-        "stateMutability": "nonpayable", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
-    }, 
+    },
     {
+        "constant": false,
         "inputs": [
             {
-                "type": "address", 
-                "name": "", 
-                "internalType": "contract IERC20"
-            }, 
+                "internalType": "uint256",
+                "name": "_amount",
+                "type": "uint256"
+            },
             {
-                "type": "bytes32", 
-                "name": "", 
-                "internalType": "bytes32"
+                "internalType": "address",
+                "name": "_beneficiary",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
             }
-        ], 
-        "constant": true, 
-        "name": "balanceOfStakingToken", 
+        ],
+        "name": "burnReputation",
         "outputs": [
             {
-                "type": "uint256", 
-                "name": "", 
-                "internalType": "uint256"
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
             }
-        ], 
-        "stateMutability": "view", 
-        "payable": false, 
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_owner",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "pid",
+                "type": "bytes32"
+            }
+        ],
+        "name": "reputationOf",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "_stakingToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_beneficiary",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_amount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "name": "stakingTokenTransfer",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "name": "balanceOfStakingToken",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
     }
 ]

@@ -178,6 +178,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         bytes32 winningProposal;  // the pid of the winningProposal
         bytes32 winpid;            // the pid of winningProposal for the AM voting machine
         mapping(bytes32=>Proposal) proposals;
+        mapping(bytes32=>bytes32) pid2AMpid;
     }
 
     function init() public {
@@ -251,6 +252,10 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
       return (seeds[_id].winningProposal, seeds[_id].winpid);
     }
 
+    function getAMpid4Seed(uint256 _id, bytes32 _pid) public view returns (bytes32) {
+      return seeds[_id].pid2AMpid[_pid];
+    }
+
 // this function is called when a user submits a new proposal from the interface
     function addProposal(uint256 _id, string memory _url) public ifStatus(_id, 1) {
         Seed storage currSeed = seeds[_id]; // try with 'memory' instead of 'storage'
@@ -273,6 +278,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         Seed storage currSeed = seeds[_id]; // try with 'memory' instead of 'storage'
 
         currSeed.winpid = AbsoluteVote(amVoteMachine).propose(2, amParams, msg.sender, address(0));
+        currSeed.pid2AMpid[currSeed.winningProposal] = currSeed.winpid;
 
         emit NewAMProposal(_id, currSeed.winpid);
 
