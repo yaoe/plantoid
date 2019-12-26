@@ -11,8 +11,8 @@ const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 //var threshold = 1000000000000000000;
 var threshold = 100;
 var artist = "0xC67Ff51c2c79F0036493B51e12560f94291fEF98";
-var ganache2 = "0x95200d9955C6A01495ceDEADe04B62909736e3a9";
-var ganache1 = "0xb913BFd7A9a2B3E40864CFa08637848e37E5a042";
+var ganache2 = "0xb913BFd7A9a2B3E40864CFa08637848e37E5a042";
+var ganache1 = "0x95200d9955C6A01495ceDEADe04B62909736e3a9";
 
 module.exports = async function(deployer,network,provider) {
 

@@ -254,7 +254,12 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         }
     }
 
-    function reputationOf(address _owner,bytes32 pid) view external returns(uint256) {
+    // FUNCTIONS for GenesisProtocolCallbacksInterface
+    function getAdminsTotalReputationSupply() external view returns(uint256) {
+          return adminRep.totalSupply();
+    }
+
+    function reputationOf(address _owner, bytes32 pid) view external returns(uint256) {
 
         if (msg.sender == amVoteMachine) {
           //Founder vote
