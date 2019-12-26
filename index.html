@@ -231,6 +231,11 @@ function ListAdmins() {
     }
    });
 
+   plantoid.getAdminsTotalReputationSupply.call("0x0000000000000000000000000000000000000000",function(err, values) {
+     console.log("total rep supply ADMINS: ");
+     console.log(values);
+    });
+
 }
 
 var rows = 0;
