@@ -129,7 +129,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 // ABSOLUTE MAJORITY VM
     address public amVoteMachine;
     bytes32 public amParams;
-    bytes32 public amOrgHash;
+    //bytes32 public amOrgHash;
 
 
 
@@ -219,7 +219,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         require(seeds[id].status == 1, "require status to be 1");
         seeds[id].proposals[pid].decision = decision;
 
-        if(decision == 1) {
+        if (decision == 1) {
             seeds[id].status = 2;
             seeds[id].winningProposal = pid;
             addAMProposal(id);
@@ -259,6 +259,12 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
           return adminRep.totalSupply();
     }
 
+    function reputationOfHC(address _owner, bytes32 pid) view external returns(uint256) {
+      //Contributor vote
+        uint256 id = pid2id[pid];
+        return seeds[id].reputation.balanceOfAt(_owner, seeds[id].proposals[pid].block);
+    }
+
     function reputationOf(address _owner, bytes32 pid) view external returns(uint256) {
 
         if (msg.sender == amVoteMachine) {
@@ -294,7 +300,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         hcVoteMachine = _voteM;
         emit NewVotingMachine(hcVoteMachine);
         genesisParams = GenesisProtocol(hcVoteMachine).setParameters(genesisProtocolParams, address(this));
-        orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(hcVoteMachine), address(this)));
+        //orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(hcVoteMachine), address(this)));
     }
 
     function setAMVotingMachine(address _voteM, address[] memory _owners) public onlyOwner {
@@ -302,13 +308,13 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         amVoteMachine = _voteM;
         emit NewVotingMachine(amVoteMachine);
         amParams = AbsoluteVote(amVoteMachine).setParameters(50, address(this));
-        amOrgHash = keccak256(abi.encodePacked(amParams, IntVoteInterface(amVoteMachine), address(this)));
+        //amOrgHash = keccak256(abi.encodePacked(amParams, IntVoteInterface(amVoteMachine), address(this)));
 
         adminRep = new Reputation();
         // Increase the reputation of the donor (for that particular Seed)
         for (uint256 i = 0; i < _owners.length; i++) {
             administrators.push(_owners[i]);
-            adminRep.mint(_owners[i], 100/_owners.length);
+            adminRep.mint(_owners[i], 1000/_owners.length);
         }
     }
 
