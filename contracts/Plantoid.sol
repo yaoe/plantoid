@@ -129,6 +129,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 // ABSOLUTE MAJORITY VM
     address public amVoteMachine;
     bytes32 public amParams;
+    uint256 private constant TOTAL_AM_REP_SUPPLY = 1000;//cannot be less than 100
     //bytes32 public amOrgHash;
 
 
@@ -314,7 +315,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         // Increase the reputation of the donor (for that particular Seed)
         for (uint256 i = 0; i < _owners.length; i++) {
             administrators.push(_owners[i]);
-            adminRep.mint(_owners[i], 1000/_owners.length);
+            adminRep.mint(_owners[i], TOTAL_AM_REP_SUPPLY/_owners.length);
         }
     }
 
