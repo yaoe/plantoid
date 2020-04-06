@@ -97,6 +97,20 @@ contract('Plantoid',  accounts =>  {
       assert.equal((await testSetup.plantoid.seeds(0)).status, 2);
       await testSetup.plantoid.voteAMProposal(0,amProposalId,1,{from:accounts[3],gas:1000000});
       assert.equal((await testSetup.plantoid.seeds(0)).status, 3);
+
+      //try to do the same with a different seeds
+      await web3.eth.sendTransaction({from:accounts[1],to:testSetup.plantoid.address, value:100,gas:7000000});
+      var tx = await testSetup.plantoid.addProposal(1,"BBB",{from:accounts[2]});
+      assert.equal(tx.logs[0].event, "NewProposal");
+      var proposalId = tx.logs[0].args.pid;
+      tx = await testSetup.plantoid.voteProposal(1,proposalId,1,{from:accounts[1]});
+      assert.equal((await testSetup.plantoid.seeds(1)).status, 2);
+      var amProposalId = (await testSetup.plantoid.seeds(1)).winpid;
+      await testSetup.plantoid.voteAMProposal(1,amProposalId,1,{from:testSetup.artist,gas:1000000});
+      assert.equal((await testSetup.plantoid.seeds(1)).status, 2);
+      await testSetup.plantoid.voteAMProposal(1,amProposalId,1,{from:accounts[3],gas:1000000});
+      assert.equal((await testSetup.plantoid.seeds(1)).status, 3);
+
     });
 
 });

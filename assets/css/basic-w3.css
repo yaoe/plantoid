@@ -157,3 +157,9 @@ input.propInput {
   border: 1px solid Orange;
 	border-radius: 8px;
 }
+
+.hidden {
+	visibility: hidden;
+	border: 1px solid Blue;
+
+}

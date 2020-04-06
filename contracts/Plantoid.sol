@@ -90,8 +90,8 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     event ExecuteProposal(uint256 id, bytes32 pid, int decision, address _proposer, uint256 b4balance, string url);
     event NewVotingMachine(address voteMachine);
     event Execution(bytes32 pid, address addr, int _decision);
-    event ApprovedExecution(uint256 id, bytes32 pid, bytes32 winpid);
-    event VetoedExecution(uint256 id, bytes32 pid, bytes32 winpid);
+    event ApprovedExecution(uint256 id, bytes32 winpid, bytes32 pid);
+    event VetoedExecution(uint256 id, bytes32 winpid, bytes32 pid);
     event ReputationOf(address _owner, uint256 rep);
     event NewAMProposal(uint256 id, bytes32 winpid);
 
@@ -202,7 +202,10 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         uint256 id = pid2id[pid];
         address proposer = seeds[id].proposals[pid].proposer;
         string memory url = seeds[id].proposals[pid].url;
+
+
         emit ExecuteProposal(id, pid, decision, proposer, proposer.balance, url);
+
 
         if (msg.sender == amVoteMachine) {
               //Founder decision
@@ -365,6 +368,8 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         currSeed.pid2AMpid[currSeed.winningProposal] = currSeed.winpid;
 
         emit NewAMProposal(_id, currSeed.winpid);
+        //add the pid to the pid2id arrays (for the callback interface functions)
+        pid2id[currSeed.winpid] = _id;
 
     }
 
@@ -416,7 +421,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         parent.transfer(portion);
         seeds[id].proposals[_pid].proposer.transfer(threshold - portion*2);
 
-        emit ApprovedExecution(id, _pid, seeds[id].winpid);
+        emit ApprovedExecution(id, _pid, seeds[id].winningProposal);
     }
 
     function vetoExecution(bytes32 _pid) public {
@@ -425,7 +430,7 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         require(seeds[id].winpid == _pid, "required _pid is winnigProposal");
         require(seeds[id].status == 2, "requiring status == 2");
 
-        emit VetoedExecution(id, _pid, seeds[id].winpid);
+        emit VetoedExecution(id, _pid, seeds[id].winningProposal);
 
         seeds[id].status = 1;
         seeds[id].winningProposal = 0;
