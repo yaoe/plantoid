@@ -18,7 +18,7 @@ class TestSetup {
   }
 }
 
-const setup = async function (accounts,artist=accounts[0],parent=accounts[0], threshold=100,proxyAdmin=accounts[5]) {
+const setup = async function (accounts,artist=accounts[0],parent=accounts[0], threshold=100) {
   var testSetup = new TestSetup();
   //deploy staking token
 //  testSetup.stakingToken = await ERC827TokenMock.new(accounts[1],1000);
@@ -35,7 +35,7 @@ const setup = async function (accounts,artist=accounts[0],parent=accounts[0], th
   var plantoidFactory = await PlantoidFactory.new();
   await plantoidFactory.initialize(appInstance.address);
   var tx = await plantoidFactory.createPlantoid(threshold,
-                                                 [artist,parent,proxyAdmin],
+                                                 [artist,parent],
                                                  [testSetup.amMachine.address,testSetup.genesisProtocol.address],
                                                  [artist, accounts[3], accounts[4]],
                                                  version,

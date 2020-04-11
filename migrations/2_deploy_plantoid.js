@@ -15,7 +15,6 @@ var threshold = 100;
 var artist = "0xC67Ff51c2c79F0036493B51e12560f94291fEF98";
 var ganache2 = "0xb913BFd7A9a2B3E40864CFa08637848e37E5a042";
 var ganache1 = "0x95200d9955C6A01495ceDEADe04B62909736e3a9";
-var proxyAdmin = "0x95200d9955C6A01495ceDEADe04B62909736e3a9";
 
 var packageName = "Plantoid";
 var version = [0,1,0];
@@ -39,7 +38,7 @@ module.exports = async function(deployer,network,provider) {
       console.log("am",absoluteVote.address);
 
       var tx = await plantoidFactory.createPlantoid(threshold,
-                                                     [artist,artist,proxyAdmin],
+                                                     [artist,artist],
                                                      [absoluteVote.address,genesisProtocol.address],
                                                      [artist, ganache2, ganache1],
                                                      version,

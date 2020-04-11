@@ -24,11 +24,14 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface, 
     event VetoedExecution(uint256 id, bytes32 winpid, bytes32 pid);
     event ReputationOf(address _owner, uint256 rep);
     event NewAMProposal(uint256 id, bytes32 winpid);
+    event UpgradeProposal(bytes32 indexed _pid);
+
 
     address payable public artist;
     address payable public parent;
     uint256 public threshold;
-
+    //mapping between proposal to new implemntation address
+    mapping (bytes32 => address) public upgradedProxyProposals;
     //list of Seeds
     mapping (uint256 => Seed) public seeds;
     uint256 public seedCnt;
@@ -156,20 +159,29 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface, 
         uint256 id = pid2id[pid];
         address proposer = seeds[id].proposals[pid].proposer;
         string memory url = seeds[id].proposals[pid].url;
-
-
         emit ExecuteProposal(id, pid, decision, proposer, proposer.balance, url);
 
-
         if (msg.sender == amVotingMachine) {
-              //Founder decision
-            require(seeds[id].status == 2, "require status to be 2");
-            if (decision == 1) {
-                approveExecution(pid);
+            if (upgradedProxyProposals[pid] != address(0)) {
+                address newImplemntation = upgradedProxyProposals[pid];
+                upgradedProxyProposals[pid] = address(0);
+                if (decision == 1) {
+                    (bool success, ) =
+                    // solhint-disable-next-line avoid-low-level-calls
+                    address(this).call(abi.encodeWithSignature("upgradeTo(address)", newImplemntation));
+                    require(success, "upgrade platoind failed");
+                }
                 return true;
             } else {
-                vetoExecution(pid);
-                return false;
+            //Founder decision
+                require(seeds[id].status == 2, "require status to be 2");
+                if (decision == 1) {
+                    approveExecution(pid);
+                    return true;
+                } else {
+                    vetoExecution(pid);
+                    return false;
+                }
             }
         }
 
@@ -189,6 +201,13 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface, 
     onlyVotingMachine
     returns(bool) {
         return _stakingToken.transfer(_beneficiary, _amount);
+    }
+
+    function upgradedProxyProposal(address _newImplemetation)
+    external {
+        bytes32 pid = AbsoluteVote(amVotingMachine).propose(2, amParams, msg.sender, address(0));
+        upgradedProxyProposals[pid] = _newImplemetation;
+        emit UpgradeProposal(pid);
     }
 
     function getAdmins() external view returns ( address[] memory) {
@@ -252,19 +271,6 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface, 
         emit NewProposal(_id, newprop.id, msg.sender, _url);
         //add the pid to the pid2id arrays (for the callback interface functions)
         pid2id[newprop.id] = _id;
-    }
-
-//this function is called when a submitted proposal is approved by the Contributor's reputation chamber
-    function addAMProposal(uint256 _id) public ifStatus(_id, 2) {
-        Seed storage currSeed = seeds[_id]; // try with 'memory' instead of 'storage'
-
-        currSeed.winpid = AbsoluteVote(amVotingMachine).propose(2, amParams, msg.sender, address(0));
-        currSeed.pid2AMpid[currSeed.winningProposal] = currSeed.winpid;
-
-        emit NewAMProposal(_id, currSeed.winpid);
-        //add the pid to the pid2id arrays (for the callback interface functions)
-        pid2id[currSeed.winpid] = _id;
-
     }
 
     function voteProposal(uint256 _id, bytes32 _pid, uint256 _vote) public ifStatus(_id, 1) {
@@ -385,6 +391,18 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface, 
             seeds[seedCnt].id = seedCnt;
             seeds[seedCnt].reputation = new Reputation();
         }
+    }
+
+    //this function is called when a submitted proposal is approved by the Contributor's reputation chamber
+    function addAMProposal(uint256 _id) private ifStatus(_id, 2) {
+        Seed storage currSeed = seeds[_id]; // try with 'memory' instead of 'storage'
+
+        currSeed.winpid = AbsoluteVote(amVotingMachine).propose(2, amParams, msg.sender, address(0));
+        currSeed.pid2AMpid[currSeed.winningProposal] = currSeed.winpid;
+
+        emit NewAMProposal(_id, currSeed.winpid);
+        //add the pid to the pid2id arrays (for the callback interface functions)
+        pid2id[currSeed.winpid] = _id;
     }
 
 }

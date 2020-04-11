@@ -18,11 +18,11 @@ contract PlantoidFactory is Initializable {
 
     /**
      * @dev Create a new palntoid
+     * the proxy admin is the plantoid (the dao)
      * @param _threshold threshold
      * @param _addresses addresses
      *  addresses[0] - artist
      *  addresses[1] - parent
-     *  addresses[2] - proxyAdmin
      * @param _votingMachines VotingMachines
      *  VotingMachines[0] - absoluteVote
      *  VotingMachines[1] - genesisProtocol
@@ -31,24 +31,23 @@ contract PlantoidFactory is Initializable {
     */
     function createPlantoid (
         uint256 _threshold,
-        address[3] calldata _addresses,
+        address[2] calldata _addresses,
         address[2] calldata _votingMachines,
         address[] calldata _owners,
         uint64[3] calldata _version)
         external
         returns(address) {
-            require(_addresses[2] != _addresses[0], "proxy admin cannot be artist");
-            require(_addresses[2] != _addresses[1], "proxy admin cannot be parent");
         //calling private function due to "stack too deep issue".
-            address proxy =  _createPlantoid(
+            AdminUpgradeabilityProxy plantoid =  _createPlantoid(
             _threshold,
             _addresses,
             _votingMachines,
             _owners,
             _version
         );
-            emit ProxyCreated(proxy);
-            return proxy;
+            plantoid.changeAdmin(address(plantoid));
+            emit ProxyCreated(address(plantoid));
+            return address(plantoid);
         }
 
     /**
@@ -57,12 +56,12 @@ contract PlantoidFactory is Initializable {
     */
     function _createPlantoid (
         uint256 _threshold,
-        address[3] memory _addresses,
+        address[2] memory _addresses,
         address[2] memory _votingMachines,
         address[] memory _owners,
         uint64[3] memory _version)
         private
-        returns(address) {
+        returns(AdminUpgradeabilityProxy) {
             uint64[3] memory packageVersion;
             Package package;
             uint64[3] memory latestVersion;
@@ -75,7 +74,7 @@ contract PlantoidFactory is Initializable {
             }
             ImplementationProvider provider = ImplementationProvider(package.getContract(packageVersion));
             address implementation = provider.getImplementation("Plantoid");
-            return address((new AdminUpgradeabilityProxy).value(msg.value)(implementation, _addresses[2],
+            return (new AdminUpgradeabilityProxy).value(msg.value)(implementation, address(this),
             abi.encodeWithSignature(
                 "initialize(address,address,uint256,address,address,address[])",
                 _addresses[0],
@@ -83,6 +82,6 @@ contract PlantoidFactory is Initializable {
                 _threshold,
                 _votingMachines[0],
                 _votingMachines[1],
-                _owners)));
+                _owners));
         }
 }
