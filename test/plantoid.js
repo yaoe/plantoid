@@ -2,39 +2,47 @@ const Plantoid = artifacts.require("./Plantoid.sol");
 //var ERC827TokenMock = artifacts.require("./ERC827TokenMock.sol");
 var GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 var AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
-var Proxy = artifacts.require("./Proxy.sol");
+const App = artifacts.require("./App.sol");
+const Package = artifacts.require("./Package.sol");
+var ImplementationDirectory = artifacts.require("./ImplementationDirectory.sol");
+var PlantoidFactory = artifacts.require("./PlantoidFactory.sol");
 
+var packageName = "Plantoid";
+var version = [0,1,0];
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 class TestSetup {
   constructor() {
   }
 }
 
-const setup = async function (accounts,artist=accounts[0],parent=accounts[0], threshold=100) {
+const setup = async function (accounts,artist=accounts[0],parent=accounts[0], threshold=100,proxyAdmin=accounts[5]) {
   var testSetup = new TestSetup();
-
   //deploy staking token
 //  testSetup.stakingToken = await ERC827TokenMock.new(accounts[1],1000);
   //deploy genesisProtocol
   testSetup.genesisProtocol = await GenesisProtocol.new(NULL_ADDRESS,{gas:6000000});
   testSetup.amMachine = await AbsoluteVote.new({gas:6000000});
+  var packageInstance = await Package.new();
+  var appInstance = await App.new();
+  var implementationDirectory = await ImplementationDirectory.new();
+  await packageInstance.addVersion(version,implementationDirectory.address,NULL_HASH);
+  await appInstance.setPackage(packageName,packageInstance.address,version);
+  var plantoidImplementation = await Plantoid.new();
+  await implementationDirectory.setImplementation("Plantoid",plantoidImplementation.address);
+  var plantoidFactory = await PlantoidFactory.new();
+  await plantoidFactory.initialize(appInstance.address);
+  var tx = await plantoidFactory.createPlantoid(threshold,
+                                                 [artist,parent,proxyAdmin],
+                                                 [testSetup.amMachine.address,testSetup.genesisProtocol.address],
+                                                 [artist, accounts[3], accounts[4]],
+                                                 version,
+                                                 {gas:6000000});
 
-  //deploy proxy
-  testSetup.proxy = await Proxy.new(artist,parent,threshold);
-  //deploy plantoid
-  var plantoid = await Plantoid.new();
 
-  await testSetup.proxy.upgradeTo(plantoid.address);
-
-  testSetup.plantoid = await Plantoid.at(testSetup.proxy.address);
-
-  await testSetup.plantoid.init();
-  await testSetup.plantoid.setHCVotingMachine(testSetup.genesisProtocol.address);
-  await testSetup.plantoid.setAMVotingMachine(testSetup.amMachine.address, [artist, accounts[3], accounts[4]]);
-  var amParams = await testSetup.plantoid.amParams();
-  console.log( await testSetup.amMachine.parameters(amParams));
+  testSetup.plantoid = await Plantoid.at(tx.logs[0].args._proxy);
   testSetup.artist = artist;
 
   return testSetup;
