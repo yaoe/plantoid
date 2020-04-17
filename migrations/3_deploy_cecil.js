@@ -23,8 +23,8 @@ module.exports = async function(deployer,network,provider) {
       var AMmachine = await deployer.deploy(AbsoluteVote, {gas:6000000});
       await cecil.init();
       await cecil.setHCVotingMachine(genesisProtocol.address);
-      await cecil.setAMVotingMachine(AMmachine.address, [artist, ganache2, ganache1]);
+      await cecil.setAMVotingMachine(AMmachine.address, [plantoid, ganache2, ganache1]);
 
-      console.log("sh deploy.sh",proxy.address,genesisProtocol.address,AMmachine.address);
+      console.log("sh deploy-cecil.sh",cecil.address,genesisProtocol.address,AMmachine.address);
   });
 };
