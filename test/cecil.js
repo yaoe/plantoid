@@ -22,25 +22,30 @@ const setup = async function (accounts,parent=accounts[0], threshold=100) {
   testSetup.genesisProtocol = await GenesisProtocol.new(NULL_ADDRESS,{gas:6000000});
   testSetup.amMachine = await AbsoluteVote.new({gas:6000000});
 
+
   //deploy proxy
-  testSetup.proxy = await Proxy.new(parent,parent,threshold);
+//  testSetup.proxy = await Proxy.new(parent,parent,threshold);
+
   //deploy plantoid
   var plantoid = await Plantoid.new();
 
-  await testSetup.proxy.upgradeTo(plantoid.address);
-
-  var cecil = await Cecil.new(testSetup.proxy.address);
+//  await testSetup.proxy.upgradeTo(plantoid.address);
 
 
-  testSetup.plantoid = await Plantoid.at(testSetup.proxy.address);
+  //var cecil = await Cecil.new(testSetup.proxy.address);
+
+  var cecil = await Cecil.new("0xC67Ff51c2c79F0036493B51e12560f94291fEF98");
+  //var cecil = await Cecil.new(plantoid.address);
+
+//  testSetup.plantoid = await Plantoid.at(testSetup.proxy.address);
   testSetup.cecil    = await Cecil.at(cecil.address);
 
   await testSetup.cecil.init();
   await testSetup.cecil.setHCVotingMachine(testSetup.genesisProtocol.address);
-  await testSetup.cecil.setAMVotingMachine(testSetup.amMachine.address, [artist, accounts[3], accounts[4]]);
+  await testSetup.cecil.setAMVotingMachine(testSetup.amMachine.address, [accounts[2], accounts[3], accounts[4]]);
   var amParams = await testSetup.cecil.amParams();
   console.log( await testSetup.amMachine.parameters(amParams));
-  testSetup.artist = artist;
+  //testSetup.artist = artist;
 
   return testSetup;
 };
@@ -93,15 +98,29 @@ contract('Cecil',  accounts =>  {
       console.log(">>account2 rep",(await testSetup.cecil.reputationOfHC(accounts[2],proposalId)).toNumber(), "propID =", proposalId);
       assert.equal((await testSetup.cecil.proposals(proposalId)).status, 1);
       tx = await testSetup.cecil.voteProposal(proposalId,1,{from:accounts[2]});
+      console.log(">>voted on " + proposalId);
       assert.equal((await testSetup.cecil.proposals(proposalId)).status, 1);
       await testSetup.cecil.voteProposal(proposalId,1,{from:accounts[1],gas:1000000});
+      console.log(">>voted on " + proposalId);
       assert.equal((await testSetup.cecil.proposals(proposalId)).status, 2);
-      assert.equal((await testSetup.cecil.getAdminBalance(testSetup.artist))[1], 333);
-      var amProposalId = (await testSetup.cecil.winpid);
-      await testSetup.plantoid.voteAMProposal(amProposalId,1,{from:testSetup.artist,gas:1000000});
+      assert.equal((await testSetup.cecil.getAdminBalance(accounts[2]))[1], 333);
+      var amProposalId = (await testSetup.cecil.winpid());
+      console.log("trying to vote on windpid = " + amProposalId);
+      await testSetup.cecil.voteAMProposal(proposalId,1,{from:accounts[2],gas:1000000});
+      console.log(">>voted on AM " + amProposalId);
       assert.equal((await testSetup.cecil.proposals(proposalId)).status, 2);
-      await testSetup.plantoid.voteAMProposal(amProposalId,1,{from:accounts[3],gas:1000000});
-      assert.equal((await testSetup.cecil.proposals(proposalId)).status, 3);
+      console.log(">>status is ::: 2");
+      var ppp = await testSetup.cecil.plantoid();
+      console.log("transferring funds to... plantoid = " + ppp );
+      await testSetup.cecil.voteAMProposal(proposalId,2,{from:accounts[3],gas:1000000});
+      console.log(">>AM voted again 1");
+      assert.equal((await testSetup.cecil.proposals(proposalId)).status, 2);
+      await testSetup.cecil.voteAMProposal(proposalId,2,{from:accounts[4],gas:1000000});
+      console.log(">>AM voted again 2");
+    //  var statt = await testSetup.cecil.proposals(proposalId).status;
+    //  console.log(">>> status is " + statt);
+      assert.equal((await testSetup.cecil.proposals(proposalId)).status, 1);
+
 
   /*    //try to do the same with a different seeds
       await web3.eth.sendTransaction({from:accounts[1],to:testSetup.plantoid.address, value:100,gas:7000000});
