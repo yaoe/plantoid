@@ -169,9 +169,12 @@ var absolute = web3.eth.contract(ABS).at("BSOLUTE");
 
 
 var SeedCounter = 0;
-var SeedStatus = [];
-var SeedWinner = [];
+var PidStatus = [];
+var SeedWinners = [];
 var SeedLoosers = [];
+
+var pid2am = [];
+var am2pid = [];
 
 var AllPids = [];
 
@@ -269,13 +272,16 @@ var rows = 0;
         else {
 
           var pC = eev.length;
+          console.log("looping over eev.length = " + pC);
           for(var m = 0; m < pC; m++) {
             var res = eev[m].args;
             if(!SeedLoosers[res.id]) { SeedLoosers[res.id] = new Array(); }
             SeedLoosers[res.id].push(res.pid);
+            console.log("pushing " + res.pid + " into SeedLoosers[0]");
           }
+        }});
 
-      //first collect the list of loosing Proposals
+      //then collect the list of loosing Proposals
       cecil.ExecuteProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((err, ev) => {
         if(err)
           console.log('Error in ExecuteProposal handler: '+ err);
@@ -287,13 +293,15 @@ var rows = 0;
             for(var k = 0; k < propC; k++) {
               var results = ev[k].args;  console.log("curennt decision === " + results.decision);
 
-              if(! SeedStatus[results.id]) { console.log("returning........."); return; }
+              PidStatus[results.pid] = 2;
+
 
               if(SeedLoosers[results.id] && SeedLoosers[results.id].indexOf(results.pid)!= -1) { console.log("continueeeeeeee..."); continue; }
 
-              if((results.decision == 1) && (SeedStatus[results.id]==2)) {
-                SeedWinner[results.id] = results.pid;
-                console.log("we got a winer?!?!? " + SeedWinner[results.id] + "with seed status = " + SeedStatus[results.id]);
+              if((results.decision == 1)) {//&& (SeedStatus[results.id]==2)) {
+                if(!SeedWinners[results.id]) { SeedWinners[results.id] = new Array(); }
+                  SeedWinners[results.id].push(results.pid);
+                console.log("we got a winer?!?!? " + SeedWinners[results.id] + "with pid status = " + PidStatus[results.id]);
 
               } else {
                 console.log('inserting looser PID as === '+results.pid);
@@ -302,6 +310,7 @@ var rows = 0;
                 console.log("OVERALL ARRAY OF LOSERS: "+ SeedLoosers[results.id]);
               }
             }
+          }});
 
 
             //then collect the list of actual winner (overridding the ExecuteProposal with decision=1)
@@ -314,11 +323,31 @@ var rows = 0;
                 var pC = eev.length;
                 for(var m = 0; m < pC; m++) {
                   var res = eev[m].args;
-                  SeedWinner[res.id] = res.pid;
+                  SeedWinners[res.id].push(res.pid);
+                  PidStatus[res.pid] = 3;
 
                   console.log("we got a REAL winer?!?!?  == " + res.pid +"  ---------" + res.winpid);
 
                 }
+              }});
+
+                //also collect the list of proposals awaiting for approval (to populate the pid2am[] array)
+                cecil.NewAMProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((eerr, eev) => {
+                  if(eerr)
+                    console.log('Error in NewAMProposal handler: '+ eerr);
+
+                  else {
+
+                    var pC = eev.length;
+                    for(var m = 0; m < pC; m++) {
+                      var res = eev[m].args;
+                      console.log("AM::: " +  res.winpid + "   --- pid = " + res.pid);
+                      pid2am[res.pid] = res.winpid;
+                      am2pid[res.winpid] = res.pid;
+                    }
+                  }
+                });
+
 
 
 
@@ -335,7 +364,11 @@ var rows = 0;
             for(var j = 0; j < propCounter; j++) {
 
               var args = eventResult[j].args;
-             console.log("processing proposition ... " + args.url + " from ID = " + args.id + " of---- " + i);
+             console.log("processing proposition ... " + args.url );
+
+              if(! SeedWinners[args.id]) { SeedWinners[args.id] = new Array(); }
+              if(! SeedLoosers[args.id]) { SeedLoosers[args.id] = new Array(); }
+
 
               if(! AllPids[args.id]) { AllPids[args.id] = new Array(); }
               if(! AllPids[args.id].includes(args.pid)) {
@@ -346,13 +379,10 @@ var rows = 0;
               var w1 = ""; var w2 = "";
               var d = "";
 
-              console.log("checking if args.id (" + args.id +") === " + i);
               if(Number(args.id) == Number(i)) {
-                console.log("Yeeeeeeeeeeeees");
 
                   var cell = document.getElementById('Seedrow' + args.id);
                   var prop = document.getElementById("Proposal"+args.pid);
-
 
                   if(! prop) {
                      console.log('No prop for .....' + args.pid + '........ '+prop);
@@ -360,16 +390,13 @@ var rows = 0;
                     var g = document.createElement('div'); g.setAttribute("id", "Proposal"+args.pid);
                     cell.appendChild(g);
 
-                    console.log('SeedStatus ==>' + SeedStatus[args.id] + '.... with SeedWinner = ' + SeedWinner[args.id]);
+                    console.log("visualizing................   PID="+args.pid + " with status = " + PidStatus[args.pid]);
 
-
-
-
-                          if( (SeedStatus[args.id]==3) && (SeedWinner[args.id] == args.pid)) {
+                          if( (PidStatus[args.pid]==3) && (SeedWinners[args.id].indexOf(args.pid)!= -1) ) {
                             w1 = '<span class="winnerProp">';
                             w2 = '</span>';
                             d = 'disabled';
-                          } else if (SeedStatus[args.id]==3) {
+                          } else if (PidStatus[args.pid]==3) {
                             w1 = '<span class="looseProp">';
                             w2 = '</span>';
                             d = 'disabled';
@@ -377,17 +404,14 @@ var rows = 0;
                             w1 = '<span class="looseProp">';
                             w2 = '</span>';
                             d = 'disabled';
-                          } else if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
+                          } else if( (PidStatus[args.pid]==2) && (SeedWinners[args.id].indexOf(args.pid)!= -1) ) {
                             w1 = '<span class="winProp">';
                             w2 = '</span>';
                             d = 'disabled';
                           }
 
-
-
-
-
-                      g.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal # " + args.pid + " : <a href='"+args.url+"'>"+args.url+"</a>"+ w2 + " <br></span>"
+                      g.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal: <a href='"+args.url+"'>"+args.url+"</a> (requesting <b>" + args.amount +"</b> WEI's)" + w2 +"<br/></span>"
+                      g.innerHTML += "<span class='from'>PID: " + args.pid + "<br></span>";
                       g.innerHTML += "<span class='from'>(from: <i>"+args._proposer+"</i>) <br></span>";
                       g.innerHTML += '<input type="image" src="./assets/images/upvote' + d + '.png" height=25 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
                       g.innerHTML += "<span id='VotesPos"+args.pid+"'> 0% </span>";
@@ -400,7 +424,7 @@ var rows = 0;
                       cell.innerHTML += '<input type="image" src="./images/downvote.png" height=20 id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\', 2)"' +
                       ((SeedStatus[args.id]==1) && ( (!SeedLoosers[args.id]) || (SeedLoosers[args.id].indexOf(args.pid)==-1) ) || 'disabled') +'/> <br/>';
 */
-                      if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
+                      if( (SeedWinners[args.id].indexOf(args.pid)!= -1) && (PidStatus[args.pid] != 3)) {
                         showApproveVeto(args.id, args.pid)
                     //    g.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
                     //    g.innerHTML += '<button type="button" id="veto" onclick="VetoPid(\'' + args.pid + '\')">Veto</button>';
@@ -419,15 +443,7 @@ var rows = 0;
 
                 } else { console.log(args.id + " != " + i);}
               }
-          }
-      });
-    }
-  });
-}
-});
-
-}
-});
+          }});
 }
 
 
@@ -444,7 +460,8 @@ function updateVotesforPid(pid) {
 function updateVotesforPidPos(pid) {
   genesis.voteStatus.call(pid, 1, function(err, val) {
     var p = document.getElementById("VotesPos"+pid);
-    var n = val / totalRep[pid] * 100;
+    var n = 0;
+    if(totalRep[pid] != 0) { var n = val / totalRep[pid] * 100 }
     if(p) p.innerHTML = n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
   });
 }
@@ -452,7 +469,8 @@ function updateVotesforPidPos(pid) {
 function updateVotesforPidNeg(pid) {
   genesis.voteStatus.call(pid, 2, function(err, val) {
     var p = document.getElementById("VotesNeg"+pid);
-    var n = val / totalRep[pid] * 100;
+    var n = 0;
+    if(totalRep[pid] != 0) { var n = val / totalRep[pid] * 100; }
     if(p) p.innerHTML = n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
   });
 }
@@ -473,11 +491,11 @@ if(prop) {
 
 
 
-                            if( (SeedStatus[args.id]==3) && (SeedWinner[args.id] == args.pid)) {
+                            if( (PidStatus[args.pid]==3) && (SeedWinners[args.id].indexOf(args.pid)!= -1) ) {
                               w1 = '<span class="winnerProp">';
                               w2 = '</span>';
                               d = 'disabled';
-                            } else if (SeedStatus[args.id]==3) {
+                            } else if (PidStatus[args.pid]==3) {
                               w1 = '<span class="looseProp">';
                               w2 = '</span>';
                               d = 'disabled';
@@ -485,7 +503,7 @@ if(prop) {
                               w1 = '<span class="looseProp">';
                               w2 = '</span>';
                               d = 'disabled';
-                            } else if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
+                            } else if( (PidStatus[args.pid]==2) && (SeedWinners[args.id].indexOf(args.pid)!= -1) ) {
                               w1 = '<span class="winProp">';
                               w2 = '</span>';
                               d = 'disabled';
@@ -493,28 +511,34 @@ if(prop) {
 
 
 
+
+
+
 //  var spans = prop.querySelectorAll("span");
 //  var url = spans[0].querySelector("a");
-  var url = prop.querySelector("a");
-  var _proposer = prop.querySelector("i");
+  var url = prop.querySelector("a").innerHTML;
+  var _proposer = prop.querySelector("i").innerHTML;
+  var amount = prop.querySelector("b").innerHTML;
+  console.log(amount);
 
   prop.innerHTML = "";
 
-  prop.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal # " + args.pid + " : <a href='"+url+"'>"+url+"</a>"+ w2 + " <br></span>"
-  prop.innerHTML += "<span class='from'>(from: <i>"+_proposer.innerHTML+"</i>) <br></span>";
+  prop.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal: <a href='"+url+"'>"+url+"</a>"+ " (requesting <b>" + amount  +"</b> WEI's)" + w2 + " <br></span>"
+  prop.innerHTML += "<span class='from'>PID: " + args.pid + "<br></span>";
+  prop.innerHTML += "<span class='from'>(from: <i>"+_proposer +"</i>) <br></span>";
   prop.innerHTML += '<input type="image" src="./assets/images/upvote' + d + '.png" height=25 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
   prop.innerHTML += "<span id='VotesPos"+args.pid+"'> 00 </span>";
   prop.innerHTML += '<input type="image" src="./assets/images/downvote' + d + '.png" height=20 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 2)"' + d + '/>';
   prop.innerHTML += "<span id='VotesNeg"+args.pid+"'> 00 </span>";
 
-  if( (SeedStatus[args.id]==2) && (SeedWinner[args.id] == args.pid)) {
+  if( (SeedWinners[args.id].indexOf(args.pid)!= -1) && (PidStatus[args.pid] != 3)) {
     showApproveVeto(args.id, args.pid);
   //  prop.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
   //  prop.innerHTML += '<button type="button" id="veto" onclick="VetoPid(\'' + args.pid + '\')">Veto</button>';
-} else if (SeedStatus[args.id]!=3) { submitPropEnabled(1); }
+} else if (PidStatus[args.pid]!=3) { submitPropEnabled(1); }
 
   //prop.innerHTML += "<br/><br/>"
-  g.innerHTML += "<hr/>"
+  prop.innerHTML += "<hr/>"
 
 
   updateVotesforPid(args.pid);
@@ -534,7 +558,7 @@ function WinningProposal(args) {
 */
 
 
-  SeedWinner[args.id] = args.pid;
+  SeedWinners[args.id].push(args.pid);
   updateProposalbyPid(args)
 
 }
@@ -555,7 +579,7 @@ SeedLoosers[args.id].push(args.pid);
 function ApprovePid(id, winpid) {
 //    plantoid.approveExecution(args, function(err, values) {
     var _vote = 1;
-      cecil.voteAMProposal(id, winpid, _vote, function(err, values) {
+      cecil.voteAMProposal(winpid, _vote, function(err, values) {
           console.log("approving execution.... " );
     });
 }
@@ -565,7 +589,7 @@ function VetoPid(id, winpid) {
     var _vote = 2;
     console.log("vetoooing execution.... with following parameters : ID= "+id+" winpid = "+winpid );
 
-    cecil.voteAMProposal(id, winpid, _vote, function(err, values) {
+    cecil.voteAMProposal(winpid, _vote, function(err, values) {
           console.log("vetoooing execution.... " );
   });
 
@@ -581,11 +605,13 @@ function sendFunds() {
 }
 
 function sendProposal(id) {
-  var url = document.getElementById("propURL"+id).value;
-  var amount = document.getElementById("propAmount"+id).value;
-  cecil.addProposal(url, amount, function(err, values) {
+  var url = document.getElementById("propURL"+id);
+  var amount = document.getElementById("propAmount"+id);
+  cecil.addProposal(url.value, amount.value, function(err, values) {
     console.log("sending new proposal for ID "+ id + " : " + url);
   });
+  amount.value = "";
+  url.value = "";
 }
 
 function voteProposal(id, pid, vote) {
@@ -650,10 +676,12 @@ NewProposalEvent.watch(function(err, result) {
 });
 
 var NewAMProposalEvent = cecil.NewAMProposal();
-NewProposalEvent.watch(function(err, result) {
+NewAMProposalEvent.watch(function(err, result) {
   if(err) { console.log(err); return; }
-  console.log("New((((AM))))Proposal Event!");
-  document.getElementById("transactionLog").innerHTML += "The plantoid received a new AM proposal: "+ result.args.id+ " winpid: " + result.args.winpid+ "<br/>";
+  console.log("New((((AM))))Proposal Event!"); console.log(result);
+  pid2am[result.args.pid] = result.args.winpid;
+  am2pid[result.args.winpid] = result.args.pid;
+  document.getElementById("transactionLog").innerHTML += "The plantoid received a new AM proposal: "+ result.args.pid+ " winpid: " + result.args.winpid+ "<br/>";
 });
 
 var VotingProposalEvent = cecil.VotingProposal();
@@ -678,12 +706,12 @@ ExecuteProposalEvent.watch(function(err, result) {
 
       document.getElementById("transactionLog").innerHTML += "We got a winner !!@#!@  :DDD<br/>"
       + "id :" + result.args.id + " pid: " + result.args.pid + " winner address = " + result.args._proposer + "with previous balance = " + result.args.b4balance;
-      SeedStatus[result.args.id]=2; SeedWinner[result.args.id] = result.args.pid;
+      PidStatus[result.args.pid]=2; //SeedWinners[result.args.id].push(result.args.pid);
       WinningProposal(result.args);
 
   } else {
       document.getElementById("transactionLog").innerHTML += "We got a LOOSER !!@#!@  :DDD<br/>"
-      SeedStatus[result.args.id]=2;
+      PidStatus[result.args.pid]=2;
       LoosingProposal(result.args);
 
   }
@@ -694,7 +722,7 @@ VotingAMProposalEvent.watch(function(err, result) {
   if(err) { console.log(err); return; }
   console.log("VotingAMProposalEvent ! with winpid == " + result.args.pid);
 
-  updateAMVotes(result.args.pid);
+  updateAMVotes(am2pid[result.args.pid]);
 
 });
 //emit VotingAMProposal(_id, _pid, msg.sender, adminRep.balanceOf(msg.sender), _vote);
@@ -704,12 +732,12 @@ var ApprovedExecutionEvent = cecil.ApprovedExecution();
 ApprovedExecutionEvent.watch(function(err, result) {
   console.log("Approved Execution by artist ---> ")
 
-  SeedStatus[result.args.id] = 3;
-  SeedWinner[result.args.id] = result.args.pid;
+  PidStatus[result.args.pid] = 3;
+  SeedWinners[result.args.id].push(result.args.pid);
 
   //UpdateProposals4Seed(result.args.id);
   for(var y=0; y < AllPids[result.args.id].length; y++) {
-    console.log("UPdating the following ::: " + AllPids[result.args.id][y]);
+    console.log("Updating the following ::: " + AllPids[result.args.id][y]);
     console.log(AllPids[result.args.id]);
 
     var myObj = new Object();
@@ -730,8 +758,10 @@ VetoedExecutionEvent.watch(function(err, result) {
 
   SeedLoosers[result.args.id].push(result.args.pid);
 
-  SeedStatus[result.args.id] = 1;
-  SeedWinner[result.args.id] = 0;
+  PidStatus[result.args.pid] = 1;
+  const index = SeedWinners.indexof(result.args.pid);
+  if(index > -1) { SeedWinners.splice(index, 1); }
+  //SeedWinners[result.args.id] = 0;
 
   updateProposalbyPid(result.args);
 });
@@ -748,24 +778,13 @@ function submitPropEnabled(n) {
   }
 }
 
-function showApproveVeto(id, pid) {
+function showApproveVeto(id, winpid) {
 
-//    plantoid.getWinpid4Seed(id, function(e, v) {
 
-      cecil.getAMpid(pid, function(e,v) {
-//      var p = v[0]; var winpid = v[1];
-      var p = pid; var winpid = v;
-
-      console.log("WINPID ====== "+ winpid);
-      console.log("PID ===" + p);
-
-      var div = document.getElementById("Proposal"+p);
+      var div = document.getElementById("Proposal"+winpid);
       var g = document.getElementById("Vote-"+winpid);
 
-      submitPropEnabled(0);
-
-
-      console.log("GGGGG ----- " + g + "(and div ====== " + div);
+      submitPropEnabled(1);
 
       if(!g) {
         g = document.createElement('span'); g.setAttribute("id", "Vote-"+winpid);
@@ -774,40 +793,34 @@ function showApproveVeto(id, pid) {
         g.innerHTML += '<button type=button class="winpid-button" id="approve-'+winpid+ '" onClick="ApprovePid(\'' + id + '\',\'' + winpid + '\')">Approve</button>';
         g.innerHTML += '<button type=button class="winpid-button" id="veto-'+winpid +   '" onclick="VetoPid(\''    + id + '\',\'' + winpid + '\')">Veto</button>';
       }
-
-  //    cell.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
-
-
-      console.log("GGGGG ----- " + g + "(and div ====== " + div);
-
-
-      if(winpid) {
-
+        console.log("updating AM votes for " + winpid);
         updateAMVotes(winpid);
-
-      }
-
-
-
-
-
-  });
-
 
 }
 
 
-function updateAMVotes(winpid) {
+function updateAMVotes(pid) {
+
+  console.log("(1)))) called with the following PID: " + pid);
+  var winpid = pid2am[pid];
+  console.log("(1)))) new PID: " + winpid);
+
+
+
   absolute.voteStatus.call(winpid, 1, function(err, val) { // call voteStatus of AbsoluteVoting machine, to know how many votes on "yes"
-      var appr = document.getElementById("approve-"+winpid);
-      console.log("APPROVE VAL: " + val);
+      var pid = am2pid[winpid];
+      var appr = document.getElementById("approve-"+pid);
       if(appr) appr.innerHTML = "Approve: "+ val.toFixed(0)/10 + "%"; // will need to fix this once reputation starts changing !
     });
 
   absolute.voteStatus.call(winpid, 2, function(err, val) { // call voteStatus on AbsoluteVoting machine, to know how many votes on "no"
-      var veto = document.getElementById("veto-"+winpid);
-      console.log("VETO VAL: " + val);
+      var pid = am2pid[winpid];
+      var veto = document.getElementById("veto-"+pid);
       if(veto) veto.innerHTML = "Veto: " +  val.toFixed(0)/10 + "%";
+
+      console.log("(2) called with the following PID: " + winpid);
+      console.log("apppppppr@$# == " + veto);
+
     });
 }
 

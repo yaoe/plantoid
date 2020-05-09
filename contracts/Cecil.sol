@@ -15,7 +15,7 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     event GotDonation(address _donor, uint256 amount, uint256 _seed);
     event AcceptedDonation(address _donor, uint256 amount, uint256 _seed);
     event Reproducing(uint256 seedCnt);
-    event NewProposal(uint256 id, bytes32 pid, address _proposer, string url);
+    event NewProposal(uint256 id, bytes32 pid, address _proposer, string url, uint256 amount);
     event VotingProposal(uint256 id, bytes32 pid, address _voter, uint256 _reputation, uint256 _vote);
     event VotingAMProposal(uint256 id, bytes32 pid, address _voter, uint256 _reputation, uint256 _vote);
     event ExecuteProposal(uint256 id, bytes32 pid, int decision, address _proposer, uint256 b4balance, string url);
@@ -136,12 +136,11 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         fund();
     }
 
-    function mintReputation(uint256 _amount,address _beneficiary) external onlyVotingMachine returns(bool) {
-      //  uint256 id = pid2id[pid];
+    function mintReputation(uint256 _amount,address _beneficiary, bytes32) external onlyVotingMachine returns(bool) {
         return reputation.mint(_beneficiary, _amount);
     }
 
-    function burnReputation(uint256 _amount,address _beneficiary) external onlyVotingMachine returns(bool) {
+    function burnReputation(uint256 _amount,address _beneficiary, bytes32) external onlyVotingMachine returns(bool) {
       //  uint256 id = pid2id[pid];
         return reputation.burn(_beneficiary, _amount);
     }
@@ -159,10 +158,12 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
         if (msg.sender == amVoteMachine) {
               //Founder decision
-            require(proposals[pid].status == 2,"require status to be 2");
+            require(proposals[winningProposal].status == 2,"require status to be 2 (in Execute AM Proposal)");
+
             if (decision == 1) {
                 approveExecution(pid);
                 return true;
+
             } else {
                 vetoExecution(pid);
                 return false;
@@ -205,6 +206,10 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         } else if (msg.sender == hcVoteMachine) {
           //  uint256 id = pid2id[pid];
             return reputation.totalSupplyAt(proposals[pid].block);
+        }
+        else {   // if called by the web interface
+          uint256 rep = reputation.totalSupplyAt(proposals[pid].block);
+          return rep;
         }
     }
 
@@ -312,7 +317,7 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
         proposals[newprop.id] = newprop;
         nProposals++;
-        emit NewProposal(0, newprop.id, msg.sender, _url);
+        emit NewProposal(0, newprop.id, msg.sender, _url, _amount);
         //add the pid to the pid2id arrays (for the callback interface functions)
       //  pid2id[newprop.id] = _id;
     }
@@ -343,8 +348,10 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     function voteAMProposal(bytes32 _pid, uint256 _vote) public ifStatus(_pid, 2) {
 
-        AbsoluteVote(amVoteMachine).vote(_pid, _vote, 0, msg.sender);
-        emit VotingAMProposal(0, _pid, msg.sender, adminRep.balanceOf(msg.sender), _vote);
+        bytes32 AMpid = pid2AMpid[_pid];
+        emit VotingAMProposal(0, AMpid, msg.sender, adminRep.balanceOf(msg.sender), _vote);
+
+        AbsoluteVote(amVoteMachine).vote(AMpid, _vote, 0, msg.sender);
     }
 
     function getProposal(bytes32 _pid) public view returns(bytes32 pid, address from, string memory url) {
@@ -376,14 +383,14 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         //uint256 id = pid2id[_pid];
         require(winningProposal != 0, "require winning proposal");
         require(winpid == _pid, "require _pid is winningProposal");
-        require(proposals[_pid].status == 2, "requiring status == 2");
+        require(proposals[winningProposal].status == 2, "requiring status == 2 (in Approve Execution)");
 
-        proposals[_pid].status = 3;
+        proposals[winningProposal].status = 3;
 
-        uint256 portion = proposals[_pid].amount/10;
+        uint256 portion = proposals[winningProposal].amount/10;
+        require(portion == 10, "asserting that portion is 10");
         plantoid.transfer(portion);
-      //  parent.transfer(portion);
-        proposals[_pid].proposer.transfer(proposals[_pid].amount - portion);
+        proposals[winningProposal].proposer.transfer(proposals[winningProposal].amount - portion);
 
         emit ApprovedExecution(0, _pid, winningProposal);
     }
@@ -392,11 +399,11 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
           //require(msg.sender == artist);
       //  uint256 id = pid2id[_pid];
         require(winpid == _pid, "required _pid is winnigProposal");
-        require(proposals[_pid].status == 2, "requiring status == 2");
+        require(proposals[winningProposal].status == 2, "requiring status == 2");
 
         emit VetoedExecution(0, _pid, winningProposal);
 
-        proposals[_pid].status = 1;
+        proposals[winningProposal].status = 1;
         winningProposal = 0;
         winpid = 0;
         proposals[_pid].decision = 2;
