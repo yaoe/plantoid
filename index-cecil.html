@@ -439,7 +439,7 @@ var rows = 0;
                       updateVotesforPid(args.pid);
 
                     }
-                    else { console.log('PRPOSITION already exists...'); }
+                  //  else { console.log('PRPOSITION already exists...'); }
 
                 } else { console.log(args.id + " != " + i);}
               }
@@ -733,6 +733,7 @@ ApprovedExecutionEvent.watch(function(err, result) {
   console.log("Approved Execution by artist ---> ")
 
   PidStatus[result.args.pid] = 3;
+  if(!SeedWinners[result.args.id]) { SeedWinners[result.args.id] = new Array(); }
   SeedWinners[result.args.id].push(result.args.pid);
 
   //UpdateProposals4Seed(result.args.id);
@@ -755,13 +756,17 @@ VetoedExecutionEvent.watch(function(err, result) {
   console.log("VETOED Execution by artist --->  " + result.args.pid + " ---- AM : " + result.args.winpid);
 
   if(!SeedLoosers[result.args.id]) { SeedLoosers[result.args.id] = new Array(); }
+  if(!SeedWinners[result.args.id]) { SeedWinners[result.args.id] = new Array(); }
+
 
   SeedLoosers[result.args.id].push(result.args.pid);
 
   PidStatus[result.args.pid] = 1;
-  const index = SeedWinners.indexof(result.args.pid);
-  if(index > -1) { SeedWinners.splice(index, 1); }
+  const index = SeedWinners[result.args.id].indexOf(result.args.pid);
+  if(index > -1) { SeedWinners[result.args.id].splice(index, 1); }
   //SeedWinners[result.args.id] = 0;
+
+  console.log("updating proposal by PID...");
 
   updateProposalbyPid(result.args);
 });

@@ -388,11 +388,13 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         proposals[winningProposal].status = 3;
 
         uint256 portion = proposals[winningProposal].amount/10;
-        require(portion == 10, "asserting that portion is 10");
+      //  require(portion == 10, "asserting that portion is 10");
+
         plantoid.transfer(portion);
         proposals[winningProposal].proposer.transfer(proposals[winningProposal].amount - portion);
 
         emit ApprovedExecution(0, _pid, winningProposal);
+    
     }
 
     function vetoExecution(bytes32 _pid) public {
