@@ -117,9 +117,22 @@ contract('Cecil',  accounts =>  {
       assert.equal((await testSetup.cecil.proposals(proposalId)).status, 2);
       await testSetup.cecil.voteAMProposal(proposalId,1,{from:accounts[4],gas:1000000});
       console.log(">>AM voted again 2");
-    //  var statt = await testSetup.cecil.proposals(proposalId).status;
-    //  console.log(">>> status is " + statt);
       assert.equal((await testSetup.cecil.proposals(proposalId)).status, 3);
+
+      tx = await testSetup.cecil.addRepProposal(accounts[4], 1000, 1);
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "NewRepProposal");
+
+      var pid = tx.logs[0].args.pid;
+      console.log("new Rep Proposal with PID = "); console.log(pid);
+      await testSetup.cecil.voteRepProposal(pid,1,{from:accounts[2],gas:1000000});
+      await testSetup.cecil.voteRepProposal(pid,1,{from:accounts[3],gas:1000000});
+      console.log(">>account4 Admin rep",(await testSetup.cecil.reputationOfAdmin(accounts[4])).toNumber());
+
+
+
+
+
 
 
   /*    //try to do the same with a different seeds

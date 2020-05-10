@@ -25,6 +25,8 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     event VetoedExecution(uint256 id, bytes32 winpid, bytes32 pid);
     event ReputationOf(address _owner, uint256 rep);
     event NewAMProposal(bytes32 pid, bytes32 winpid);
+    event NewRepProposal(bytes32 pid, address receiver, int rep, uint256 typ);
+
 
 // NEVER TOUCH
     uint256 public save1;
@@ -52,6 +54,8 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     mapping(bytes32=>Proposal) public proposals;
     mapping(bytes32=>bytes32) public pid2AMpid;
 
+    mapping(bytes32=>RepProposal) public repProposals;
+
 
     //list of the current administrators of the Plantoid
     address[] public administrators;
@@ -73,7 +77,9 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     uint256 private constant TOTAL_AM_REP_SUPPLY = 1000;//cannot be less than 100
     //bytes32 public amOrgHash;
 
-
+// REPUTATION TYPE CONSTANTS
+   uint256 private constant ADMIN = 1;
+   uint256 private constant CONTRIB = 2;
 
 // TILL HERE
 
@@ -111,6 +117,14 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         uint256 status;
         uint256 amount;
     }
+
+    struct RepProposal {
+        bytes32 id;
+        int decision;
+        address receiver;
+        int rep;
+        uint256 typ; // 1 = ADMIN; 2 = CONTRIB;
+    }
 /*
     struct Seed {
         uint256 id;
@@ -137,11 +151,22 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     }
 
     function mintReputation(uint256 _amount,address _beneficiary, bytes32) external onlyVotingMachine returns(bool) {
+
+    /*  Reputation  rep;
+
+      if     (msg.sender == amVoteMachine) { rep = adminRep; }
+      else if(msg.sender == hcVoteMachine) { rep = reputation; } */
+
         return reputation.mint(_beneficiary, _amount);
     }
 
     function burnReputation(uint256 _amount,address _beneficiary, bytes32) external onlyVotingMachine returns(bool) {
-      //  uint256 id = pid2id[pid];
+
+    /*  Reputation  rep;
+
+      if     (msg.sender == amVoteMachine) { rep = adminRep; }
+      else if(msg.sender == hcVoteMachine) { rep = reputation; } */
+
         return reputation.burn(_beneficiary, _amount);
     }
 
@@ -149,15 +174,30 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     function executeProposal(bytes32 pid, int decision) external onlyVotingMachine  returns(bool) {
 
       //  uint256 id = pid2id[pid];
-        address proposer = proposals[pid].proposer;
-        string memory url = proposals[pid].url;
 
+        if (msg.sender == amVoteMachine) {     //Administrator's decision
 
-        emit ExecuteProposal(0, pid, decision, proposer, proposer.balance, url);
+          if(repProposals[pid].id != 0) {   // Reputation proposal  (the pid exists in the mapping array)
 
+            Reputation  rep;
 
-        if (msg.sender == amVoteMachine) {
-              //Founder decision
+            if(decision == 1) {
+
+              if     (repProposals[pid].typ == ADMIN)   {  rep = adminRep; }
+              else if(repProposals[pid].typ == CONTRIB) { rep = reputation; }
+
+                if(repProposals[pid].rep > 0) {
+                  rep.mint(repProposals[pid].receiver, uint256( repProposals[pid].rep ));
+
+                } else {
+                  rep.burn(repProposals[pid].receiver, uint256( - repProposals[pid].rep ));
+                }
+
+              }
+            } // end repProposal
+
+          else {                  // AM proposal
+
             require(proposals[winningProposal].status == 2,"require status to be 2 (in Execute AM Proposal)");
 
             if (decision == 1) {
@@ -170,8 +210,15 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
               }
         }
 
-          //else:  Contributor decision
+      } else {    //else:  Contributor decision
+
         require(proposals[pid].status == 1, "require status to be 1");
+
+        address proposer = proposals[pid].proposer;
+        string memory url = proposals[pid].url;
+
+        emit ExecuteProposal(0, pid, decision, proposer, proposer.balance, url);
+
         proposals[pid].decision = decision;
 
         if (decision == 1) {
@@ -180,11 +227,10 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
             addAMProposal(pid);
         }
     }
+  }
 
     function stakingTokenTransfer(IERC20 _stakingToken, address _beneficiary,uint256 _amount,bytes32)
-    external
-    onlyVotingMachine
-    returns(bool) {
+    external onlyVotingMachine returns(bool) {
         return _stakingToken.transfer(_beneficiary,_amount);
     }
 
@@ -203,6 +249,7 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     function getTotalReputationSupply(bytes32 pid) external view returns(uint256) {
         if (msg.sender == amVoteMachine) {
             return adminRep.totalSupply();
+
         } else if (msg.sender == hcVoteMachine) {
           //  uint256 id = pid2id[pid];
             return reputation.totalSupplyAt(proposals[pid].block);
@@ -219,9 +266,13 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     }
 
     function reputationOfHC(address _owner, bytes32 pid) view external returns(uint256) {
-      //Contributor vote
-      //  uint256 id = pid2id[pid];
+
         return reputation.balanceOfAt(_owner, proposals[pid].block);
+    }
+
+    function reputationOfAdmin(address _owner) view external returns(uint256) {
+
+        return adminRep.balanceOf(_owner);
     }
 
     function reputationOf(address _owner, bytes32 pid) view external returns(uint256) {
@@ -335,6 +386,27 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     }
 
+    function addRepProposal(address _receiver, int _rep, uint256 _type) public { // type 1 = Admin, 2 = Contributors
+
+      RepProposal memory repprop;
+      repprop.id = AbsoluteVote(amVoteMachine).propose(2, amParams, msg.sender, address(0));
+      repprop.receiver = _receiver;
+      repprop.rep = _rep;
+      repprop.typ = _type;
+
+      emit NewRepProposal(repprop.id, _receiver, _rep, _type);
+
+      repProposals[repprop.id] = repprop;
+
+    }
+
+    function voteRepProposal(bytes32 _pid, uint256 _vote) public {
+
+      AbsoluteVote(amVoteMachine).vote(_pid, _vote, 0, msg.sender);
+
+    }
+
+
     function voteProposal(bytes32 _pid, uint256 _vote) public { //ifStatus(_id, 1) {
 
         //Seed storage currSeed = seeds[pid2id[_pid]];
@@ -394,7 +466,7 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         proposals[winningProposal].proposer.transfer(proposals[winningProposal].amount - portion);
 
         emit ApprovedExecution(0, _pid, winningProposal);
-    
+
     }
 
     function vetoExecution(bytes32 _pid) public {
