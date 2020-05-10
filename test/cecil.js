@@ -115,11 +115,11 @@ contract('Cecil',  accounts =>  {
       await testSetup.cecil.voteAMProposal(proposalId,2,{from:accounts[3],gas:1000000});
       console.log(">>AM voted again 1");
       assert.equal((await testSetup.cecil.proposals(proposalId)).status, 2);
-      await testSetup.cecil.voteAMProposal(proposalId,2,{from:accounts[4],gas:1000000});
+      await testSetup.cecil.voteAMProposal(proposalId,1,{from:accounts[4],gas:1000000});
       console.log(">>AM voted again 2");
     //  var statt = await testSetup.cecil.proposals(proposalId).status;
     //  console.log(">>> status is " + statt);
-      assert.equal((await testSetup.cecil.proposals(proposalId)).status, 1);
+      assert.equal((await testSetup.cecil.proposals(proposalId)).status, 3);
 
 
   /*    //try to do the same with a different seeds
