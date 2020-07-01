@@ -50,6 +50,35 @@ contract PlantoidFactory is Initializable {
             return address(plantoid);
         }
 
+        /**
+         * @dev Create a new Cecil
+         * the proxy admin is the Cecil (the dao)
+         * @param _votingMachines VotingMachines
+         *  VotingMachines[0] - absoluteVote
+         *  VotingMachines[1] - genesisProtocol
+         * @param _owners - array of initial owners (for the absoluteVote)
+         * @return The address of the new platoind created
+        */
+    function createCecil (
+        address[2] calldata _votingMachines,
+        address[] calldata _owners,
+        address payable _beneficiary,
+        uint64[3] calldata _version)
+        external
+        returns(address) {
+        //calling private function due to "stack too deep issue".
+            AdminUpgradeabilityProxy cecil =  _createCecil(
+            _votingMachines,
+            _owners,
+            _beneficiary,
+            _version
+        );
+            cecil.changeAdmin(address(cecil));
+            emit ProxyCreated(address(cecil));
+            return address(cecil);
+        }
+
+
     /**
      * @dev Create a new palntoid
      * @return The address of the new platoind created
@@ -83,5 +112,37 @@ contract PlantoidFactory is Initializable {
                 _votingMachines[0],
                 _votingMachines[1],
                 _owners));
+        }
+
+    /**
+     * @dev Create a new cecil
+     * @return The address of the new platoind created
+    */
+    function _createCecil (
+        address[2] memory _votingMachines,
+        address[] memory _owners,
+        address payable _beneficiary,
+        uint64[3] memory _version)
+        private
+        returns(AdminUpgradeabilityProxy) {
+            uint64[3] memory packageVersion;
+            Package package;
+            uint64[3] memory latestVersion;
+            (package, latestVersion) = app.getPackage(PACKAGE_NAME);
+            if (package.getContract(_version) == address(0)) {
+                require(package.getContract(latestVersion) != address(0), "ImplementationProvider does not exist");
+                packageVersion = latestVersion;
+            } else {
+                packageVersion = _version;
+            }
+            ImplementationProvider provider = ImplementationProvider(package.getContract(packageVersion));
+            address implementation = provider.getImplementation("Cecil");
+            return (new AdminUpgradeabilityProxy).value(msg.value)(implementation, address(this),
+            abi.encodeWithSignature(
+                "initialize(address,address,address[],address)",
+                _votingMachines[0],
+                _votingMachines[1],
+                _owners,
+                _beneficiary));
         }
 }

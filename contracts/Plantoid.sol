@@ -48,7 +48,6 @@ contract Plantoid is ProposalExecuteInterface, VotingMachineCallbacksInterface, 
 // GENESIS PROTOCOL VARIABLES
 
     address public hcVotingMachine;
-    address public votingMachine;
     bytes32 public genesisParams;
 
 // ABSOLUTE MAJORITY VM

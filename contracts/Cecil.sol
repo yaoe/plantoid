@@ -7,9 +7,6 @@ import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
 import "@daostack/infra/contracts/VotingMachines/AbsoluteVote.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
-
-
-
 contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     event GotDonation(address _donor, uint256 amount, uint256 _seed);
@@ -29,13 +26,8 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
 
 // NEVER TOUCH
-    uint256 public save1;
-    //uint256 public save2;
 
-    address public owner;
-    address payable public  plantoid;
-    address payable public parent;
-    uint256 public threshold;
+    address payable public  beneficiary;
 
 // Variables formely assigned to Seed's
     uint256 public weiRaised;
@@ -92,13 +84,6 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         _;
     }
 
-    /**
-     * @dev Throws if called by any account other than the owner.
-     */
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
 
     struct Proposal {
         bytes32 id;
@@ -118,9 +103,39 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         uint256 typ; // 1 = ADMIN; 2 = CONTRIB;
     }
 
-    constructor(address payable _plantoid) public {
-        plantoid = _plantoid;
-        owner = msg.sender;
+    /**
+    * @dev initialize
+    */
+    function initialize(address _amVotingMachine,
+                        address _hcVotingMachine,
+                        address[] calldata _owners,
+                        address payable _beneficiary)
+    external
+    initializer {
+        amVotingMachine = _amVotingMachine;
+        hcVotingMachine = _hcVotingMachine;
+        beneficiary = _beneficiary;
+        uint256[11] memory genesisProtocolParams = [
+            uint256(50),     //_queuedVoteRequiredPercentage=50,
+            11557600,     //_queuedVotePeriodLimit=60, (in seconds) -- 3 months
+            300,     //_boostedVotePeriodLimit=60,
+            300,    //_preBoostedVotePeriodLimit
+            2000,   //_thresholdConst
+            60,     //_quietEndingPeriod
+            0,      //_proposingRepReward
+            0,      //_votersReputationLossRatio
+            1 ether,      //_minimumDaoBounty
+            10,      //_daoBountyConst = 15,
+            0 //_activationTime
+        ];
+        genesisParams = GenesisProtocol(hcVotingMachine).setParameters(genesisProtocolParams, address(this));
+        amParams = AbsoluteVote(amVotingMachine).setParameters(50, address(this));
+        adminRep = new Reputation();
+        // Increase the reputation of the donor (for that particular Seed)
+        for (uint256 i = 0; i < _owners.length; i++) {
+            administrators.push(_owners[i]);
+            adminRep.mint(_owners[i], TOTAL_AM_REP_SUPPLY/_owners.length);
+        }
     }
 
     // Simple callback function
@@ -229,14 +244,14 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
             return reputation.totalSupplyAt(proposals[pid].block);
         }
         else {   // if called by the web interface
-          uint256 rep = reputation.totalSupplyAt(proposals[pid].block);
-          return rep;
+            uint256 rep = reputation.totalSupplyAt(proposals[pid].block);
+            return rep;
         }
     }
 
     // FUNCTIONS for GenesisProtocolCallbacksInterface
     function getAdminsTotalReputationSupply() external view returns(uint256) {
-          return adminRep.totalSupply();
+        return adminRep.totalSupply();
     }
 
     function reputationOfHC(address _owner, bytes32 pid) view external returns(uint256) {
@@ -262,70 +277,14 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         }
     }
 
-
-    function init() public {
-        genesisProtocolParams = [
-        50,     //_queuedVoteRequiredPercentage=50,
-        11557600,     //_queuedVotePeriodLimit=60, (in seconds) -- 3 months
-        300,     //_boostedVotePeriodLimit=60,
-        300,    //_preBoostedVotePeriodLimit
-        2000,   //_thresholdConst
-        60,     //_quietEndingPeriod
-        0,      //_proposingRepReward
-        0,      //_votersReputationLossRatio
-        1 ether,      //_minimumDaoBounty
-        10,      //_daoBountyConst = 15,
-        0 //_activationTime
-        ];
-
-        reputation = new Reputation();
-    }
-
-    function setHCVotingMachine(address _voteM) public onlyOwner {
-        require(hcVoteMachine == address(0));
-        hcVoteMachine = _voteM;
-        emit NewVotingMachine(hcVoteMachine);
-        genesisParams = GenesisProtocol(hcVoteMachine).setParameters(genesisProtocolParams, address(this));
-        //orgHash = keccak256(abi.encodePacked(genesisParams, IntVoteInterface(hcVoteMachine), address(this)));
-    }
-
-    function setAMVotingMachine(address _voteM, address[] memory _owners) public onlyOwner {
-        require(amVoteMachine == address(0));
-        amVoteMachine = _voteM;
-        emit NewVotingMachine(amVoteMachine);
-        amParams = AbsoluteVote(amVoteMachine).setParameters(50, address(this));
-        //amOrgHash = keccak256(abi.encodePacked(amParams, IntVoteInterface(amVoteMachine), address(this)));
-
-        adminRep = new Reputation();
-        // Increase the reputation of the donor (for that particular Seed)
-        for (uint256 i = 0; i < _owners.length; i++) {
-            administrators.push(_owners[i]);
-            adminRep.mint(_owners[i], TOTAL_AM_REP_SUPPLY/_owners.length);
-        }
-    }
-
-    /*function getSeed(uint256 _id)
-        public
-        view
-        returns(uint256 status,
-                uint256 weis,
-                address reputation,
-                uint256 nProps,
-                bytes32 winner)
-    {
-        Seed storage seed = seeds[_id];
-        return (seed.status, seed.weiRaised, address(seed.reputation), seed.nProposals, seed.winningProposal);
-    }
-*/
-
     function getWinpid() public view returns (bytes32, bytes32) {
         bytes32 _winpid = winpid;
         return (winningProposal, _winpid);
     }
 
     function getAMpid(bytes32 _pid) public view returns (bytes32) {
-      bytes32 ampid = pid2AMpid[_pid];
-      return ampid;
+        bytes32 ampid = pid2AMpid[_pid];
+        return ampid;
     }
 
 // this function is called when a user submits a new proposal from the interface
@@ -343,8 +302,6 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         proposals[newprop.id] = newprop;
         nProposals++;
         emit NewProposal(0, newprop.id, msg.sender, _url, _amount);
-        //add the pid to the pid2id arrays (for the callback interface functions)
-      //  pid2id[newprop.id] = _id;
     }
 
 //this function is called when a submitted proposal is approved by the Contributor's reputation chamber
@@ -378,14 +335,12 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     function voteRepProposal(bytes32 _pid, uint256 _vote) public {
 
-      AbsoluteVote(amVoteMachine).vote(_pid, _vote, 0, msg.sender);
+        AbsoluteVote(amVoteMachine).vote(_pid, _vote, 0, msg.sender);
 
     }
 
-
     function voteProposal(bytes32 _pid, uint256 _vote) public { //ifStatus(_id, 1) {
 
-        //Seed storage currSeed = seeds[pid2id[_pid]];
         GenesisProtocol(hcVoteMachine).vote(_pid, _vote, 0, msg.sender);
         emit VotingProposal(0,
                             _pid,
@@ -396,10 +351,10 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     function voteAMProposal(bytes32 _pid, uint256 _vote) public ifStatus(_pid, 2) {
 
-        bytes32 AMpid = pid2AMpid[_pid];
-        emit VotingAMProposal(0, AMpid, msg.sender, adminRep.balanceOf(msg.sender), _vote);
+        bytes32 amPid = pid2AMpid[_pid];
+        emit VotingAMProposal(0, amPid, msg.sender, adminRep.balanceOf(msg.sender), _vote);
 
-        AbsoluteVote(amVoteMachine).vote(AMpid, _vote, 0, msg.sender);
+        AbsoluteVote(amVoteMachine).vote(amPid, _vote, 0, msg.sender);
     }
 
     function getProposal(bytes32 _pid) public view returns(bytes32 pid, address from, string memory url) {
@@ -417,13 +372,9 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         reputation.mint(msg.sender, donation);
 
         // Increase the amount of weiRaised (for that particular Seed)
-          weiRaised += donation;
+        weiRaised += donation;
 
-          emit AcceptedDonation(msg.sender, donation, 0);
-
-  //      while (funds > 0) {
-  //          funds = _fund(funds);
-  //      }
+        emit AcceptedDonation(msg.sender, donation, 0);
     }
 
     function approveExecution(bytes32 _pid) public {
@@ -438,7 +389,7 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         uint256 portion = proposals[winningProposal].amount/10;
       //  require(portion == 10, "asserting that portion is 10");
 
-        plantoid.transfer(portion);
+        beneficiary.transfer(portion);
         proposals[winningProposal].proposer.transfer(proposals[winningProposal].amount - portion);
 
         emit ApprovedExecution(0, _pid, winningProposal);
@@ -446,8 +397,6 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     }
 
     function vetoExecution(bytes32 _pid) public {
-          //require(msg.sender == artist);
-      //  uint256 id = pid2id[_pid];
         require(winpid == _pid, "required _pid is winnigProposal");
         require(proposals[winningProposal].status == 2, "requiring status == 2");
 
@@ -457,49 +406,6 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         winningProposal = 0;
         winpid = 0;
         proposals[_pid].decision = 2;
-     }
-
-    // Internal fund function
-  /*  function _fund(uint256 donation) internal { //returns(uint256 overflow) {
-
-    //    uint256 donation;
-    //    Seed storage currSeed = seeds[seedCnt];
-
-      // Check if there is an overflow
-    //    if (currSeed.weiRaised + _donation > threshold) {
-    //        overflow = currSeed.weiRaised + _donation - threshold;
-    //        donation = threshold - currSeed.weiRaised;
-    //    } else {
-    //        donation = _donation;
-    //        emit AcceptedDonation(msg.sender, donation, 0);
-    //    }
-
-
-      // instantiate a new Reputation system (DAOstack) if one doesnt exist
-      //  if ((reputation) == Reputation(0)) {
-      //      reputation = new Reputation();
-      //  }
-      // Increase the reputation of the donor (for that particular Seed)
-
-        reputation.mint(msg.sender, donation);
-
-        // Increase the amount of weiRaised (for that particular Seed)
-          weiRaised += donation;
-
-          emit AcceptedDonation(msg.sender, donation, 0);
-
-
-        if (currSeed.weiRaised >= threshold) {
-            emit Reproducing(seedCnt);
-            // change status of the seeds
-            seeds[seedCnt].status = 1;
-            // Create new Seed:
-            seedCnt++;
-            seeds[seedCnt].id = seedCnt;
-            seeds[seedCnt].reputation = new Reputation();
-        }
-
-
-    }  */
+    }
 
 }
