@@ -37,14 +37,6 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     address payable public parent;
     uint256 public threshold;
 
-    //list of Seeds
-  /*  mapping (uint256 => Seed) public seeds;
-    uint256 public seedCnt = 9;
-
-    //mapping between proposal to seed index
-    mapping (bytes32=>uint256) public pid2id;
-*/
-
 // Variables formely assigned to Seed's
     uint256 public weiRaised;
     Reputation public reputation;
@@ -78,8 +70,8 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     //bytes32 public amOrgHash;
 
 // REPUTATION TYPE CONSTANTS
-   uint256 private constant ADMIN = 1;
-   uint256 private constant CONTRIB = 2;
+    uint256 private constant ADMIN = 1;
+    uint256 private constant CONTRIB = 2;
 
 // TILL HERE
 
@@ -122,23 +114,9 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         bytes32 id;
         int decision;
         address receiver;
-        int rep;
+        int256 rep;
         uint256 typ; // 1 = ADMIN; 2 = CONTRIB;
     }
-/*
-    struct Seed {
-        uint256 id;
-        uint256 status;
-        uint256 weiRaised;
-        Reputation reputation;
-        uint256 nProposals;
-        bytes32 winningProposal;  // the pid of the winningProposal
-        bytes32 winpid;            // the pid of winningProposal for the AM voting machine
-        mapping(bytes32=>Proposal) proposals;
-        mapping(bytes32=>bytes32) pid2AMpid;
-    }
-*/
-
 
     constructor(address payable _plantoid) public {
         plantoid = _plantoid;
@@ -150,22 +128,12 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
         fund();
     }
 
-    function mintReputation(uint256 _amount,address _beneficiary, bytes32) external onlyVotingMachine returns(bool) {
-
-    /*  Reputation  rep;
-
-      if     (msg.sender == amVoteMachine) { rep = adminRep; }
-      else if(msg.sender == hcVoteMachine) { rep = reputation; } */
+    function mintReputation(uint256 _amount, address _beneficiary, bytes32) external onlyVotingMachine returns(bool) {
 
         return reputation.mint(_beneficiary, _amount);
     }
 
-    function burnReputation(uint256 _amount,address _beneficiary, bytes32) external onlyVotingMachine returns(bool) {
-
-    /*  Reputation  rep;
-
-      if     (msg.sender == amVoteMachine) { rep = adminRep; }
-      else if(msg.sender == hcVoteMachine) { rep = reputation; } */
+    function burnReputation(uint256 _amount, address _beneficiary, bytes32) external onlyVotingMachine returns(bool) {
 
         return reputation.burn(_beneficiary, _amount);
     }
@@ -173,28 +141,23 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     // FUNCTIONS for ProposalExecuteInterface
     function executeProposal(bytes32 pid, int decision) external onlyVotingMachine  returns(bool) {
 
-      //  uint256 id = pid2id[pid];
-
         if (msg.sender == amVoteMachine) {     //Administrator's decision
+            if (repProposals[pid].id != 0) {   // Reputation proposal  (the pid exists in the mapping array)
 
-          if(repProposals[pid].id != 0) {   // Reputation proposal  (the pid exists in the mapping array)
+                Reputation  rep;
 
-            Reputation  rep;
+                if (decision == 1) {
+                    if (repProposals[pid].typ == ADMIN) {
+                        rep = adminRep;
+                    } else if (repProposals[pid].typ == CONTRIB) { rep = reputation; }
 
-            if(decision == 1) {
-
-              if     (repProposals[pid].typ == ADMIN)   {  rep = adminRep; }
-              else if(repProposals[pid].typ == CONTRIB) { rep = reputation; }
-
-                if(repProposals[pid].rep > 0) {
-                  rep.mint(repProposals[pid].receiver, uint256( repProposals[pid].rep ));
-
-                } else {
-                  rep.burn(repProposals[pid].receiver, uint256( - repProposals[pid].rep ));
-                }
-
-              }
-            } // end repProposal
+                    if (repProposals[pid].rep > 0) {
+                        rep.mint(repProposals[pid].receiver, uint256(repProposals[pid].rep));
+                    } else {
+                        rep.burn(repProposals[pid].receiver, uint256(-repProposals[pid].rep));
+                    }
+                  }
+                } // end repProposal
 
           else {                  // AM proposal
 
@@ -243,6 +206,17 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
     }
 
     function balanceOfStakingToken(IERC20, bytes32) external view returns(uint256) {
+    }
+
+    function isAdmin(address _account) external view returns(bool) {
+
+        uint256 i;
+        for (i = 0; i < administrators.length; i++) {
+            if (administrators[i] == _account) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // FUNCTIONS for GenesisProtocolCallbacksInterface
@@ -386,17 +360,19 @@ contract Cecil is ProposalExecuteInterface, VotingMachineCallbacksInterface {
 
     }
 
-    function addRepProposal(address _receiver, int _rep, uint256 _type) public { // type 1 = Admin, 2 = Contributors
+    function addRepProposal(address _receiver, int256 _rep, uint256 _type) public { // type 1 = Admin, 2 = Contributors
+        require(isAdmin(msg.sender), "only admin can propose");
+        require(_rep != 0, "reputation proposed cannot be zero");
 
-      RepProposal memory repprop;
-      repprop.id = AbsoluteVote(amVoteMachine).propose(2, amParams, msg.sender, address(0));
-      repprop.receiver = _receiver;
-      repprop.rep = _rep;
-      repprop.typ = _type;
+        RepProposal memory repprop;
+        repprop.id = AbsoluteVote(amVoteMachine).propose(2, amParams, msg.sender, address(0));
+        repprop.receiver = _receiver;
+        repprop.rep = _rep;
+        repprop.typ = _type;
 
-      emit NewRepProposal(repprop.id, _receiver, _rep, _type);
+        emit NewRepProposal(repprop.id, _receiver, _rep, _type);
 
-      repProposals[repprop.id] = repprop;
+        repProposals[repprop.id] = repprop;
 
     }
 
