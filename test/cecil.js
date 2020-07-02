@@ -1,54 +1,51 @@
 const Cecil = artifacts.require("./Cecil.sol");
-const Plantoid = artifacts.require("./Plantoid.sol");
-//var ERC827TokenMock = artifacts.require("./ERC827TokenMock.sol");
 var GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 var AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
-var Proxy = artifacts.require("./Proxy.sol");
+const App = artifacts.require("./App.sol");
+const Package = artifacts.require("./Package.sol");
+var ImplementationDirectory = artifacts.require("./ImplementationDirectory.sol");
+var PlantoidFactory = artifacts.require("./PlantoidFactory.sol");
 
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
+
+var packageName = "Plantoid";
+var version = [0,1,0];
 
 class TestSetup {
   constructor() {
   }
 }
 
-const setup = async function (accounts,parent=accounts[0], threshold=100) {
+const setup = async function (accounts,beneficiary=accounts[0]) {
   var testSetup = new TestSetup();
-
   //deploy staking token
 //  testSetup.stakingToken = await ERC827TokenMock.new(accounts[1],1000);
   //deploy genesisProtocol
   testSetup.genesisProtocol = await GenesisProtocol.new(NULL_ADDRESS,{gas:6000000});
   testSetup.amMachine = await AbsoluteVote.new({gas:6000000});
+  var packageInstance = await Package.new();
+  var appInstance = await App.new();
+  var implementationDirectory = await ImplementationDirectory.new();
+  await packageInstance.addVersion(version,implementationDirectory.address,NULL_HASH);
+  await appInstance.setPackage(packageName,packageInstance.address,version);
+  var cecilImplementation = await Cecil.new();
+  await implementationDirectory.setImplementation("Cecil",cecilImplementation.address);
+  var plantoidFactory = await PlantoidFactory.new();
+  await plantoidFactory.initialize(appInstance.address);
+  var tx = await plantoidFactory.createCecil(
+                                                 [testSetup.amMachine.address,testSetup.genesisProtocol.address],
+                                                 [accounts[2], accounts[3], accounts[4]],
+                                                 accounts[0],
+                                                 version,
+                                                 {gas:6000000});
 
 
-  //deploy proxy
-//  testSetup.proxy = await Proxy.new(parent,parent,threshold);
-
-  //deploy plantoid
-  var plantoid = await Plantoid.new();
-
-//  await testSetup.proxy.upgradeTo(plantoid.address);
-
-
-  //var cecil = await Cecil.new(testSetup.proxy.address);
-
-  var cecil = await Cecil.new("0xC67Ff51c2c79F0036493B51e12560f94291fEF98");
-  //var cecil = await Cecil.new(plantoid.address);
-
-//  testSetup.plantoid = await Plantoid.at(testSetup.proxy.address);
-  testSetup.cecil    = await Cecil.at(cecil.address);
-
-  await testSetup.cecil.init();
-  await testSetup.cecil.setHCVotingMachine(testSetup.genesisProtocol.address);
-  await testSetup.cecil.setAMVotingMachine(testSetup.amMachine.address, [accounts[2], accounts[3], accounts[4]]);
-  var amParams = await testSetup.cecil.amParams();
-  console.log( await testSetup.amMachine.parameters(amParams));
-  //testSetup.artist = artist;
-
+  testSetup.cecil = await Cecil.at(tx.logs[0].args._proxy);
   return testSetup;
 };
+
 contract('Cecil',  accounts =>  {
 
     // it("Proxy params", async () => {
@@ -110,8 +107,8 @@ contract('Cecil',  accounts =>  {
       console.log(">>voted on AM " + amProposalId);
       assert.equal((await testSetup.cecil.proposals(proposalId)).status, 2);
       console.log(">>status is ::: 2");
-      var ppp = await testSetup.cecil.plantoid();
-      console.log("transferring funds to... plantoid = " + ppp );
+      var ppp = await testSetup.cecil.beneficiary();
+      console.log("transferring funds to... beneficiary = " + ppp );
       await testSetup.cecil.voteAMProposal(proposalId,2,{from:accounts[3],gas:1000000});
       console.log(">>AM voted again 1");
       assert.equal((await testSetup.cecil.proposals(proposalId)).status, 2);
@@ -119,7 +116,13 @@ contract('Cecil',  accounts =>  {
       console.log(">>AM voted again 2");
       assert.equal((await testSetup.cecil.proposals(proposalId)).status, 3);
 
-      tx = await testSetup.cecil.addRepProposal(accounts[4], 1000, 1);
+      try {
+        await testSetup.cecil.addRepProposal(accounts[4], 1000, 1);
+        assert(false, "only admin can propose");
+      } catch(error) {
+
+      }
+      tx = await testSetup.cecil.addRepProposal(accounts[4], 1000, 1, {from:accounts[2]});
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewRepProposal");
 

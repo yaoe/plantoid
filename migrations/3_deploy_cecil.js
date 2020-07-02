@@ -29,7 +29,7 @@ module.exports = async function(deployer,network,provider) {
       await packageInstance.addVersion(version,implementationDirectory.address,NULL_HASH);
       await appInstance.setPackage(packageName,packageInstance.address,version);
       var cecilImplementation = await deployer.deploy(Cecil);
-      await implementationDirectory.setImplementation("Plantoid",cecilImplementation.address);
+      await implementationDirectory.setImplementation("Cecil",cecilImplementation.address);
       var plantoidFactory = await deployer.deploy(PlantoidFactory);
       await plantoidFactory.initialize(appInstance.address);
       var genesisProtocol = await deployer.deploy(GenesisProtocol,NULL_ADDRESS);
@@ -49,7 +49,6 @@ module.exports = async function(deployer,network,provider) {
       console.log("genesisProtocol vm",await cecil.hcVotingMachine());
       console.log("absoluteVote vm",await cecil.amVotingMachine());
       console.log("cecil:",cecil.address);
-      console.log("seedcnt:",(await cecil.seedCnt()).toNumber());
       console.log("sh deploy.sh",cecil.address,genesisProtocol.address,absoluteVote.address);
   });
 };
