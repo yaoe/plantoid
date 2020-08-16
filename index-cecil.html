@@ -1,0 +1,852 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>CECIL DAO</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+        <link rel="stylesheet" href="./assets/css/basic-w3.css" />
+
+    </head>
+
+<script src="./web3.js"></script>
+
+
+<body class="w3-black">
+
+
+    <!-- Page Content -->
+    <div class="w3-padding-large"  id="main">
+
+      <!-- Header -->
+      <header class="w3-container w3-padding-32 w3-center " id="home">
+        <h1 class="warning w3-xlarge"> This project is still on its alpha phase. We don't guarantee complete security. Play at your own risk !</h3>
+
+          <p>Hello ...</p>
+          <h1 class="quote w3-xxxlarge">I'm Cecil</h1>
+          <p>A Blockchain-based life form.</p>
+
+
+          <div class="w3-row w3-center wp-padding-16 w3-section">
+
+
+              <div class="w3-third w3-section w3-left w3-left-align">
+                  <p class="quote w3-xxxlarge">Feed Me! </p>
+
+                  <div class="w3-row w3-left w3-left-align w3-section">
+
+                  <div class="w3-col w3-container w3-padding-0" style="width: 50px">
+                    <img src="./assets/images/QR6-ETH.png" id="QRcode"  width="45" style="border: 1px solid white; padding: 2px;">
+                    <hr style="border:black; padding-bottom: 3px;"/>
+                    <img src="./assets/images/metamask.png" width="45" style="padding: 2px;">
+                  </div>
+
+                  <div class="w3-rest w3-container w3-padding-small">
+                      <span class="w3-small">ETHER:</span><br/>
+                    <span class="w3-tiny">ETHHH</span>
+                    <hr/>
+                    Send money via Metamask <br/>
+                    <span class="w3-small">Amount (in Wei):</span> <input type="text" id="amount">
+                    <input type="image" src="./assets/images/send.png" id="feed" onclick="sendFunds()">
+                  </div>
+
+                  </div>
+
+              </div>
+
+              <div class="w3-third w3-section">
+                   <img src="./assets/images/lion.jpg" alt="plantoid"  width="350px" >
+              </div>
+
+              <div class="w3-third w3-section w3-left w3-left-align">
+
+                <div class="w3-col w3-container w3-quarter w3-padding-0">
+                    <span class="w3-small">Plantoid: </span><br/>
+                    <hr>
+                    <span class="w3-medium">Administrators: </span><br/>
+                    <table id="owners"></table>
+                    <hr>
+                </div>
+
+                <div class="w3-col w3-container w3-threequarter w3-padding-0">
+                    <span class="w3-tiny" id="PlantoidAss"></span><br/>
+                </div>
+
+                <div class="w3-row w3-cell-row w3-left w3-left-align">
+
+                  <div class="w3-col w3-cell w3-quarter w3-padding-0">
+                    <p><span class="w3-medium">Current<br/>balance:</span></p>
+                  </div>
+                  <div class="w3-col w3-cell w3-half w3-center w3-center-align">
+                      <span class="w3-xxlarge" id="balance"> ??? </span>
+
+                  </div>
+                  <div class="w3-col w3-cell w3-quarter w3-center-align ">
+                      <br/>WEI
+                  </div>
+                </div>
+
+
+          </div>
+
+      </header>
+
+
+<hr/>
+<table id="SeedTable"></table>
+<hr/>
+<div id="transactionLog"></div>
+
+</div>
+</body>
+
+
+
+
+
+
+
+<script>
+
+console.log("we start here");
+const Web3 = require('web3');
+var web3;
+
+if(typeof web3 !== 'undefined') {
+  console.log("here");
+	web3 = new Web3(web3.currentProvider);
+  console.log("web333-current: " + web3);
+
+} else {
+  console.log("there");
+//	web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/3e0e337a9e144b08b56d2b1b35f3c90b"));
+//  web3 = new Web3('wss://ropsten.infura.io/ws');
+    web = new Web3(new Web3.providers.WebsocketProvider('ws://ropsten.infura.io/ws'));
+  console.log("web333-infura: " + web3);
+}
+
+
+
+// Modern dapp browsers...
+    if (window.ethereum) {
+        window.web3 = new Web3(ethereum);
+        try {
+            // Request account access if needed
+            //await ethereum.enable();
+            ethereum.enable();
+            // Acccounts now exposed
+          //  web3.eth.sendTransaction({/* ... */});
+        } catch (error) {
+            // User denied account access...
+        }
+    }
+    // Legacy dapp browsers...
+    else if (window.web3) {
+        window.web3 = new Web3(web3.currentProvider);
+        // Acccounts always exposed
+      //  web3.eth.sendTransaction({/* ... */});
+    }
+    // Non-dapp browsers...
+    else {
+        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+    }
+
+
+web3.eth.defaultAccount = web3.eth.accounts[0];
+console.log("account 0 = " + web3.currentProvider);
+console.log("account ===" + web3.eth.defaultAccount);
+
+
+
+var cecil = web3.eth.contract(ABI).at("ETHHH");
+var genesis = web3.eth.contract(IBA).at("GPPP");
+var absolute = web3.eth.contract(ABS).at("BSOLUTE");
+
+
+
+var SeedCounter = 0;
+var PidStatus = [];
+var SeedWinners = [];
+var SeedLoosers = [];
+
+var pid2am = [];
+var am2pid = [];
+
+var AllPids = [];
+
+var totalRep = [];
+
+setTimeout(getBalance(), 20000);
+setTimeout(getInfo(), 20000);
+
+
+function getBalance() {
+	web3.eth.getBalance(cecil.address, (e,r)=>{document.getElementById('balance').innerHTML =  r;});
+}
+
+
+function getInfo() {
+
+  //proxy._implementation.call(function(err, res) {
+  cecil.plantoid.call(function(err, res) {
+    document.getElementById('PlantoidAss').innerHTML = res;
+  });
+
+  ListAdmins();
+
+  CreateStandardSeed(0);
+}
+
+
+function ListAdmins() {
+
+  cecil.getAdmins.call( function(err, values) {
+
+    var own = document.getElementById('owners');
+    for(var i = 0; i < values.length; i++) {
+      cecil.getAdminBalance.call(values[i], function (err,v){
+        own.innerHTML += '<td><span class="w3-tiny">' + v[0] + '</td><td>(' + v[1] / 10 + '%)</span></td><tr/>';
+      });
+    }
+   });
+
+
+}
+
+var rows = 0;
+
+  function CreateStandardSeed(i, values) {
+
+  //  returns(uint256 status,
+  //          uint256 weis,
+  //      address reputation,
+  //          uint256 nProps,
+  //          bytes32 winner);
+
+        var table = document.getElementById("SeedTable");
+        var row = table.insertRow(0);
+        row.id = "Seed" + i;
+        var cell1 = row.insertCell(0); cell1.style.width = '75px';
+        var cell2 = row.insertCell(1); cell2.style.width = '75px';
+        var cell3 = row.insertCell(2); cell3.style.width = '100px';
+        var cell4 = row.insertCell(3);
+        cell1.innerHTML = "Proposals<br/>";
+        cell2.innerHTML = "Status:<br/>"
+        cell3.innerHTML = "Requested Funds:<br/>"
+    //    if(SeedStatus[i] == 1 || SeedStatus[i] == 2) {
+              cell4.innerHTML =
+              '<div id="submitproposal">' +
+              '<span class="submitText">Submit a proposal:<br/></span>' +
+              '<input type="text" class="propInput" id="propURL'+i+'" size=60 placeholder="Enter link to proposal (HTML or IPFS)">' +
+              '<input type="text" class="propInput" id="propAmount'+i+'" size=20 placeholder="Enter requested amount (in WEI)">' +
+              '<input type="image" src="./assets/images/send2.png" id="feed" onclick="sendProposal(' + i +')"/>'+
+              '</div>';
+    //    }
+
+        var row2 = table.insertRow(1);
+        row2.insertCell(0);
+        row2.insertCell(1);
+        row2.insertCell(2);
+        var cell = row2.insertCell(3);
+        cell.id = "Seedrow" + i;
+
+        UpdateProposals4Seed(i);
+
+  }
+
+
+
+
+   function UpdateProposals4Seed(i) {
+
+
+      //first collect the list of Vetoed proposals
+      cecil.VetoedExecution({}, {fromBlock: 0, toBlock: 'latest'}).get((eerr, eev) => {
+        if(eerr)
+          console.log('Error in VetoedExecution handler: '+ eerr);
+
+        else {
+
+          var pC = eev.length;
+          console.log("looping over eev.length = " + pC);
+          for(var m = 0; m < pC; m++) {
+            var res = eev[m].args;
+            if(!SeedLoosers[res.id]) { SeedLoosers[res.id] = new Array(); }
+            SeedLoosers[res.id].push(res.pid);
+            console.log("pushing " + res.pid + " into SeedLoosers[0]");
+          }
+        }});
+
+      //then collect the list of loosing Proposals
+      cecil.ExecuteProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((err, ev) => {
+        if(err)
+          console.log('Error in ExecuteProposal handler: '+ err);
+
+        else {
+
+          var propC = ev.length; console.log("******** length of EXECUTED props == "+ ev.length);
+
+            for(var k = 0; k < propC; k++) {
+              var results = ev[k].args;  console.log("curennt decision === " + results.decision);
+
+              PidStatus[results.pid] = 2;
+
+
+              if(SeedLoosers[results.id] && SeedLoosers[results.id].indexOf(results.pid)!= -1) { console.log("continueeeeeeee..."); continue; }
+
+              if((results.decision == 1)) {//&& (SeedStatus[results.id]==2)) {
+                if(!SeedWinners[results.id]) { SeedWinners[results.id] = new Array(); }
+                  SeedWinners[results.id].push(results.pid);
+                console.log("we got a winer?!?!? " + SeedWinners[results.id] + "with pid status = " + PidStatus[results.id]);
+
+              } else {
+                console.log('inserting looser PID as === '+results.pid);
+                if(!SeedLoosers[results.id]) { SeedLoosers[results.id] = new Array(); }
+                SeedLoosers[results.id].push(results.pid);
+                console.log("OVERALL ARRAY OF LOSERS: "+ SeedLoosers[results.id]);
+              }
+            }
+          }});
+
+
+            //then collect the list of actual winner (overridding the ExecuteProposal with decision=1)
+            cecil.ApprovedExecution({}, {fromBlock: 0, toBlock: 'latest'}).get((eerr, eev) => {
+              if(eerr)
+                console.log('Error in ApprovedExecution handler: '+ eerr);
+
+              else {
+
+                var pC = eev.length;
+                for(var m = 0; m < pC; m++) {
+                  var res = eev[m].args;
+                  SeedWinners[res.id].push(res.pid);
+                  PidStatus[res.pid] = 3;
+
+                  console.log("we got a REAL winer?!?!?  == " + res.pid +"  ---------" + res.winpid);
+
+                }
+              }});
+
+                //also collect the list of proposals awaiting for approval (to populate the pid2am[] array)
+                cecil.NewAMProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((eerr, eev) => {
+                  if(eerr)
+                    console.log('Error in NewAMProposal handler: '+ eerr);
+
+                  else {
+
+                    var pC = eev.length;
+                    for(var m = 0; m < pC; m++) {
+                      var res = eev[m].args;
+                      console.log("AM::: " +  res.winpid + "   --- pid = " + res.pid);
+                      pid2am[res.pid] = res.winpid;
+                      am2pid[res.winpid] = res.pid;
+                    }
+                  }
+                });
+
+
+
+
+      //then collect the list of proposals for Seed = i
+      cecil.NewProposal({}, {fromBlock: 0, toBlock: 'latest'}).get((error, eventResult) => {
+        if(error)
+          console.log('Error in NewProposal handler: '+ error);
+        else {
+
+          var propCounter = eventResult.length;
+
+
+
+            for(var j = 0; j < propCounter; j++) {
+
+              var args = eventResult[j].args;
+             console.log("processing proposition ... " + args.url );
+
+              if(! SeedWinners[args.id]) { SeedWinners[args.id] = new Array(); }
+              if(! SeedLoosers[args.id]) { SeedLoosers[args.id] = new Array(); }
+
+
+              if(! AllPids[args.id]) { AllPids[args.id] = new Array(); }
+              if(! AllPids[args.id].includes(args.pid)) {
+                    AllPids[args.id].push(args.pid);
+              }
+
+
+              var w1 = ""; var w2 = "";
+              var d = "";
+
+              if(Number(args.id) == Number(i)) {
+
+                  var cell = document.getElementById('Seedrow' + args.id);
+                  var prop = document.getElementById("Proposal"+args.pid);
+
+                  if(! prop) {
+                     console.log('No prop for .....' + args.pid + '........ '+prop);
+
+                    var g = document.createElement('div'); g.setAttribute("id", "Proposal"+args.pid);
+                    cell.appendChild(g);
+
+                    console.log("visualizing................   PID="+args.pid + " with status = " + PidStatus[args.pid]);
+
+                          if( (PidStatus[args.pid]==3) && (SeedWinners[args.id].indexOf(args.pid)!= -1) ) {
+                            w1 = '<span class="winnerProp">';
+                            w2 = '</span>';
+                            d = 'disabled';
+                          } else if (PidStatus[args.pid]==3) {
+                            w1 = '<span class="looseProp">';
+                            w2 = '</span>';
+                            d = 'disabled';
+                          } else if( SeedLoosers[args.id] && (SeedLoosers[args.id].indexOf(args.pid)!= -1)) {
+                            w1 = '<span class="looseProp">';
+                            w2 = '</span>';
+                            d = 'disabled';
+                          } else if( (PidStatus[args.pid]==2) && (SeedWinners[args.id].indexOf(args.pid)!= -1) ) {
+                            w1 = '<span class="winProp">';
+                            w2 = '</span>';
+                            d = 'disabled';
+                          }
+
+                      g.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal: <a href='"+args.url+"'>"+args.url+"</a> (requesting <b>" + args.amount +"</b> WEI's)" + w2 +"<br/></span>"
+                      g.innerHTML += "<span class='from'>PID: " + args.pid + "<br></span>";
+                      g.innerHTML += "<span class='from'>(from: <i>"+args._proposer+"</i>) <br></span>";
+                      g.innerHTML += '<input type="image" src="./assets/images/upvote' + d + '.png" height=25 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
+                      g.innerHTML += "<span id='VotesPos"+args.pid+"'> 0% </span>";
+                      g.innerHTML += '<input type="image" src="./assets/images/downvote' + d + '.png" height=20 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 2)"' + d + '/>';
+                      g.innerHTML += "<span id='VotesNeg"+args.pid+"'> 0% </span>";
+
+/*
+                      cell.innerHTML += '<input type="image" src="./images/upvote.png" height=25 id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' +
+                      ((SeedStatus[args.id]==1) && ( (!SeedLoosers[args.id]) || (SeedLoosers[args.id].indexOf(args.pid)==-1) ) || 'disabled') +'/> ';
+                      cell.innerHTML += '<input type="image" src="./images/downvote.png" height=20 id="vote" onclick="voteProposal(' + args.id +',\''+ args.pid+'\', 2)"' +
+                      ((SeedStatus[args.id]==1) && ( (!SeedLoosers[args.id]) || (SeedLoosers[args.id].indexOf(args.pid)==-1) ) || 'disabled') +'/> <br/>';
+*/
+                      if( (SeedWinners[args.id].indexOf(args.pid)!= -1) && (PidStatus[args.pid] != 3)) {
+                        showApproveVeto(args.id, args.pid)
+                    //    g.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
+                    //    g.innerHTML += '<button type="button" id="veto" onclick="VetoPid(\'' + args.pid + '\')">Veto</button>';
+                  } else {       submitPropEnabled(1);  }
+
+                  //   if( SeedLoosers[args.id] && (SeedLoosers[args.id].indexOf(args.pid)!= -1)) {
+                  //      showApproveVeto(args.id,args.pid)
+                  //    }
+
+                      g.innerHTML += "<hr/>"
+
+                      updateVotesforPid(args.pid);
+
+                    }
+                  //  else { console.log('PRPOSITION already exists...'); }
+
+                } else { console.log(args.id + " != " + i);}
+              }
+          }});
+}
+
+
+function updateVotesforPid(pid) {
+  cecil.getTotalReputationSupply.call(pid, function(err, val) {
+
+    totalRep[pid] = val;
+    console.log("total rep for " + pid + " === " + val);
+    updateVotesforPidPos(pid);
+    updateVotesforPidNeg(pid);
+  })
+}
+
+function updateVotesforPidPos(pid) {
+  genesis.voteStatus.call(pid, 1, function(err, val) {
+    var p = document.getElementById("VotesPos"+pid);
+    var n = 0;
+    if(totalRep[pid] != 0) { var n = val / totalRep[pid] * 100 }
+    if(p) p.innerHTML = n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
+  });
+}
+
+function updateVotesforPidNeg(pid) {
+  genesis.voteStatus.call(pid, 2, function(err, val) {
+    var p = document.getElementById("VotesNeg"+pid);
+    var n = 0;
+    if(totalRep[pid] != 0) { var n = val / totalRep[pid] * 100; }
+    if(p) p.innerHTML = n.toFixed(0) + "%"; // will need to fix this once reputation starts changing !
+  });
+}
+
+
+
+function updateProposalbyPid(args) {
+
+  var prop = document.getElementById("Proposal"+args.pid);
+
+  console.log("looking for Prop (" + prop + ") with args.pid = " + args.pid);
+
+if(prop) {
+  var w1 = ""; var w2 = "";
+  var d = "";
+
+  ///console.log('Args.id === ' + args.id + ' seedStatus = ' + SeedStatus[args.id] + ' SeedWinner = ' + SeedWinner[args.id]);
+
+
+
+                            if( (PidStatus[args.pid]==3) && (SeedWinners[args.id].indexOf(args.pid)!= -1) ) {
+                              w1 = '<span class="winnerProp">';
+                              w2 = '</span>';
+                              d = 'disabled';
+                            } else if (PidStatus[args.pid]==3) {
+                              w1 = '<span class="looseProp">';
+                              w2 = '</span>';
+                              d = 'disabled';
+                            } else if( SeedLoosers[args.id] && (SeedLoosers[args.id].indexOf(args.pid)!= -1)) {
+                              w1 = '<span class="looseProp">';
+                              w2 = '</span>';
+                              d = 'disabled';
+                            } else if( (PidStatus[args.pid]==2) && (SeedWinners[args.id].indexOf(args.pid)!= -1) ) {
+                              w1 = '<span class="winProp">';
+                              w2 = '</span>';
+                              d = 'disabled';
+                            }
+
+
+
+
+
+
+//  var spans = prop.querySelectorAll("span");
+//  var url = spans[0].querySelector("a");
+  var url = prop.querySelector("a").innerHTML;
+  var _proposer = prop.querySelector("i").innerHTML;
+  var amount = prop.querySelector("b").innerHTML;
+  console.log(amount);
+
+  prop.innerHTML = "";
+
+  prop.innerHTML += '<span id="PID' + args.pid+'">' + w1 + "Proposal: <a href='"+url+"'>"+url+"</a>"+ " (requesting <b>" + amount  +"</b> WEI's)" + w2 + " <br></span>"
+  prop.innerHTML += "<span class='from'>PID: " + args.pid + "<br></span>";
+  prop.innerHTML += "<span class='from'>(from: <i>"+_proposer +"</i>) <br></span>";
+  prop.innerHTML += '<input type="image" src="./assets/images/upvote' + d + '.png" height=25 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 1)"' + d + '/>';
+  prop.innerHTML += "<span id='VotesPos"+args.pid+"'> 00 </span>";
+  prop.innerHTML += '<input type="image" src="./assets/images/downvote' + d + '.png" height=20 id="vote" onClick="voteProposal(' + args.id +',\''+ args.pid+'\', 2)"' + d + '/>';
+  prop.innerHTML += "<span id='VotesNeg"+args.pid+"'> 00 </span>";
+
+  if( (SeedWinners[args.id].indexOf(args.pid)!= -1) && (PidStatus[args.pid] != 3)) {
+    showApproveVeto(args.id, args.pid);
+  //  prop.innerHTML += '<button type="button" id="approve" onClick="ApprovePid(\'' + args.pid + '\')">Approve</button>';
+  //  prop.innerHTML += '<button type="button" id="veto" onclick="VetoPid(\'' + args.pid + '\')">Veto</button>';
+} else if (PidStatus[args.pid]!=3) { submitPropEnabled(1); }
+
+  //prop.innerHTML += "<br/><br/>"
+  prop.innerHTML += "<hr/>"
+
+
+  updateVotesforPid(args.pid);
+
+}
+}
+
+
+
+
+function WinningProposal(args) {
+/*  var cell = document.getElementById("PID"+args.pid);
+  var content = cell.innerHTML;
+  var w1 = '<span class="winProp">';
+  var w2 = '</span>';
+  cell.innerHTML = w1+content+w2;
+*/
+
+
+  SeedWinners[args.id].push(args.pid);
+  updateProposalbyPid(args)
+
+}
+
+function LoosingProposal(args) {
+/*  var cell = document.getElementById("PID"+args.pid);
+  var content = cell.innerHTML;
+  var w1 = '<span class="looseProp">';
+  var w2 = '</span>';
+  cell.innerHTML = w1+content+w2;
+*/
+if(!SeedLoosers[args.id]) { SeedLoosers[args.id] = new Array(); }
+SeedLoosers[args.id].push(args.pid);
+  updateProposalbyPid(args)
+
+}
+
+function ApprovePid(id, winpid) {
+//    plantoid.approveExecution(args, function(err, values) {
+    var _vote = 1;
+      cecil.voteAMProposal(winpid, _vote, function(err, values) {
+          console.log("approving execution.... " );
+    });
+}
+
+function VetoPid(id, winpid) {
+//  plantoid.vetoExecution(args, function(err, values) {
+    var _vote = 2;
+    console.log("vetoooing execution.... with following parameters : ID= "+id+" winpid = "+winpid );
+
+    cecil.voteAMProposal(winpid, _vote, function(err, values) {
+          console.log("vetoooing execution.... " );
+  });
+
+}
+
+function sendFunds() {
+	var amount = document.getElementById("amount").value;
+	//amount = web3.toWei(amount, "ether");
+	//web3.eth.sendTransaction({to:'ETH', from: '0x64EB4dfcC14B96582D8D5095e9894b279E519b4B', value:amount}, (e)=>{console.log(e)});
+	//plantoid.fund({value: amount});
+  web3.eth.sendTransaction({to:'ETHHH',  value:amount, gas:2500000}, (e)=>{console.log(e)});
+
+}
+
+function sendProposal(id) {
+  var url = document.getElementById("propURL"+id);
+  var amount = document.getElementById("propAmount"+id);
+  cecil.addProposal(url.value, amount.value, function(err, values) {
+    console.log("sending new proposal for ID "+ id + " : " + url);
+  });
+  amount.value = "";
+  url.value = "";
+}
+
+function voteProposal(id, pid, vote) {
+  cecil.voteProposal(pid, vote, function(err, values) {
+        console.log("error:" ,err);
+        console.log("voting on proposal ID: "+ pid + "for Seed: "+id + " with decision = " + vote);
+   });
+  console.log("voting on proposal ID: "+ pid + " for Seed: "+id +"   -> "+ typeof(pid.toString()));
+
+}
+
+
+
+
+/*
+plantoid.allEvents({fromBlock:'latest'}, function (error,event){
+    if (error) {
+      console.log(error)
+    } else {
+      console.log("All Events")
+      console.log(event);
+    }
+  });
+*/
+
+var DonationEvent = cecil.GotDonation();
+DonationEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("GotDonation!!! ");
+  console.log(result.args);
+  getBalance();
+  document.getElementById("transactionLog").innerHTML += "Got Donation of " + web3.fromWei(result.args.amount, 'ether') + " by donor: " + result.args._donor +" <br/>";
+});
+
+var DonationAccepted = cecil.AcceptedDonation();
+DonationAccepted.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("ACCEPTED Donation!!! ");
+  console.log(result.args);
+  getBalance();
+  document.getElementById("transactionLog").innerHTML += "Accepted Donation of " + web3.fromWei(result.args.amount, 'ether') + " from donor: " + result.args._donor +" <br/>";
+});
+
+
+var ReproductionEvent = cecil.Reproducing();
+ReproductionEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("Reproduction Event from: "+ result.args.seedCnt);
+  document.getElementById("transactionLog").innerHTML += "The plantoid's Seed #"+result.args.seedCnt+" is reproducing itself !!!!  :DDD<br/>";
+  CreateSeeds(Number(SeedCounter)+1);
+});
+
+
+
+var NewProposalEvent = cecil.NewProposal();
+NewProposalEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("NewProposal Event!");
+  console.log(result.args);
+  UpdateProposals4Seed(Number(result.args.id));
+  document.getElementById("transactionLog").innerHTML += "The plantoid received a new proposal: "+ result.args.url+ " from " + result.args._proposer+ "<br/>";
+});
+
+var NewAMProposalEvent = cecil.NewAMProposal();
+NewAMProposalEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("New((((AM))))Proposal Event!"); console.log(result);
+  pid2am[result.args.pid] = result.args.winpid;
+  am2pid[result.args.winpid] = result.args.pid;
+  document.getElementById("transactionLog").innerHTML += "The plantoid received a new AM proposal: "+ result.args.pid+ " winpid: " + result.args.winpid+ "<br/>";
+});
+
+var VotingProposalEvent = cecil.VotingProposal();
+VotingProposalEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("VOTED proposal Event!");
+  console.log(result.args);
+  //UpdateProposals(result.args.id);
+  updateVotesforPid(result.args.pid);
+
+  document.getElementById("transactionLog").innerHTML += "Someone ("+result.args._voter+") is voting on proposal "+result.args.pid+" with reputation("+result.args._reputation+") and vote = "+ result.args._vote+"<br/>";
+});
+
+
+var ExecuteProposalEvent = cecil.ExecuteProposal();
+ExecuteProposalEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  getBalance();
+  console.log("ExecuteProposal Event! with decision == " + result.args.decision);
+
+  if(result.args.decision == 1) {
+
+      document.getElementById("transactionLog").innerHTML += "We got a winner !!@#!@  :DDD<br/>"
+      + "id :" + result.args.id + " pid: " + result.args.pid + " winner address = " + result.args._proposer + "with previous balance = " + result.args.b4balance;
+      PidStatus[result.args.pid]=2; //SeedWinners[result.args.id].push(result.args.pid);
+      WinningProposal(result.args);
+
+  } else {
+      document.getElementById("transactionLog").innerHTML += "We got a LOOSER !!@#!@  :DDD<br/>"
+      PidStatus[result.args.pid]=2;
+      LoosingProposal(result.args);
+
+  }
+});
+
+var VotingAMProposalEvent = cecil.VotingAMProposal();
+VotingAMProposalEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("VotingAMProposalEvent ! with winpid == " + result.args.pid);
+
+  updateAMVotes(am2pid[result.args.pid]);
+
+});
+//emit VotingAMProposal(_id, _pid, msg.sender, adminRep.balanceOf(msg.sender), _vote);
+
+
+var ApprovedExecutionEvent = cecil.ApprovedExecution();
+ApprovedExecutionEvent.watch(function(err, result) {
+  console.log("Approved Execution by artist ---> ")
+
+  PidStatus[result.args.pid] = 3;
+  if(!SeedWinners[result.args.id]) { SeedWinners[result.args.id] = new Array(); }
+  SeedWinners[result.args.id].push(result.args.pid);
+
+  //UpdateProposals4Seed(result.args.id);
+  for(var y=0; y < AllPids[result.args.id].length; y++) {
+    console.log("Updating the following ::: " + AllPids[result.args.id][y]);
+    console.log(AllPids[result.args.id]);
+
+    var myObj = new Object();
+    myObj.id = result.args.id;
+    myObj.pid = AllPids[result.args.id][y];
+    updateProposalbyPid(myObj);
+  }
+});
+
+
+
+var VetoedExecutionEvent = cecil.VetoedExecution();
+
+VetoedExecutionEvent.watch(function(err, result) {
+  console.log("VETOED Execution by artist --->  " + result.args.pid + " ---- AM : " + result.args.winpid);
+
+  if(!SeedLoosers[result.args.id]) { SeedLoosers[result.args.id] = new Array(); }
+  if(!SeedWinners[result.args.id]) { SeedWinners[result.args.id] = new Array(); }
+
+
+  SeedLoosers[result.args.id].push(result.args.pid);
+
+  PidStatus[result.args.pid] = 1;
+  const index = SeedWinners[result.args.id].indexOf(result.args.pid);
+  if(index > -1) { SeedWinners[result.args.id].splice(index, 1); }
+  //SeedWinners[result.args.id] = 0;
+
+  console.log("updating proposal by PID...");
+
+  updateProposalbyPid(result.args);
+});
+
+
+function submitPropEnabled(n) {
+  var subm = document.getElementById("submitproposal");
+  if(!subm) { return; }
+
+  if(!n) {
+    subm.setAttribute("class", "hidden");
+  }
+  else { subm.classList.remove("hidden");
+  }
+}
+
+function showApproveVeto(id, winpid) {
+
+
+      var div = document.getElementById("Proposal"+winpid);
+      var g = document.getElementById("Vote-"+winpid);
+
+      submitPropEnabled(1);
+
+      if(!g) {
+        g = document.createElement('span'); g.setAttribute("id", "Vote-"+winpid);
+        div.appendChild(g);
+
+        g.innerHTML += '<button type=button class="winpid-button" id="approve-'+winpid+ '" onClick="ApprovePid(\'' + id + '\',\'' + winpid + '\')">Approve</button>';
+        g.innerHTML += '<button type=button class="winpid-button" id="veto-'+winpid +   '" onclick="VetoPid(\''    + id + '\',\'' + winpid + '\')">Veto</button>';
+      }
+        console.log("updating AM votes for " + winpid);
+        updateAMVotes(winpid);
+
+}
+
+
+function updateAMVotes(pid) {
+
+  console.log("(1)))) called with the following PID: " + pid);
+  var winpid = pid2am[pid];
+  console.log("(1)))) new PID: " + winpid);
+
+
+
+  absolute.voteStatus.call(winpid, 1, function(err, val) { // call voteStatus of AbsoluteVoting machine, to know how many votes on "yes"
+      var pid = am2pid[winpid];
+      var appr = document.getElementById("approve-"+pid);
+      if(appr) appr.innerHTML = "Approve: "+ val.toFixed(0)/10 + "%"; // will need to fix this once reputation starts changing !
+    });
+
+  absolute.voteStatus.call(winpid, 2, function(err, val) { // call voteStatus on AbsoluteVoting machine, to know how many votes on "no"
+      var pid = am2pid[winpid];
+      var veto = document.getElementById("veto-"+pid);
+      if(veto) veto.innerHTML = "Veto: " +  val.toFixed(0)/10 + "%";
+
+      console.log("(2) called with the following PID: " + winpid);
+      console.log("apppppppr@$# == " + veto);
+
+    });
+}
+
+
+/*
+var UpgradedEvent = plantoid.Upgraded();
+UpgradedEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("UPgraded to" + result.args.implemntation);
+  document.getElementById("transactionLog").innerHTML += "UPgraded to" + result.args.implemntation + "<br/>";
+});
+
+var FallingBackEvent = plantoid.FallingBack();
+FallingBackEvent.watch(function(err, result) {
+  if(err) { console.log(err); return; }
+  console.log("Falling backkkkkkkkk to" + result.args.implemntation + " with data: " + result.args.data);
+  document.getElementById("transactionLog").innerHTML += "Falling backkkkkkkkk to" + result.args.implemntation + " with data: " + result.args.data + "<br>"
+});
+*/
+
+
+</script>
+
+</html>
