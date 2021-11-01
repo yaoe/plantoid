@@ -9,7 +9,37 @@ interface IPlantoidSpawner {
     function spawnPlantoid(address, address) external returns (bool);
 }
 
+
 /// @title Plantoid
+/// @dev Blockchain based lifeform
+///
+///  Features in this version
+///
+///     ERC1155 multi token contract
+///         Token ID 1: Primary art work - 1/1
+///         Token ID 2: Badges for license holders
+///
+///         Current owner of Token ID 1 has a license to mint derivative works
+///         Once owner sells token ID 1 they have a fixed amount of blocks to use their license to mint a new work
+//          
+//          Purchasers receive badges minted by the primary contract when they purchase
+//          Badges are not transferable
+//          
+//      Merkle Royalties
+///         Upon mint of token ID 1, set merkle root of a royalties claim tree
+///         Each leaf in the tree specifies an address and a percentage in basis points
+///         Any royalties collected by these contracts are sent to a Merkle claiming contract
+///         Royalty recipients can claim accumulated royalties from the contract
+///
+//      Perpetual Auctions
+///         NFTs can always be bought for a percentage more than they were last purchased for
+///         
+///         Buyers can place bids at least at a fixed percentage lower than the last sale price
+///
+///  Features not yet implemented
+///     Disable old bids on a sale?
+///     Cap for royalties?
+///
 contract Plantoid is ERC721Enumerable, Initializable {
     using ECDSA for bytes32; /*ECDSA for signature recovery for license mints*/
 
@@ -153,6 +183,8 @@ contract Plantoid is ERC721Enumerable, Initializable {
         );
         winningProposal[spawnCount] = _winningProposal;
     }
+    
+    // todo allow artist to veto winning proposal - move on to next spawn count
 
     /// @dev Spawn new plantoid by winning artist
     /// @param _newPlantoid address of new plantoid oracle
@@ -166,10 +198,14 @@ contract Plantoid is ERC721Enumerable, Initializable {
         // todo royalties
         require(_success, "could not send");
         require(
-            spawner.spawnPlantoid(_newPlantoid, msg.sender),
+            spawner.spawnPlantoid(_newPlantoid, msg.sender), // todo interface for different valid plantoid
             "Failed to spawn"
         );
     }
+    
+    // each plantoid has basic funtions but possibly one can be overwritten by new creator
+    // add a before transfer hook
+    // add a voting module
 
     /*****************
     Supporter functions
@@ -264,7 +300,8 @@ contract PlantoidSpawn is CloneFactory, IPlantoidSpawner {
         template = _template;
     }
 
-    function spawnPlantoid(address _plantoidAddr, address _artist)
+    // add a generic data bytes field so people can make new templates
+    function spawnPlantoid(address _plantoidAddr, address _artist) 
         external
         override
         returns (bool)

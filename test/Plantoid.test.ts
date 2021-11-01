@@ -143,6 +143,10 @@ describe('Plantoid NFT', function () {
         ethers.utils.solidityKeccak256(['uint256', 'string', 'address', 'address'], [nonce, testUri, supporter.address, plantoidInstance.address])
       )
       const sig = await plantoidOracle.signMessage(msgHash)
+      
+      console.log({msgHash, sig, testUri})
+
+      
       await plantoidAsSupporter.mintSeed(nonce, supporter.address, testUri, sig)
 
       await supporter.sendTransaction({ to: plantoidInstance.address, value: ethers.utils.parseEther('3') })
