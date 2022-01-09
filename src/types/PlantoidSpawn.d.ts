@@ -22,13 +22,13 @@ import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
 interface PlantoidSpawnInterface extends ethers.utils.Interface {
   functions: {
-    "spawnPlantoid(address,address)": FunctionFragment;
+    "spawnPlantoid(address,address,uint256,string,string)": FunctionFragment;
     "template()": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "spawnPlantoid",
-    values: [string, string]
+    values: [string, string, BigNumberish, string, string]
   ): string;
   encodeFunctionData(functionFragment: "template", values?: undefined): string;
 
@@ -62,12 +62,18 @@ export class PlantoidSpawn extends Contract {
     spawnPlantoid(
       _plantoidAddr: string,
       _artist: string,
+      _threshold: BigNumberish,
+      _name: string,
+      _symbol: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "spawnPlantoid(address,address)"(
+    "spawnPlantoid(address,address,uint256,string,string)"(
       _plantoidAddr: string,
       _artist: string,
+      _threshold: BigNumberish,
+      _name: string,
+      _symbol: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
@@ -83,12 +89,18 @@ export class PlantoidSpawn extends Contract {
   spawnPlantoid(
     _plantoidAddr: string,
     _artist: string,
+    _threshold: BigNumberish,
+    _name: string,
+    _symbol: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "spawnPlantoid(address,address)"(
+  "spawnPlantoid(address,address,uint256,string,string)"(
     _plantoidAddr: string,
     _artist: string,
+    _threshold: BigNumberish,
+    _name: string,
+    _symbol: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
@@ -100,12 +112,18 @@ export class PlantoidSpawn extends Contract {
     spawnPlantoid(
       _plantoidAddr: string,
       _artist: string,
+      _threshold: BigNumberish,
+      _name: string,
+      _symbol: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "spawnPlantoid(address,address)"(
+    "spawnPlantoid(address,address,uint256,string,string)"(
       _plantoidAddr: string,
       _artist: string,
+      _threshold: BigNumberish,
+      _name: string,
+      _symbol: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
@@ -125,12 +143,18 @@ export class PlantoidSpawn extends Contract {
     spawnPlantoid(
       _plantoidAddr: string,
       _artist: string,
+      _threshold: BigNumberish,
+      _name: string,
+      _symbol: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    "spawnPlantoid(address,address)"(
+    "spawnPlantoid(address,address,uint256,string,string)"(
       _plantoidAddr: string,
       _artist: string,
+      _threshold: BigNumberish,
+      _name: string,
+      _symbol: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
@@ -143,12 +167,18 @@ export class PlantoidSpawn extends Contract {
     spawnPlantoid(
       _plantoidAddr: string,
       _artist: string,
+      _threshold: BigNumberish,
+      _name: string,
+      _symbol: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "spawnPlantoid(address,address)"(
+    "spawnPlantoid(address,address,uint256,string,string)"(
       _plantoidAddr: string,
       _artist: string,
+      _threshold: BigNumberish,
+      _name: string,
+      _symbol: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 

@@ -22,12 +22,12 @@ import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
 interface IPlantoidSpawnerInterface extends ethers.utils.Interface {
   functions: {
-    "spawnPlantoid(address,address)": FunctionFragment;
+    "spawnPlantoid(address,address,uint256,string,string)": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "spawnPlantoid",
-    values: [string, string]
+    values: [string, string, BigNumberish, string, string]
   ): string;
 
   decodeFunctionResult(
@@ -55,12 +55,18 @@ export class IPlantoidSpawner extends Contract {
     spawnPlantoid(
       arg0: string,
       arg1: string,
+      arg2: BigNumberish,
+      arg3: string,
+      arg4: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "spawnPlantoid(address,address)"(
+    "spawnPlantoid(address,address,uint256,string,string)"(
       arg0: string,
       arg1: string,
+      arg2: BigNumberish,
+      arg3: string,
+      arg4: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
   };
@@ -68,12 +74,18 @@ export class IPlantoidSpawner extends Contract {
   spawnPlantoid(
     arg0: string,
     arg1: string,
+    arg2: BigNumberish,
+    arg3: string,
+    arg4: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "spawnPlantoid(address,address)"(
+  "spawnPlantoid(address,address,uint256,string,string)"(
     arg0: string,
     arg1: string,
+    arg2: BigNumberish,
+    arg3: string,
+    arg4: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
@@ -81,12 +93,18 @@ export class IPlantoidSpawner extends Contract {
     spawnPlantoid(
       arg0: string,
       arg1: string,
+      arg2: BigNumberish,
+      arg3: string,
+      arg4: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "spawnPlantoid(address,address)"(
+    "spawnPlantoid(address,address,uint256,string,string)"(
       arg0: string,
       arg1: string,
+      arg2: BigNumberish,
+      arg3: string,
+      arg4: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
   };
@@ -97,12 +115,18 @@ export class IPlantoidSpawner extends Contract {
     spawnPlantoid(
       arg0: string,
       arg1: string,
+      arg2: BigNumberish,
+      arg3: string,
+      arg4: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    "spawnPlantoid(address,address)"(
+    "spawnPlantoid(address,address,uint256,string,string)"(
       arg0: string,
       arg1: string,
+      arg2: BigNumberish,
+      arg3: string,
+      arg4: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
   };
@@ -111,12 +135,18 @@ export class IPlantoidSpawner extends Contract {
     spawnPlantoid(
       arg0: string,
       arg1: string,
+      arg2: BigNumberish,
+      arg3: string,
+      arg4: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "spawnPlantoid(address,address)"(
+    "spawnPlantoid(address,address,uint256,string,string)"(
       arg0: string,
       arg1: string,
+      arg2: BigNumberish,
+      arg3: string,
+      arg4: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
   };

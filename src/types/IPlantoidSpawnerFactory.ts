@@ -29,6 +29,21 @@ const _abi = [
         name: "",
         type: "address",
       },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
     ],
     name: "spawnPlantoid",
     outputs: [

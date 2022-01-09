@@ -28,6 +28,12 @@ const getNewPlantoidAddress = async (tx: ContractTransaction): Promise<string> =
     return plantoid
 }
 
+const config = {
+  threshold: ethers.utils.parseEther('1'),
+  name: 'Plantoid',
+  symbol: 'LIFE',
+}
+
 describe('Plantoid NFT', function () {
   let plantoidInstance: Plantoid
   let plantoidSpawn: PlantoidSpawn
@@ -56,7 +62,7 @@ describe('Plantoid NFT', function () {
   })
 
   beforeEach(async function () {
-    const tx = await plantoidSpawn.spawnPlantoid(plantoidOracle.address, firstCreator.address)
+    const tx = await plantoidSpawn.spawnPlantoid(plantoidOracle.address, firstCreator.address, config.threshold, config.name, config.symbol)
     const plantoid = await getNewPlantoidAddress(tx)
     plantoidInstance = (await Plantoid.attach(plantoid)) as Plantoid
 
@@ -154,7 +160,7 @@ describe('Plantoid NFT', function () {
       await plantoidAsSupporter.submitVote(0, 1, [1])
       await plantoidInstance.acceptWinner(0, 1)
       
-      const tx = await plantoidAsApplicant.spawn(plantoidOracle.address)
+      const tx = await plantoidAsApplicant.spawn(plantoidOracle.address, config.threshold, config.name, config.symbol)
       const plantoid = await getNewPlantoidAddress(tx)
       
       const newPlantoid = (await Plantoid.attach(plantoid)) as Plantoid

@@ -6,75 +6,61 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 interface IPlantoidSpawner {
-    function spawnPlantoid(address, address) external returns (bool);
+    function spawnPlantoid(
+        address,
+        address,
+        uint256,
+        string memory,
+        string memory
+    ) external returns (bool);
 }
-
 
 /// @title Plantoid
 /// @dev Blockchain based lifeform
 ///
-///  Features in this version
-///
-///     ERC1155 multi token contract
-///         Token ID 1: Primary art work - 1/1
-///         Token ID 2: Badges for license holders
-///
-///         Current owner of Token ID 1 has a license to mint derivative works
-///         Once owner sells token ID 1 they have a fixed amount of blocks to use their license to mint a new work
-//          
-//          Purchasers receive badges minted by the primary contract when they purchase
-//          Badges are not transferable
-//          
-//      Merkle Royalties
-///         Upon mint of token ID 1, set merkle root of a royalties claim tree
-///         Each leaf in the tree specifies an address and a percentage in basis points
-///         Any royalties collected by these contracts are sent to a Merkle claiming contract
-///         Royalty recipients can claim accumulated royalties from the contract
-///
-//      Perpetual Auctions
-///         NFTs can always be bought for a percentage more than they were last purchased for
-///         
-///         Buyers can place bids at least at a fixed percentage lower than the last sale price
-///
-///  Features not yet implemented
-///     Disable old bids on a sale?
-///     Cap for royalties?
 ///
 contract Plantoid is ERC721Enumerable, Initializable {
     using ECDSA for bytes32; /*ECDSA for signature recovery for license mints*/
 
     event Deposit(uint256 amount, address sender);
+    event ProposalSubmitted(address proposer, string proposalUri);
 
     struct Proposal {
         address proposer;
         string proposalUri;
     }
 
-    uint256 constant THRESHOLD = 3 ether;
+    /*****************
+    Reproduction state mgmt
+    *****************/
+    uint256 threshold; /*Threshold of received ETH to trigger a spawning round*/
 
-    mapping(uint256 => uint256) public proposalCounter;
+    mapping(uint256 => uint256) public proposalCounter; /* spawn count => proposal count*/
     mapping(uint256 => mapping(uint256 => Proposal)) public proposals; /* spawn count => proposal Id => Proposal */
-    mapping(uint256 => uint256) public winningProposal; /* spawn count => proposal Id => Proposal */
+    mapping(uint256 => uint256) public winningProposal; /* spawn count => winning proposal Id */
 
     mapping(uint256 => mapping(uint256 => bool)) public voted; /* spawn count => token ID => voted */
     mapping(uint256 => mapping(uint256 => uint256)) public votes; /* spawn count => proposal Id => votes*/
 
-    mapping(bytes32 => bool) public signatureUsed; /* track if license consent signature has been used */
-
     uint256 public spawnCount; /*Track how many children - used for voting rounds*/
-    address public plantoidAddress; /* Plantoid oracle TODO make changeable by creator? */
     address public artist;
 
-    IPlantoidSpawner spawner;
-
-    string private _name; /*Token name override*/
-
-    string private _symbol; /*Token symbol override*/
-
+    /*****************
+    Minting state mgmt
+    *****************/
+    mapping(bytes32 => bool) public signatureUsed; /* track if minting signature has been used */
+    address public plantoidAddress; /* Plantoid oracle TODO make changeable by creator? */
     uint256 _tokenIds;
     mapping(uint256 => string) private _tokenUris;
 
+    /*****************
+    Config state mgmt
+    *****************/
+    string private _name; /*Token name override*/
+    string private _symbol; /*Token symbol override*/
     string public contractURI; /*contractURI contract metadata json*/
+
+    IPlantoidSpawner spawner;
 
     /*****************
     Configuration
@@ -94,11 +80,13 @@ contract Plantoid is ERC721Enumerable, Initializable {
     function init(
         address _plantoid,
         address _artist,
+        uint256 _threshold,
         string calldata name_,
         string calldata symbol_
     ) external initializer {
         plantoidAddress = _plantoid;
         artist = _artist;
+        threshold = _threshold;
         _name = name_;
         _symbol = symbol_;
         spawner = IPlantoidSpawner(msg.sender); /*Initialize interface to spawner*/
@@ -137,26 +125,28 @@ contract Plantoid is ERC721Enumerable, Initializable {
     function submitProposal(uint256 _round, string memory _proposalUri)
         external
     {
-        require(address(this).balance >= THRESHOLD, "!threshold");
+        require(address(this).balance >= threshold, "!threshold");
         require(_round == spawnCount, "!round");
         proposalCounter[spawnCount] += 1;
         proposals[spawnCount][proposalCounter[spawnCount]] = Proposal(
             msg.sender,
             _proposalUri
         );
-        // todo emit proposal event
+        emit ProposalSubmitted(msg.sender, _proposalUri);
     }
+
+    // TODO move voting and proposals off chain to snapshot?
 
     /// @dev Submit vote on round proposal
     /// @param _round Round to vote for
     /// @param _proposal ID of proposal
-    /// @param _votingTokenIds IDs of tokens to use for vote TODO should we just use balance? cheaper gas
+    /// @param _votingTokenIds IDs of tokens to use for vote
     function submitVote(
         uint256 _round,
         uint256 _proposal,
         uint256[] memory _votingTokenIds
     ) external {
-        require(address(this).balance >= THRESHOLD, "!threshold");
+        require(address(this).balance >= threshold, "!threshold");
         require(_round == spawnCount, "!round");
         require(
             proposals[spawnCount][_proposal].proposer != address(0),
@@ -174,7 +164,7 @@ contract Plantoid is ERC721Enumerable, Initializable {
     /// @param _round Round to accept for
     /// @param _winningProposal Proposal ID
     function acceptWinner(uint256 _round, uint256 _winningProposal) external {
-        require(address(this).balance >= THRESHOLD, "!threshold");
+        require(address(this).balance >= threshold, "!threshold");
         require(_round == spawnCount, "!round");
         require(msg.sender == artist, "!authorized");
         require(
@@ -183,29 +173,72 @@ contract Plantoid is ERC721Enumerable, Initializable {
         );
         winningProposal[spawnCount] = _winningProposal;
     }
-    
+
     // todo allow artist to veto winning proposal - move on to next spawn count
 
     /// @dev Spawn new plantoid by winning artist
     /// @param _newPlantoid address of new plantoid oracle
-    function spawn(address _newPlantoid) external {
+    /// @param _plantoidThreshold deposit threshold for new plantoid
+    /// @param _plantoidName token name of new plantoid
+    /// @param _plantoidSymbol token symbol
+    function spawn(
+        address _newPlantoid,
+        uint256 _plantoidThreshold,
+        string memory _plantoidName,
+        string memory _plantoidSymbol
+    ) external {
         require(
             proposals[spawnCount][winningProposal[spawnCount]].proposer ==
                 msg.sender,
             "!winner"
         );
-        (bool _success, ) = artist.call{value: THRESHOLD}(""); /*Send ETH to artist first*/
+        (bool _success, ) = artist.call{value: threshold}(""); /*Send ETH to artist first*/
         // todo royalties
         require(_success, "could not send");
         require(
-            spawner.spawnPlantoid(_newPlantoid, msg.sender), // todo interface for different valid plantoid
+            spawner.spawnPlantoid(
+                _newPlantoid,
+                msg.sender,
+                _plantoidThreshold,
+                _plantoidName,
+                _plantoidSymbol
+            ),
             "Failed to spawn"
         );
     }
-    
-    // each plantoid has basic funtions but possibly one can be overwritten by new creator
-    // add a before transfer hook
-    // add a voting module
+
+    /// @dev Spawn new plantoid using custom contract by winning artist
+    /// @param _newPlantoidSpawner address of new plantoid spawner
+    /// @param _newPlantoid address of new plantoid oracle
+    /// @param _plantoidThreshold deposit threshold for new plantoid
+    /// @param _plantoidName token name of new plantoid
+    /// @param _plantoidSymbol token symbol
+    function spawnCustom(
+        IPlantoidSpawner _newPlantoidSpawner,
+        address _newPlantoid,
+        uint256 _plantoidThreshold,
+        string memory _plantoidName,
+        string memory _plantoidSymbol
+    ) external {
+        require(
+            proposals[spawnCount][winningProposal[spawnCount]].proposer ==
+                msg.sender,
+            "!winner"
+        );
+        (bool _success, ) = artist.call{value: threshold}(""); /*Send ETH to artist first*/
+        // todo royalties
+        require(_success, "could not send");
+        require(
+            _newPlantoidSpawner.spawnPlantoid(
+                _newPlantoid,
+                msg.sender,
+                _plantoidThreshold,
+                _plantoidName,
+                _plantoidSymbol
+            ),
+            "Failed to spawn"
+        );
+    }
 
     /*****************
     Supporter functions
@@ -273,7 +306,7 @@ contract CloneFactory {
         internal
         returns (address payable result)
     {
-        // eip-1167 proxy pattern adapted for payable minion
+        // eip-1167 proxy pattern adapted for payable platoid spawner
         bytes20 targetBytes = bytes20(address(target));
         assembly {
             let clone := mload(0x40)
@@ -301,13 +334,15 @@ contract PlantoidSpawn is CloneFactory, IPlantoidSpawner {
     }
 
     // add a generic data bytes field so people can make new templates
-    function spawnPlantoid(address _plantoidAddr, address _artist) 
-        external
-        override
-        returns (bool)
-    {
+    function spawnPlantoid(
+        address _plantoidAddr,
+        address _artist,
+        uint256 _threshold,
+        string memory _name,
+        string memory _symbol
+    ) external override returns (bool) {
         Plantoid _plantoid = Plantoid(createClone(template));
-        _plantoid.init(_plantoidAddr, _artist, "TODO-Name", "TODO-Symbol");
+        _plantoid.init(_plantoidAddr, _artist, _threshold, _name, _symbol);
         emit PlantoidSpawned(address(_plantoid), _artist);
         return true;
     }

@@ -28,7 +28,7 @@ interface PlantoidInterface extends ethers.utils.Interface {
     "balanceOf(address)": FunctionFragment;
     "contractURI()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
-    "init(address,address,string,string)": FunctionFragment;
+    "init(address,address,uint256,string,string)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "mintSeed(uint256,address,string,bytes)": FunctionFragment;
     "name()": FunctionFragment;
@@ -39,8 +39,9 @@ interface PlantoidInterface extends ethers.utils.Interface {
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "signatureUsed(bytes32)": FunctionFragment;
-    "spawn(address)": FunctionFragment;
+    "spawn(address,uint256,string,string)": FunctionFragment;
     "spawnCount()": FunctionFragment;
+    "spawnCustom(address,address,uint256,string,string)": FunctionFragment;
     "submitProposal(uint256,string)": FunctionFragment;
     "submitVote(uint256,uint256,uint256[])": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
@@ -75,7 +76,7 @@ interface PlantoidInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "init",
-    values: [string, string, string, string]
+    values: [string, string, BigNumberish, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
@@ -114,10 +115,17 @@ interface PlantoidInterface extends ethers.utils.Interface {
     functionFragment: "signatureUsed",
     values: [BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: "spawn", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "spawn",
+    values: [string, BigNumberish, string, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "spawnCount",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "spawnCustom",
+    values: [string, string, BigNumberish, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "submitProposal",
@@ -212,6 +220,10 @@ interface PlantoidInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "spawn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "spawnCount", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "spawnCustom",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "submitProposal",
     data: BytesLike
   ): Result;
@@ -249,12 +261,14 @@ interface PlantoidInterface extends ethers.utils.Interface {
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
     "Deposit(uint256,address)": EventFragment;
+    "ProposalSubmitted(address,string)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Deposit"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ProposalSubmitted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
@@ -343,14 +357,16 @@ export class Plantoid extends Contract {
     init(
       _plantoid: string,
       _artist: string,
+      _threshold: BigNumberish,
       name_: string,
       symbol_: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "init(address,address,string,string)"(
+    "init(address,address,uint256,string,string)"(
       _plantoid: string,
       _artist: string,
+      _threshold: BigNumberish,
       name_: string,
       symbol_: string,
       overrides?: Overrides
@@ -497,11 +513,17 @@ export class Plantoid extends Contract {
 
     spawn(
       _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "spawn(address)"(
+    "spawn(address,uint256,string,string)"(
       _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
@@ -512,6 +534,24 @@ export class Plantoid extends Contract {
     "spawnCount()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
+
+    spawnCustom(
+      _newPlantoidSpawner: string,
+      _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "spawnCustom(address,address,uint256,string,string)"(
+      _newPlantoidSpawner: string,
+      _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     submitProposal(
       _round: BigNumberish,
@@ -726,14 +766,16 @@ export class Plantoid extends Contract {
   init(
     _plantoid: string,
     _artist: string,
+    _threshold: BigNumberish,
     name_: string,
     symbol_: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "init(address,address,string,string)"(
+  "init(address,address,uint256,string,string)"(
     _plantoid: string,
     _artist: string,
+    _threshold: BigNumberish,
     name_: string,
     symbol_: string,
     overrides?: Overrides
@@ -850,17 +892,41 @@ export class Plantoid extends Contract {
 
   spawn(
     _newPlantoid: string,
+    _plantoidThreshold: BigNumberish,
+    _plantoidName: string,
+    _plantoidSymbol: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "spawn(address)"(
+  "spawn(address,uint256,string,string)"(
     _newPlantoid: string,
+    _plantoidThreshold: BigNumberish,
+    _plantoidName: string,
+    _plantoidSymbol: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   spawnCount(overrides?: CallOverrides): Promise<BigNumber>;
 
   "spawnCount()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+  spawnCustom(
+    _newPlantoidSpawner: string,
+    _newPlantoid: string,
+    _plantoidThreshold: BigNumberish,
+    _plantoidName: string,
+    _plantoidSymbol: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "spawnCustom(address,address,uint256,string,string)"(
+    _newPlantoidSpawner: string,
+    _newPlantoid: string,
+    _plantoidThreshold: BigNumberish,
+    _plantoidName: string,
+    _plantoidSymbol: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
   submitProposal(
     _round: BigNumberish,
@@ -1036,14 +1102,16 @@ export class Plantoid extends Contract {
     init(
       _plantoid: string,
       _artist: string,
+      _threshold: BigNumberish,
       name_: string,
       symbol_: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "init(address,address,string,string)"(
+    "init(address,address,uint256,string,string)"(
       _plantoid: string,
       _artist: string,
+      _threshold: BigNumberish,
       name_: string,
       symbol_: string,
       overrides?: CallOverrides
@@ -1158,16 +1226,43 @@ export class Plantoid extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    spawn(_newPlantoid: string, overrides?: CallOverrides): Promise<void>;
-
-    "spawn(address)"(
+    spawn(
       _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "spawn(address,uint256,string,string)"(
+      _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
     spawnCount(overrides?: CallOverrides): Promise<BigNumber>;
 
     "spawnCount()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    spawnCustom(
+      _newPlantoidSpawner: string,
+      _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "spawnCustom(address,address,uint256,string,string)"(
+      _newPlantoidSpawner: string,
+      _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     submitProposal(
       _round: BigNumberish,
@@ -1309,6 +1404,8 @@ export class Plantoid extends Contract {
 
     Deposit(amount: null, sender: null): EventFilter;
 
+    ProposalSubmitted(proposer: null, proposalUri: null): EventFilter;
+
     Transfer(
       from: string | null,
       to: string | null,
@@ -1369,14 +1466,16 @@ export class Plantoid extends Contract {
     init(
       _plantoid: string,
       _artist: string,
+      _threshold: BigNumberish,
       name_: string,
       symbol_: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    "init(address,address,string,string)"(
+    "init(address,address,uint256,string,string)"(
       _plantoid: string,
       _artist: string,
+      _threshold: BigNumberish,
       name_: string,
       symbol_: string,
       overrides?: Overrides
@@ -1487,16 +1586,43 @@ export class Plantoid extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    spawn(_newPlantoid: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "spawn(address)"(
+    spawn(
       _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "spawn(address,uint256,string,string)"(
+      _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
     spawnCount(overrides?: CallOverrides): Promise<BigNumber>;
 
     "spawnCount()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    spawnCustom(
+      _newPlantoidSpawner: string,
+      _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "spawnCustom(address,address,uint256,string,string)"(
+      _newPlantoidSpawner: string,
+      _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
     submitProposal(
       _round: BigNumberish,
@@ -1679,14 +1805,16 @@ export class Plantoid extends Contract {
     init(
       _plantoid: string,
       _artist: string,
+      _threshold: BigNumberish,
       name_: string,
       symbol_: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "init(address,address,string,string)"(
+    "init(address,address,uint256,string,string)"(
       _plantoid: string,
       _artist: string,
+      _threshold: BigNumberish,
       name_: string,
       symbol_: string,
       overrides?: Overrides
@@ -1801,17 +1929,41 @@ export class Plantoid extends Contract {
 
     spawn(
       _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "spawn(address)"(
+    "spawn(address,uint256,string,string)"(
       _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
     spawnCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "spawnCount()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    spawnCustom(
+      _newPlantoidSpawner: string,
+      _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "spawnCustom(address,address,uint256,string,string)"(
+      _newPlantoidSpawner: string,
+      _newPlantoid: string,
+      _plantoidThreshold: BigNumberish,
+      _plantoidName: string,
+      _plantoidSymbol: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
     submitProposal(
       _round: BigNumberish,
