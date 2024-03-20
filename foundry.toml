@@ -5,9 +5,11 @@ libs = ["node_modules", "lib"]
 remappings = [
     "@ensdomains/=node_modules/@ensdomains/",
     "@gnosis.pm/=node_modules/@gnosis.pm/",
-    "@openzeppelin/=node_modules/@openzeppelin/",
+    "@openzeppelin/=lib/openzeppelin-contracts/",
     "eth-gas-reporter/=node_modules/eth-gas-reporter/",
     "hardhat/=node_modules/hardhat/",
 ]
+optimizer = true
+optimizer_runs = 100000
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
