@@ -75,6 +75,8 @@ contract Plantoid is ERC721Enumerable, Initializable {
     /// @dev Initialize
     /// @param _plantoid Address of plantoid oracle on physical sculpture
     /// @param _artist Address of creator of this plantoid
+    /// @param _threshold Deposit threshold to trigger reproduction. Denominated
+    /// in wei
     /// @param name_ Token name for supporter seeds
     /// @param symbol_ Token symbol for supporter seeds
     function init(
